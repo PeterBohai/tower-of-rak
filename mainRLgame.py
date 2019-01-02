@@ -268,13 +268,15 @@ class ObjGame:
     Stores and tracks all information including maps, objects, and a record of game messages.
 
     Attributes:
-        current_map (obj): The map that is currently loaded and displayed.
+        current_map (2d-array): The map that is currently loaded and displayed.
         current_objects (list): List of objects on the current map (and not in an actor's container inventory).
+        current_rooms (list): List of all valid ObjRoom objects on the displayed map.
         message_history (list): List of messages that have been displayed to the player on the game screen.
 
     """
     def __init__(self):
-        self.current_map = map_create()
+        self.current_map = []
+        self.current_rooms = []
         self.current_objects = []
 
         self.message_history = []  # an empty list
@@ -856,7 +858,7 @@ class ComEquipment:
 
 
 # ================================================================= #
-#                    -----  Ai Components  -----                     #
+#                    -----  Ai Components  -----                    #
 #                          --- SECTION ---                          #
 # ================================================================= #
 
@@ -966,31 +968,114 @@ def map_create():
     Calls map_make_fov() on new_map to create the fov (field of view) map.
 
     Returns:
-        new_map (array) : An array of StructTile objects.
+        new_map (2d array) : An array of StructTile objects.
+        list_of_rooms (list): A list containing all valid ObjRoom objects on the displayed map.
 
     """
 
-    # initialize empty map with floor tiles (False arg for StructTile)
-    new_map = [[StructTile(False) for y in range(0, constants.MAP_HEIGHT)] for x in range(0, constants.MAP_WIDTH)]
+    # initialize empty map with wall tiles (True arg for StructTile)
+    new_map = [[StructTile(True) for y in range(0, constants.MAP_HEIGHT)] for x in range(0, constants.MAP_WIDTH)]
 
-    # place two test walls in the map
-    new_map[10][10].block_path = True
-    new_map[10][15].block_path = True
+    # list of rooms containing room objects
+    list_of_rooms = []
 
-    # sets top and bottom tiles of map to walls
-    for x in range(constants.MAP_WIDTH):
-        new_map[x][0].block_path = True
-        new_map[x][constants.MAP_HEIGHT - 1].block_path = True
+    # generate new room
+    for i in range(constants.MAP_MAX_NUM_ROOMS):
 
-    # sets left and right most tiles of map to walls
-    for y in range(constants.MAP_HEIGHT):
-        new_map[0][y].block_path = True
-        new_map[constants.MAP_WIDTH - 1][y].block_path = True
+        # randomize room dimensions and position (upper-left corner) coordinate
+        room_width = tcod.random_get_int(0, constants.ROOM_MIN_WIDTH, constants.ROOM_MAX_WIDTH)
+        room_height = tcod.random_get_int(0, constants.ROOM_MIN_HEIGHT, constants.ROOM_MAX_HEIGHT)
+
+        room_x = tcod.random_get_int(0, 2, constants.MAP_WIDTH - 2 - room_width)
+        room_y = tcod.random_get_int(0, 2, constants.MAP_HEIGHT - 2 - room_height)
+
+        # create the room
+        new_room = ObjRoom((room_x, room_y), (room_width, room_height))
+        failed = False
+
+        # check for interference
+        for other_room in list_of_rooms:
+            if new_room.intersect(other_room):
+                failed = True
+                break
+
+        if not failed:
+
+            # place the room onto the map
+            map_create_room(new_map, new_room)
+
+            # place the PLAYER inside the center of the very first of room of this map
+            if len(list_of_rooms) == 0:
+                gen_player(new_room.center)
+
+            # otherwise, dig tunnel to the previous room's center
+            else:
+                previous_room = list_of_rooms[-1]
+
+                map_create_tunnels(new_map, new_room.center, previous_room.center)
+
+            list_of_rooms.append(new_room)
 
     # create FOV_MAP
     map_make_fov(new_map)
 
-    return new_map
+    return new_map, list_of_rooms
+
+
+def map_create_room(map_array, new_room):
+    """ Creates a room in the map.
+
+    Turns all the tiles of the specified room to floor tiles.
+
+    Args:
+        map_array (2d array): The map (array of tiles) to create/dig the room in.
+        new_room (ObjRoom): The room object with coordinate attributes specifying the tiles to be turned to floor.
+
+    """
+
+    for x in range(new_room.x1, new_room.x2):
+        for y in range(new_room.y1, new_room.y2):
+            map_array[x][y].block_path = False
+
+
+def map_create_tunnels(map_array, tup_center1, tup_center2):
+    """ Creates (one tile-width) a horizontal and a vertical tunnel connecting one room to another.
+
+    Provides a 50% chance to create the horizontal tunnel first.
+
+    Args:
+        map_array (2d array): The map (array of tiles) to create/dig the horizontal tunnel in.
+        tup_center1 (tuple): The center coordinate of a room (usually the room that was just created).
+        tup_center2 (tuple): The center coordinate of another room (usually the previously created room).
+
+    """
+
+    x1, y1 = tup_center1
+    x2, y2 = tup_center2
+
+    # give a 50% chance that the tunnel will be created in the horizontal direction first
+    order_of_tunnel_drawn = tcod.random_get_int(0, 0, 1)
+
+    # If this horizontal tunnel is drawn first, y coord would be y1. Otherwise, y coord would be y2.
+    if order_of_tunnel_drawn == 1:
+
+        # create horizontal tunnel first
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            map_array[x][y1].block_path = False
+
+        # create vertical tunnel next
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            map_array[x2][y].block_path = False
+
+    else:
+
+        # create vertical tunnel first
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            map_array[x1][y].block_path = False
+
+        # create horizontal tunnel next
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            map_array[x][y2].block_path = False
 
 
 def map_check_for_creatures(x, y, exclude_object=None):
@@ -1107,8 +1192,6 @@ def map_find_radius(coords, radius):
 # ================================================================= #
 
 def draw_game():
-
-    global SURFACE_MAIN
 
     # clear the surface (filling it with some color, wipe the color out)
     SURFACE_MAIN.fill(constants.COLOR_DEFAULT_BG)
@@ -1589,18 +1672,20 @@ def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penet
 
 # ---> PLAYER
 def gen_player(tup_coords):
+    global PLAYER
+
     x, y = tup_coords
 
     container_com = ComContainer()
     creature_com = ComCreature("Rak", base_atk=3)
 
-    player_obj = ObjActor(1, 1, "Alligator",
-                          ASSETS.A_PLAYER,
-                          animation_speed=1,
-                          creature=creature_com,
-                          container=container_com)
+    PLAYER = ObjActor(x, y, "Alligator",
+                      ASSETS.A_PLAYER,
+                      animation_speed=1,
+                      creature=creature_com,
+                      container=container_com)
 
-    return player_obj
+    GAME.current_objects.append(PLAYER)
 
 
 # ---> ITEMS
@@ -1829,68 +1914,31 @@ def game_initialize():
 
     """
 
-    global SURFACE_MAIN, GAME, CLOCK, FOV_CALCULATE, PLAYER, ENEMY, ASSETS
+    global SURFACE_MAIN, GAME, CLOCK, FOV_CALCULATE, ASSETS
 
     # initialize pygame
     pygame.init()
-    pygame.key.set_repeat(250, 110)     # (delay, interval) in milliseconds for movement when holding down keys
-
-    # displays the pygame window
-    SURFACE_MAIN = pygame.display.set_mode((constants.MAP_WIDTH * constants.CELL_WIDTH,
-                                            constants.MAP_HEIGHT * constants.CELL_HEIGHT),
-                                           pygame.RESIZABLE)
-
-    GAME = ObjGame()
-
-    CLOCK = pygame.time.Clock()
-
-    FOV_CALCULATE = True
-
-    ASSETS = StructAssets()
-
-    #PLAYER.creature.take_damage(5)  # for testing healing effects
-
-    #creature_com2_3 = ComCreature("Acidclaw", base_atk=5, death_function=death_snake_monster)
-    #item_com1_3 = ComItem()
-    #ai_com = AiChase()
-    #ENEMY4 = ObjActor(6, 7, "Crabster",  ASSETS.A_GIANT_BOA,
-    #                  animation_speed=1, creature=creature_com2_3, ai=ai_com, item=item_com1_3)
-
-    # Test Items
-    item_heal_com2 = ComItem(use_function=cast_heal, value=4)
-    item_com3 = ComItem(use_function=cast_heal, value=6)
-    item_com4 = ComItem(use_function=cast_heal, value=10)
-
-    test_ITEM = ObjActor(1, 2, "Juicy Tomato", ASSETS.S_TOMATO, item=item_heal_com2)
-    test_ITEM2 = ObjActor(1, 3, "Dry Cabbage", ASSETS.S_CABBAGE, item=item_com3)
-    test_ITEM3 = ObjActor(1, 4, "Crunchy Radish", ASSETS.S_RADISH, item=item_com4)
-
-    # Test Equipment
-    equipment_com1 = ComEquipment(attack_bonus=2, slot="Right Hand")
-    test_SWORD = ObjActor(3, 1, "Small Sword", ASSETS.S_32_SWORD, equipment=equipment_com1)
-
-    equipment_com2 = ComEquipment(defence_bonus=1, slot="Left Hand")
-    test_SHIELD = ObjActor(4, 1, "Small Shield", ASSETS.S_32_SHIELD, equipment=equipment_com2)
-
-    # Test Scrolls
-
-    GAME.current_objects = [test_ITEM, test_ITEM2, test_ITEM3, test_SWORD, test_SHIELD]
+    pygame.key.set_repeat(200, 110)     # (delay, interval) in milliseconds for movement when holding down keys
 
     # Parse name generation files
     tcod.namegen_parse("data/namegen/jice_fantasy.cfg")
 
-    # create scrolls and equipment
-    gen_item((3, 3))
-    gen_item((3, 4))
-    gen_item((3, 5))
+    # displays the pygame window
+    SURFACE_MAIN = pygame.display.set_mode((constants.MAP_WIDTH * constants.CELL_WIDTH,
+                                            constants.MAP_HEIGHT * constants.CELL_HEIGHT),
+                                            pygame.RESIZABLE)
 
-    # create 2 enemies
-    gen_enemy((7, 8))
-    gen_enemy((8, 8))
 
-    PLAYER = gen_player((1, 1))
+    ASSETS = StructAssets()
 
-    GAME.current_objects.append(PLAYER)
+    GAME = ObjGame()
+
+    # initialize game object first and then set map creation
+    GAME.current_map, GAME.current_rooms = map_create()
+
+    CLOCK = pygame.time.Clock()
+
+    FOV_CALCULATE = True
 
 
 def game_handle_keys():
