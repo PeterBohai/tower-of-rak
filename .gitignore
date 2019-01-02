@@ -1,0 +1,17 @@
+# macOS files
+.DS_Store
+._*
+
+# python-specific
+__pycache__/
+
+# intelliJ or pycharm files
+.idea
+
+# other files
+*.docx
+*.zip
+
+# directories
+dungeon-generation-examples/
+data/Other/
