@@ -553,12 +553,20 @@ class ComCreature:
         self.current_hp -= damage
 
         if self.owner is not PLAYER:
-            damage_taken = "{}'s heath is {}/{}".format(self.owner.display_name, self.current_hp, self.maxHp)
             msg_color = constants.COLOR_ORANGE
 
+            if self.current_hp < 0:
+                damage_taken = "{}'s heath is 0/{}".format(self.owner.display_name, self.maxHp)
+            else:
+                damage_taken = "{}'s heath is {}/{}".format(self.owner.display_name, self.current_hp, self.maxHp)
+
         elif self.owner is PLAYER:
-            damage_taken = "{}'s heath is {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
             msg_color = constants.COLOR_RED
+
+            if self.current_hp < 0:
+                damage_taken = "{}'s heath is 0/{}".format(self.name_instance, self.maxHp)
+            else:
+                damage_taken = "{}'s heath is {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
 
         game_message(damage_taken, msg_color)
 
@@ -583,6 +591,7 @@ class ComCreature:
         if self.current_hp <= self.maxHp:
             healed_amt_msg = self.name_instance + " healed for " + str(amount)
             curr_hp_msg = self.name_instance + "'s health is now " + str(self.current_hp) + "/" + str(self.maxHp)
+
             game_message(healed_amt_msg, constants.COLOR_GREEN)
             game_message(curr_hp_msg, constants.COLOR_WHITE)
 
@@ -593,6 +602,7 @@ class ComCreature:
 
             healed_amt_msg = self.name_instance + " healed for " + str(actual_healed_amt)
             curr_hp_msg = self.name_instance + "'s health is now " + str(self.current_hp) + "/" + str(self.maxHp)
+
             game_message(healed_amt_msg, constants.COLOR_GREEN)
             game_message(curr_hp_msg, constants.COLOR_WHITE)
 
@@ -728,9 +738,7 @@ class ComItem:
             # holding the item.
 
             result = self.use_function(self.container.owner, self.value)
-            if result is not None:
-                print("use_function failed")
-            else:
+            if result != "unused":
                 self.container.inventory.remove(self.owner)
 
 
@@ -1033,9 +1041,40 @@ def map_create_room(map_array, new_room):
 
     """
 
-    for x in range(new_room.x1, new_room.x2):
-        for y in range(new_room.y1, new_room.y2):
+    for x in range(new_room.x1, new_room.x2 + 1):
+        for y in range(new_room.y1, new_room.y2 + 1):
             map_array[x][y].block_path = False
+
+
+def map_place_items_creatures(room_list):
+    """ Randomly generates different items and creatures to random coordinates in each room on the map.
+
+    Args:
+        room_list (list): List of ObjRoom objects.
+
+    """
+
+    for i, room in enumerate(room_list):
+        min_x = room.x1
+        max_x = room.x2
+        min_y = room.y1
+        max_y = room.y2
+
+        enemy_x = tcod.random_get_int(0, min_x, max_x)
+        enemy_y = tcod.random_get_int(0, min_y, max_y)
+
+        if i != 0:
+            gen_enemy((enemy_x, enemy_y))
+
+        item_x = enemy_x
+        item_y = enemy_y
+
+        # make sure enemies dont spawn on top of items (might not be necessary since they move away anyways)
+        while enemy_x == item_x and enemy_y == item_y:
+            item_x = tcod.random_get_int(0, min_x, max_x)
+            item_y = tcod.random_get_int(0, min_y, max_y)
+
+        gen_item((item_x, item_y))
 
 
 def map_create_tunnels(map_array, tup_center1, tup_center2):
@@ -1350,7 +1389,7 @@ def cast_lightening(caster, tup_dmg_range):
 
     # continue with casting of spell only if caster did not "cancel" the spell (by escaping from menu_tile_select)
     if selected_tile_address:
-        game_message("{} casts lightening".format(caster.name_object),
+        game_message("{} casts lightening".format(caster.creature.name_instance),
                      constants.COLOR_WHITE)
 
         # convert tile into a list of coords between a and b
@@ -1362,6 +1401,9 @@ def cast_lightening(caster, tup_dmg_range):
 
             if target_creature and i != 0:
                 target_creature.creature.take_damage(damage)
+
+    else:
+        return "unused"
 
 
 def cast_fireball(caster, tup_dmg_range_radius):
@@ -1379,7 +1421,7 @@ def cast_fireball(caster, tup_dmg_range_radius):
                                              creature_penetration=False)
     # get sequence of tiles
     if selected_tile_address:
-        game_message("{} casts fireball".format(caster.name_object),
+        game_message("{} casts fireball".format(caster.creature.name_instance),
                      constants.COLOR_WHITE)
 
         list_of_tiles_to_damage = map_find_radius(selected_tile_address, spell_radius)
@@ -1390,6 +1432,9 @@ def cast_fireball(caster, tup_dmg_range_radius):
 
             if target_creature:
                 target_creature.creature.take_damage(damage)
+
+    else:
+        return "unused"
 
 
 def cast_confusion(caster, effect_length):
@@ -1405,7 +1450,7 @@ def cast_confusion(caster, effect_length):
         target_creature = map_check_for_creatures(target_tile_x, target_tile_y)
 
         if target_creature:
-            game_message("{} casts confusion on {}".format(caster.name_object, target_creature.display_name),
+            game_message("{} casts confusion on {}".format(caster.creature.name_instance, target_creature.display_name),
                          constants.COLOR_WHITE)
 
             normal_ai = target_creature.ai
@@ -1414,6 +1459,9 @@ def cast_confusion(caster, effect_length):
             target_creature.ai.owner = target_creature
 
             game_message("{} is now confused!".format(target_creature.display_name), constants.COLOR_GREEN)
+
+    else:
+        return "unused"
 
 
 # ================================================================= #
@@ -1465,8 +1513,8 @@ def menu_inventory():
     window_height = constants.MAP_HEIGHT * constants.CELL_HEIGHT
 
     # menu characteristics
-    menu_width = 200
-    menu_height = 200
+    menu_width = (2/5) * window_width
+    menu_height = (2/5) * window_height
     menu_x = (window_width/2) - (menu_width/2)          # number of pixels to the right from the left game window side
     menu_y = (window_height/2) - (menu_height/2)        # number of pixels down from the top game window side
     menu_text_font = constants.FONT_BEST
@@ -1479,7 +1527,7 @@ def menu_inventory():
         draw_game()
 
         # Clear the menu
-        local_inventory_menu_surface.fill(constants.COLOR_BLACK)
+        local_inventory_menu_surface.fill(constants.COLOR_GREY)
 
         # mouse control inside menu
         mouse_x, mouse_y = pygame.mouse.get_pos()  # gets mouse position coordinates relative to game window
@@ -1500,7 +1548,7 @@ def menu_inventory():
         for line, name in enumerate(print_list):
             if mouse_in_menu and line == mouse_line_selection:
                 draw_text(local_inventory_menu_surface, name, menu_text_font, (0, 0 + (line * menu_text_height)),
-                          menu_text_color, constants.COLOR_GREY)
+                          constants.COLOR_BLACK, constants.COLOR_WHITE)
             else:
                 draw_text(local_inventory_menu_surface, name, menu_text_font, (0, 0 + (line * menu_text_height)),
                           menu_text_color)
@@ -1935,6 +1983,8 @@ def game_initialize():
 
     # initialize game object first and then set map creation
     GAME.current_map, GAME.current_rooms = map_create()
+
+    map_place_items_creatures(GAME.current_rooms)
 
     CLOCK = pygame.time.Clock()
 
