@@ -3,11 +3,12 @@ import pygame
 
 pygame.init()
 
-# Game sizes
-GAME_WIDTH = 800
-GAME_HEIGHT = 600
+# GAME SIZES
 CELL_WIDTH = 32
 CELL_HEIGHT = 32  # because of the size of the sprite character's png
+
+CAMERA_WIDTH = 900
+CAMERA_HEIGHT = 650
 
 
 # FPS LIMIT
@@ -15,17 +16,17 @@ GAME_FPS = 60
 
 
 # MAP VARS (39 X 23)
-MAP_WIDTH = 38
-MAP_HEIGHT = 22
+MAP_WIDTH = 100
+MAP_HEIGHT = 100
 MAP_MAX_NUM_ROOMS = 10
 
 
 # ROOM LIMITS
-ROOM_MAX_HEIGHT = 7
-ROOM_MAX_WIDTH = 7
+ROOM_MAX_HEIGHT = 9
+ROOM_MAX_WIDTH = 9
 
-ROOM_MIN_HEIGHT = 4
-ROOM_MIN_WIDTH = 4
+ROOM_MIN_HEIGHT = 5
+ROOM_MIN_WIDTH = 5
 
 
 # Color definitions
@@ -40,7 +41,7 @@ COLOR_ORANGE = (255, 155, 84)
 
 
 # Game colors
-COLOR_DEFAULT_BG = COLOR_BLACK
+
 
 # FOV SETTINGS
 

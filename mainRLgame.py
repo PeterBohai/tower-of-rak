@@ -198,7 +198,7 @@ class ObjActor:
         if is_visible:
             if len(self.animation) == 1:
                 # pixel address
-                SURFACE_MAIN.blit(self.animation[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+                SURFACE_MAP.blit(self.animation[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
             elif len(self.animation) > 1:
                 if CLOCK.get_fps() > 0.0:
@@ -217,7 +217,7 @@ class ObjActor:
             if len(self.animation) == 1:
                 self.sprite_image = 0
 
-            SURFACE_MAIN.blit(self.animation[self.sprite_image],
+            SURFACE_MAP.blit(self.animation[self.sprite_image],
                               (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
     def distance_to(self, other):
@@ -386,7 +386,7 @@ class ObjSpriteSheet:
 
 
 class ObjRoom:
-    """ Rectangular rooms on the map that have various useful properties.
+    """ Rectangular room objects on the map that have various useful properties.
 
     Contains the property of returning the coordinate that is closest to the room object's "center".
     Also have the property of returning a boolean to determine whether it intersects with another room object
@@ -439,6 +439,47 @@ class ObjRoom:
                             self.y1 <= other.y2 and self.y2 >= other.y1)
 
         return intersects_other
+
+
+class ObjCamera:
+    """ Camera object that updates the view of the map as the player moves around.
+
+    Attributes:
+        width (int): The width of the rectangular camera display in pixels
+        height (int): The height of the rectangular camera display in pixels
+        x (int): The x (pixel) coordinate of the camera rectangle to be aligned to a surface.
+        y (int): The y (pixel) coordinate of the camera rectangle to be aligned to a surface.
+
+    """
+    def __init__(self):
+        self.width = constants.CAMERA_WIDTH
+        self.height = constants.CAMERA_HEIGHT
+        self.x, self.y = (0, 0)
+
+    def update_pos(self):
+        """ Updates and sets the position of the x, y coordinates of camera.
+
+        Follows the coordinate (relative to SURFACE_MAP) of the center of the player.
+
+        """
+
+        # add half the pixel dimensions of one cell as PLAYER coordinates are aligned to the cell's top-left corner
+        self.x = (PLAYER.x * constants.CELL_WIDTH) + (constants.CELL_WIDTH/2)
+        self.y = (PLAYER.y * constants.CELL_HEIGHT) + (constants.CELL_HEIGHT/2)
+
+    @property
+    def rectangle(self):
+        """ Creates the rectangle area of the camera object and aligns its center coordinates accordingly.
+
+        Returns:
+            pos_rect (Rect): A pygame's rectangle object aligned at the center.
+
+        """
+        pos_rect = pygame.Rect((0, 0), (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
+        pos_rect.center = (self.x, self.y)
+
+        return pos_rect
 
 
 # ================================================================= #
@@ -1069,8 +1110,8 @@ def map_place_items_creatures(room_list):
         item_x = enemy_x
         item_y = enemy_y
 
-        # make sure enemies dont spawn on top of items (might not be necessary since they move away anyways)
-        while enemy_x == item_x and enemy_y == item_y:
+        # make sure enemies do not spawn on top of items or PLAYER (might not be necessary since they move away anyways)
+        while enemy_x == item_x and enemy_y == item_y and (item_x, item_y) is not (PLAYER.x, PLAYER.y):
             item_x = tcod.random_get_int(0, min_x, max_x)
             item_y = tcod.random_get_int(0, min_y, max_y)
 
@@ -1233,7 +1274,10 @@ def map_find_radius(coords, radius):
 def draw_game():
 
     # clear the surface (filling it with some color, wipe the color out)
-    SURFACE_MAIN.fill(constants.COLOR_DEFAULT_BG)
+    SURFACE_MAIN.fill(constants.COLOR_BLACK)
+    SURFACE_MAP.fill(constants.COLOR_BLACK)
+
+    CAMERA.update_pos()
 
     # draw the map
     draw_map(GAME.current_map)
@@ -1241,6 +1285,8 @@ def draw_game():
     # draw the character
     for obj in GAME.current_objects:
         obj.draw()
+
+    SURFACE_MAIN.blit(SURFACE_MAP, (0, 0), CAMERA.rectangle)
 
     draw_debug()
     draw_messages()
@@ -1258,18 +1304,18 @@ def draw_map(map_to_draw):
                 map_to_draw[x][y].explored = True
 
                 if map_to_draw[x][y].block_path is True:
-                    SURFACE_MAIN.blit(ASSETS.S_WALL, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    SURFACE_MAP.blit(ASSETS.S_WALL, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                 else:
-                    SURFACE_MAIN.blit(ASSETS.S_FLOOR, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    SURFACE_MAP.blit(ASSETS.S_FLOOR, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             else:
                 if map_to_draw[x][y].explored:
                     if map_to_draw[x][y].block_path is True:
-                        SURFACE_MAIN.blit(ASSETS.S_WALL_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        SURFACE_MAP.blit(ASSETS.S_WALL_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                     else:
-                        SURFACE_MAIN.blit(ASSETS.S_FLOOR_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        SURFACE_MAP.blit(ASSETS.S_FLOOR_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
 
 def draw_debug():
@@ -1286,7 +1332,7 @@ def draw_messages():
         # GAME.message_history = GAME.message_history[-constants.NUM_MESSAGES:]
 
     text_height = helper_text_height(constants.FONT_BEST)
-    start_y = constants.MAP_HEIGHT * constants.CELL_HEIGHT - (constants.NUM_MESSAGES * text_height)
+    start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height)
 
     for i, (message, color) in enumerate(GAME.message_history):
 
@@ -1509,8 +1555,8 @@ def menu_inventory():
     menu_close = False
 
     # game window dimensions
-    window_width = constants.MAP_WIDTH * constants.CELL_WIDTH
-    window_height = constants.MAP_HEIGHT * constants.CELL_HEIGHT
+    window_width = constants.CAMERA_WIDTH
+    window_height = constants.CAMERA_HEIGHT
 
     # menu characteristics
     menu_width = (2/5) * window_width
@@ -1671,39 +1717,39 @@ def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penet
                 if target_creature:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_RED, alpha=200, mark="X")
+                        draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED, alpha=200, mark="X")
 
                     else:
-                        draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_RED, alpha=150)
+                        draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED, alpha=150)
 
                 # highlight anything else (walls, floor, items) in pale yellow
                 else:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=200, mark="X")
+                        draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=200, mark="X")
                     else:
-                        draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=100)
+                        draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=100)
 
         # Draw rectangle at mouse position over game visuals
         for (tile_x, tile_y) in list_of_tiles:
 
             # mark target with an "X"
             if (tile_x, tile_y) == list_of_tiles[-1] and not radius:
-                draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_WHITE, alpha=200, mark="X")
+                draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=200, mark="X")
 
             target_creature = map_check_for_creatures(tile_x, tile_y)
 
             # highlight tile in red if tile contains a monster
             if target_creature and target_creature is not PLAYER:
-                draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_RED)
+                draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED)
 
             # no highlight of tile if tile is PLAYER (setting transparency to max)
             elif target_creature is PLAYER:
-                draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_WHITE, alpha=0)
+                draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=0)
 
             # highlight anything else (walls, floor, items) in white
             else:
-                draw_tile_rect(SURFACE_MAIN, (tile_x, tile_y), constants.COLOR_WHITE, alpha=150)
+                draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=150)
 
 
 
@@ -1962,20 +2008,23 @@ def game_initialize():
 
     """
 
-    global SURFACE_MAIN, GAME, CLOCK, FOV_CALCULATE, ASSETS
+    global SURFACE_MAIN, GAME, CLOCK, FOV_CALCULATE, ASSETS, SURFACE_MAP, CAMERA
 
     # initialize pygame
     pygame.init()
-    pygame.key.set_repeat(200, 110)     # (delay, interval) in milliseconds for movement when holding down keys
+    pygame.key.set_repeat(180, 90)     # (delay, interval) in milliseconds for movement when holding down keys
 
     # Parse name generation files
     tcod.namegen_parse("data/namegen/jice_fantasy.cfg")
 
     # displays the pygame window
-    SURFACE_MAIN = pygame.display.set_mode((constants.MAP_WIDTH * constants.CELL_WIDTH,
-                                            constants.MAP_HEIGHT * constants.CELL_HEIGHT),
-                                            pygame.RESIZABLE)
+    SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))  # pygame.RESIZABLE
 
+    # surface of entire map
+    SURFACE_MAP = pygame.Surface((constants.MAP_WIDTH * constants.CELL_WIDTH,
+                                  constants.MAP_HEIGHT * constants.CELL_HEIGHT))
+
+    CAMERA = ObjCamera()
 
     ASSETS = StructAssets()
 
