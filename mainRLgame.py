@@ -456,17 +456,6 @@ class ObjCamera:
         self.height = constants.CAMERA_HEIGHT
         self.x, self.y = (0, 0)
 
-    def update_pos(self):
-        """ Updates and sets the position of the x, y coordinates of camera.
-
-        Follows the coordinate (relative to SURFACE_MAP) of the center of the player.
-
-        """
-
-        # add half the pixel dimensions of one cell as PLAYER coordinates are aligned to the cell's top-left corner
-        self.x = (PLAYER.x * constants.CELL_WIDTH) + (constants.CELL_WIDTH/2)
-        self.y = (PLAYER.y * constants.CELL_HEIGHT) + (constants.CELL_HEIGHT/2)
-
     @property
     def rectangle(self):
         """ Creates the rectangle area of the camera object and aligns its center coordinates accordingly.
@@ -480,6 +469,102 @@ class ObjCamera:
         pos_rect.center = (self.x, self.y)
 
         return pos_rect
+
+    @property
+    def map_address(self):
+        """ Converts the camera's center map-pixel coordinates to map-tile coordinates.
+
+        Returns:
+            tup_map_tile_coords (tuple): The converted map-tile coordinates of the camera's center position on the map.
+
+        """
+
+        map_x = int(self.x / constants.CELL_WIDTH)
+        map_y = int(self.y / constants.CELL_HEIGHT)
+
+        tup_map_tile_coords = (map_x, map_y)
+
+        return tup_map_tile_coords
+
+    def update_pos(self):
+        """ Updates and sets the position of the x, y coordinates of camera.
+
+        Follows the coordinate (relative to SURFACE_MAP) of the center of the player. Have the option of making the
+        camera lag behind a bit, or have to catch up in a smooth motion.
+
+        """
+
+        # add half the pixel dimensions of one cell as PLAYER coordinates are aligned to the cell's upper-left corner
+        target_x = (PLAYER.x * constants.CELL_WIDTH) + (constants.CELL_WIDTH/2)
+        target_y = (PLAYER.y * constants.CELL_HEIGHT) + (constants.CELL_HEIGHT/2)
+
+        distance_to_target_x, distance_to_target_y = self. map_dist_to_cam((target_x, target_y))
+
+        camera_speed = 1
+
+        self.x += int(distance_to_target_x * camera_speed)
+        self.y += int(distance_to_target_y * camera_speed)
+
+    def map_dist_to_cam(self, tup_coords):
+        """ Gives x and y distance from specified map-coordinate to camera's center map-coordinate.
+
+        Calculates the x and y coordinate difference between a specified coordinate on the map and the center
+        map-coordinate of the camera. Every value is expressed in pixels.
+
+        Args:
+            tup_coords (tuple): Pixel coordinates relative to the map, or SURFACE_MAP.
+
+        Returns:
+            tup_diff_coord (tuple): Pixel coordinates relative to the map of the calculated x and y difference.
+
+        """
+
+        map_x, map_y = tup_coords
+
+        distance_diff_x = map_x - self.x
+        distance_diff_y = map_y - self.y
+
+        tup_diff_coord = (distance_diff_x, distance_diff_y)
+
+        return tup_diff_coord
+
+    def window_dist_to_cam(self, tup_coords):
+        """ Gives x and y distance from specified window-coordinate to camera's center window-coordinate.
+
+        Calculates the x and y coordinate difference between a specified coordinate on the window and the center
+        window-coordinate of the camera. Every value is expressed in pixels.
+
+        Args:
+            tup_coords (tuple): Pixel coordinates relative to the window, or SURFACE_MAIN.
+
+        Returns:
+            tup_diff_coord (tuple): Pixel coordinates relative to the window of the calculated x and y difference.
+
+        """
+
+        window_x, window_y = tup_coords
+
+        distance_diff_x = window_x - (self.width / 2)
+        distance_diff_y = window_y - (self.height / 2)
+
+        tup_diff_coord = (distance_diff_x, distance_diff_y)
+
+        return tup_diff_coord
+
+    def window_to_map(self, tup_coords):
+        target_x, target_y = tup_coords
+
+        # convert window coordinates to distance from camera
+        cam_wind_dx, cam_wind_dy = self.window_dist_to_cam((target_x, target_y))
+
+        # distance from camera to map coordinate
+        map_pix_x = self.x + cam_wind_dx
+        map_pix_y = self.y + cam_wind_dy
+
+        # pixel map coordinates converted from window pixel coordinates
+        tup_map_coords = (map_pix_x, map_pix_y)
+
+        return tup_map_coords
 
 
 # ================================================================= #
@@ -1294,8 +1379,30 @@ def draw_game():
 
 def draw_map(map_to_draw):
 
-    for x in range(0, constants.MAP_WIDTH):
-        for y in range(0, constants.MAP_HEIGHT):
+    # render only the visible portion of the map
+
+    cam_tile_x, cam_tile_y = CAMERA.map_address
+
+    window_tile_width = int(constants.CAMERA_WIDTH / constants.CELL_WIDTH)
+    window_tile_height = int(constants.CAMERA_HEIGHT / constants.CELL_HEIGHT)
+
+    render_min_x = int(cam_tile_x - (window_tile_width / 2))
+    render_min_y = int(cam_tile_y - (window_tile_height / 2))
+
+    render_max_x = int(cam_tile_x + (window_tile_width / 2))
+    render_max_y = int(cam_tile_y + (window_tile_height / 2))
+
+    if render_min_x < 0:
+        render_min_x = 0
+    if render_min_y < 0:
+        render_min_y = 0
+    if render_max_x > constants.MAP_WIDTH:
+        render_max_x = constants.MAP_WIDTH
+    if render_max_y > constants.MAP_HEIGHT:
+        render_max_y = constants.MAP_HEIGHT
+
+    for x in range(render_min_x, render_max_x):
+        for y in range(render_min_y, render_max_y):
 
             is_visible = tcod.map_is_in_fov(FOV_MAP, x, y)      # to check whether or not a tile is visible
 
@@ -1522,8 +1629,8 @@ def menu_pause():
 
     menu_close = False
 
-    window_width = constants.MAP_WIDTH * constants.CELL_WIDTH
-    window_height = constants.MAP_HEIGHT * constants.CELL_HEIGHT
+    window_width = constants.CAMERA_WIDTH
+    window_height = constants.CAMERA_HEIGHT
 
     pause_menu_text = "PAUSED"
     pause_menu_font = constants.FONT_BEST
@@ -1644,9 +1751,14 @@ def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penet
         # Get mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        # mouse map position conversion
-        map_tile_x = int(mouse_x/constants.CELL_WIDTH)
-        map_tile_y = int(mouse_y/constants.CELL_WIDTH)
+        # convert mouse window address to map pixel address
+        map_x_pixel, map_y_pixel = CAMERA.window_to_map((mouse_x, mouse_y))
+
+        # convert to map tile address
+        map_tile_x = int(map_x_pixel/constants.CELL_WIDTH)
+        map_tile_y = int(map_y_pixel/constants.CELL_HEIGHT)
+
+
 
         if coords_origin:
             list_of_tiles = map_find_line(coords_origin, (map_tile_x, map_tile_y))
@@ -1698,7 +1810,18 @@ def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penet
                         return list_of_tiles[-1]
 
         # Draw game
-        draw_game()
+        # clear the surface (filling it with some color, wipe the color out)
+        SURFACE_MAIN.fill(constants.COLOR_BLACK)
+        SURFACE_MAP.fill(constants.COLOR_BLACK)
+
+        CAMERA.update_pos()
+
+        # draw the map
+        draw_map(GAME.current_map)
+
+        # draw the character
+        for obj in GAME.current_objects:
+            obj.draw()
 
         # draw area of affect with the correct radius
         if radius:
@@ -1751,7 +1874,11 @@ def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penet
             else:
                 draw_tile_rect(SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=150)
 
+        # next half of draw_game()
+        SURFACE_MAIN.blit(SURFACE_MAP, (0, 0), CAMERA.rectangle)
 
+        draw_debug()
+        draw_messages()
 
         pygame.display.flip()  # pygame.display.update() does the same thing if given without any arguments
 
