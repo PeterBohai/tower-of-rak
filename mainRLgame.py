@@ -275,11 +275,51 @@ class ObjGame:
 
     """
     def __init__(self):
-        self.current_map = []
-        self.current_rooms = []
         self.current_objects = []
-
         self.message_history = []  # an empty list
+        self.maps_next = []
+        self.maps_prev = []
+        self.current_map, self.current_rooms = map_create()
+
+    def map_transition_next(self):
+        global FOV_CALCULATE
+
+        FOV_CALCULATE = True
+
+        if len(self.maps_next) == 0:
+            # save data of current map (before creating new map) on to maps_prev list
+            save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
+            self.maps_prev.append(save_data)
+
+            # erase all items from previous map except the PLAYER
+            self.current_objects = [PLAYER]
+            self.current_map, self.current_rooms = map_create()
+            map_place_items_creatures(self.current_rooms)
+
+        else:
+
+            (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_next[-1]
+
+            map_make_fov(self.current_map)
+
+            FOV_CALCULATE = True
+
+            del self.maps_next[-1]
+
+    def map_transition_prev(self):
+        global FOV_CALCULATE
+
+        if len(self.maps_prev) != 0:
+            save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
+            self.maps_next.append(save_data)
+
+            (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_prev[-1]
+
+            map_make_fov(self.current_map)
+
+            FOV_CALCULATE = True
+
+            del self.maps_prev[-1]
 
 
 class ObjSpriteSheet:
@@ -451,6 +491,7 @@ class ObjCamera:
         y (int): The y (pixel) coordinate of the camera rectangle to be aligned to a surface.
 
     """
+
     def __init__(self):
         self.width = constants.CAMERA_WIDTH
         self.height = constants.CAMERA_HEIGHT
@@ -1139,11 +1180,7 @@ def map_create():
             map_create_room(new_map, new_room)
 
             # place the PLAYER inside the center of the very first of room of this map
-            if len(list_of_rooms) == 0:
-                gen_player(new_room.center)
-
-            # otherwise, dig tunnel to the previous room's center
-            else:
+            if len(list_of_rooms) != 0:
                 previous_room = list_of_rooms[-1]
 
                 map_create_tunnels(new_map, new_room.center, previous_room.center)
@@ -1189,14 +1226,19 @@ def map_place_items_creatures(room_list):
         enemy_x = tcod.random_get_int(0, min_x, max_x)
         enemy_y = tcod.random_get_int(0, min_y, max_y)
 
+        # place PLAYER in the center of the first room
+        if i == 0:
+            PLAYER.x, PLAYER.y = room.center
+
+        # only generate enemies in the rooms that the player doesnt start in
         if i != 0:
             gen_enemy((enemy_x, enemy_y))
 
-        item_x = enemy_x
-        item_y = enemy_y
+        item_x = PLAYER.x
+        item_y = PLAYER.y
 
-        # make sure enemies do not spawn on top of items or PLAYER (might not be necessary since they move away anyways)
-        while enemy_x == item_x and enemy_y == item_y and (item_x, item_y) is not (PLAYER.x, PLAYER.y):
+        # items are not allowed to span on top of player's spawn point
+        while (item_x, item_y) == (PLAYER.x, PLAYER.y):
             item_x = tcod.random_get_int(0, min_x, max_x)
             item_y = tcod.random_get_int(0, min_y, max_y)
 
@@ -2135,7 +2177,7 @@ def game_initialize():
 
     """
 
-    global SURFACE_MAIN, GAME, CLOCK, FOV_CALCULATE, ASSETS, SURFACE_MAP, CAMERA
+    global SURFACE_MAIN, CLOCK, FOV_CALCULATE, ASSETS, SURFACE_MAP, CAMERA
 
     # initialize pygame
     pygame.init()
@@ -2155,16 +2197,12 @@ def game_initialize():
 
     ASSETS = StructAssets()
 
-    GAME = ObjGame()
-
-    # initialize game object first and then set map creation
-    GAME.current_map, GAME.current_rooms = map_create()
-
-    map_place_items_creatures(GAME.current_rooms)
-
     CLOCK = pygame.time.Clock()
 
     FOV_CALCULATE = True
+
+    # generate a completely new game
+    game_new()
 
 
 def game_handle_keys():
@@ -2226,6 +2264,12 @@ def game_handle_keys():
             if event.key == pygame.K_i:
                 menu_inventory()
 
+            if event.key == pygame.K_n:
+                GAME.map_transition_next()
+
+            if event.key == pygame.K_b:
+                GAME.map_transition_prev()
+
             # 'l' key: enable tile selection (for lightening spell)
             # if event.key == pygame.K_l:
                 # cast_lightening(5)
@@ -2255,6 +2299,14 @@ def game_message(game_msg, msg_color=constants.COLOR_GREY):
             del GAME.message_history[0]
 
     GAME.message_history.append((game_msg, msg_color))
+
+
+def game_new():
+    global GAME
+
+    GAME = ObjGame()
+    gen_player((0, 0))
+    map_place_items_creatures(GAME.current_rooms)
 
 
 if __name__ == '__main__':
