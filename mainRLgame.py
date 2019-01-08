@@ -13,7 +13,7 @@ import constants
 #                          --- SECTION ---                          #
 # ================================================================= #
 class StructTile:
-    """ A class which functions like a struct that tracks the data for each tile within a map.
+    """A class which functions like a struct that tracks the data for each tile within a map.
 
     Attributes:
         block_path (arg, bool) : True if the tile is like a wall, which blocks any movement onto or through the tile.
@@ -27,7 +27,7 @@ class StructTile:
 
 
 class StructAssets:
-    """ A class which functions like a struct and contains all the assets used in the game.
+    """A class which functions like a struct and contains all the assets used in the game.
 
     Loads sprite sheets using the ObjSpriteSheet class and creates individual sprite images and animations from the
     ObjActor class. Will also include music and sound effects.
@@ -95,7 +95,7 @@ class StructAssets:
 # ================================================================= #
 
 class ObjActor:
-    """ An actor object class that essentially represents every entity in the game.
+    """An actor object class that essentially represents every entity in the game.
 
     This is an object that can be anything that appears in the game and is differentiated mainly through the components
     that make up and control the object.
@@ -165,7 +165,7 @@ class ObjActor:
 
     @property
     def display_name(self):
-        """ Combines creature names and their object (type) name. Adds the "[E]" indicator for equipped items.
+        """Combines creature names and their object (type) name. Adds the "[E]" indicator for equipped items.
 
         Returns:
             name_to_display (str): The full name of a creature or the equip status of an equipment item.
@@ -185,7 +185,7 @@ class ObjActor:
                 return name_to_display
 
     def draw(self):
-        """ Draws the actor object to the screen.
+        """Draws the actor object to the screen.
 
         Draws the actor object to the map screen if it appears within the PLAYER's fov. If the object as multiple sprite
         images in its animation list, it keeps track of the timing of the animations and triggers a transition to
@@ -221,7 +221,7 @@ class ObjActor:
                               (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
     def distance_to(self, other):
-        """ Calculates the relative distance of this actor object to another.
+        """Calculates the relative distance of this actor object to another.
 
         Args:
             other (ObjActor): Another actor object.
@@ -240,7 +240,7 @@ class ObjActor:
         return shortest_distance_to_other
 
     def move_towards(self, other):
-        """ Moves this actor object closer towards another object.
+        """Moves this actor object closer towards another object.
 
             Used in the AiChase to chase after a specified actor object.
             Uses the move() method in the ComCreature component class.
@@ -263,15 +263,17 @@ class ObjActor:
 
 
 class ObjGame:
-    """ A game object class that tracks game progress and entities.
+    """A game object class that tracks game progress and entities.
 
     Stores and tracks all information including maps, objects, and a record of game messages.
 
     Attributes:
-        current_map (2d-array): The map that is currently loaded and displayed.
         current_objects (list): List of objects on the current map (and not in an actor's container inventory).
-        current_rooms (list): List of all valid ObjRoom objects on the displayed map.
         message_history (list): List of messages that have been displayed to the player on the game screen.
+        maps_next (list): List map data (tuple) saved before transitioning to previous maps.
+        maps_prev (list): List map data (tuple) saved before transitioning to a new map.
+        current_map (2d-array): The map that is currently loaded and displayed.
+        current_rooms (list): List of all valid ObjRoom objects on the displayed map.
 
     """
     def __init__(self):
@@ -282,6 +284,9 @@ class ObjGame:
         self.current_map, self.current_rooms = map_create()
 
     def map_transition_next(self):
+        """Creates a new map if there are no maps in maps_next queue. Otherwise, load the last map in maps_next.
+
+        """
         global FOV_CALCULATE
 
         FOV_CALCULATE = True
@@ -307,6 +312,9 @@ class ObjGame:
             del self.maps_next[-1]
 
     def map_transition_prev(self):
+        """Loads the last map in maps_prev, saving data of current map before doing so.
+
+        """
         global FOV_CALCULATE
 
         if len(self.maps_prev) != 0:
@@ -323,7 +331,7 @@ class ObjGame:
 
 
 class ObjSpriteSheet:
-    """ A sprite sheet object class that contain methods to grab images out of a sprite sheet.
+    """A sprite sheet object class that contain methods to grab images out of a sprite sheet.
 
     Access and grab subsections or individual sprites after loading in a sprite sheet. Will also scale the sprites to
     32 x 32.
@@ -345,7 +353,7 @@ class ObjSpriteSheet:
                          'm': 13, 'n': 14, 'o': 15, 'p': 16}    # Thus, (A, 0) will get the upper left corner sprite
 
     def get_image(self, column, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None):
-        """ Returns a single sprite.
+        """Returns a single sprite.
 
         Given a loaded sprite sheet, blits a single sprite specified by column (char) and row (int) onto a new pygame
         surface and appends that image onto image_list (list).
@@ -383,7 +391,7 @@ class ObjSpriteSheet:
 
     def get_animation(self, column, row, num_sprites=1, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT,
                       scale=None):
-        """ Returns a sequence of sprites.
+        """Returns a sequence of sprites.
 
         Given a loaded sprite sheet, appends a sequence of sprites specified by column (char) and row (int) and number
         of sprites in the animation sequence onto image_list (list).
@@ -426,7 +434,7 @@ class ObjSpriteSheet:
 
 
 class ObjRoom:
-    """ Rectangular room objects on the map that have various useful properties.
+    """Rectangular room objects on the map that have various useful properties.
 
     Contains the property of returning the coordinate that is closest to the room object's "center".
     Also have the property of returning a boolean to determine whether it intersects with another room object
@@ -452,7 +460,7 @@ class ObjRoom:
 
     @property
     def center(self):
-        """ A property method that takes x and y coordinates and calculates the center coordinate of the room.
+        """A property method that takes x and y coordinates and calculates the center coordinate of the room.
 
         Returns:
             center_x (int): The x coordinate of the center of the room.
@@ -465,7 +473,7 @@ class ObjRoom:
         return center_x, center_y
 
     def intersect(self, other):
-        """ Determines whether a room object intersects with another room object.
+        """Determines whether a room object intersects with another room object.
 
         Args:
             other (ObjRoom): Another room object created by ObjRoom.
@@ -482,7 +490,7 @@ class ObjRoom:
 
 
 class ObjCamera:
-    """ Camera object that updates the view of the map as the player moves around.
+    """Camera object that updates the view of the map as the player moves around.
 
     Attributes:
         width (int): The width of the rectangular camera display in pixels
@@ -499,7 +507,7 @@ class ObjCamera:
 
     @property
     def rectangle(self):
-        """ Creates the rectangle area of the camera object and aligns its center coordinates accordingly.
+        """Creates the rectangle area of the camera object and aligns its center coordinates accordingly.
 
         Returns:
             pos_rect (Rect): A pygame's rectangle object aligned at the center.
@@ -513,7 +521,7 @@ class ObjCamera:
 
     @property
     def map_address(self):
-        """ Converts the camera's center map-pixel coordinates to map-tile coordinates.
+        """Converts the camera's center map-pixel coordinates to map-tile coordinates.
 
         Returns:
             tup_map_tile_coords (tuple): The converted map-tile coordinates of the camera's center position on the map.
@@ -528,7 +536,7 @@ class ObjCamera:
         return tup_map_tile_coords
 
     def update_pos(self):
-        """ Updates and sets the position of the x, y coordinates of camera.
+        """Updates and sets the position of the x, y coordinates of camera.
 
         Follows the coordinate (relative to SURFACE_MAP) of the center of the player. Have the option of making the
         camera lag behind a bit, or have to catch up in a smooth motion.
@@ -547,7 +555,7 @@ class ObjCamera:
         self.y += int(distance_to_target_y * camera_speed)
 
     def map_dist_to_cam(self, tup_coords):
-        """ Gives x and y distance from specified map-coordinate to camera's center map-coordinate.
+        """Gives x and y distance from specified map-coordinate to camera's center map-coordinate.
 
         Calculates the x and y coordinate difference between a specified coordinate on the map and the center
         map-coordinate of the camera. Every value is expressed in pixels.
@@ -570,7 +578,7 @@ class ObjCamera:
         return tup_diff_coord
 
     def window_dist_to_cam(self, tup_coords):
-        """ Gives x and y distance from specified window-coordinate to camera's center window-coordinate.
+        """Gives x and y distance from specified window-coordinate to camera's center window-coordinate.
 
         Calculates the x and y coordinate difference between a specified coordinate on the window and the center
         window-coordinate of the camera. Every value is expressed in pixels.
@@ -615,7 +623,7 @@ class ObjCamera:
 
 
 class ComCreature:
-    """ Creature component gives actor objects health and fighting properties.
+    """Creature component gives actor objects health and fighting properties.
 
     Creatures have health, can damage other objects by attacking them and possibly die.
 
@@ -644,7 +652,7 @@ class ComCreature:
         self.death_function = death_function
 
     def move(self, dx, dy):
-        """ Moves the creature object on the map.
+        """Moves the creature object on the map.
 
         Args:
             dx (int): Distance in tile map coordinates to move object along the x-axis.
@@ -671,7 +679,7 @@ class ComCreature:
             self.owner.y += dy
 
     def attack(self, target):
-        """ Attacks another "target" ObjActor object.
+        """Attacks another "target" ObjActor object.
 
         Uses the take_damage() method in this ComCreature class to implement harming of target. Will display a game
         message indicating how much damage the creature did to the target. The damage dealt to the target is influenced
@@ -706,7 +714,7 @@ class ComCreature:
         target.creature.take_damage(damage_dealt)
 
     def take_damage(self, damage):
-        """ Applies damage amount to current_hp.
+        """Applies damage amount to current_hp.
 
         Decreases current_hp of self and displays a game message indicating how much health remains. The name displayed
         is different for PLAYER and other creatures. Runs death_function specified in the initialization of the creature
@@ -742,7 +750,7 @@ class ComCreature:
                 self.death_function(self.owner)
 
     def heal(self, amount):
-        """ Applies health to creature's current_hp.
+        """Applies health to creature's current_hp.
 
         Increases current_hp of self and displays a game message indicating the amount healed and another game message
         indicating the current health of the creature. Makes sure that the current_hp of creature does not go past its
@@ -775,7 +783,7 @@ class ComCreature:
 
     @property
     def power(self):
-        """ A property that calculates and returns the current total power of the creature.
+        """A property that calculates and returns the current total power of the creature.
 
         Adds base_atk and all attack bonuses currently available to the creature (equipped items, etc.) to its
         total power.
@@ -796,7 +804,7 @@ class ComCreature:
 
     @property
     def defence(self):
-        """ A property that calculates and returns the current total defence of the creature.
+        """A property that calculates and returns the current total defence of the creature.
 
         Adds base_def and all defence bonuses currently available to the creature (equipped items, etc.) to its
         total defence.
@@ -817,7 +825,7 @@ class ComCreature:
 
 
 class ComItem:
-    """ Item component gives actor objects the property of being picked up and used.
+    """Item component gives actor objects the property of being picked up and used.
 
     Attributes:
         weight (arg, float): The weight of the object with precision of one decimal point.
@@ -841,7 +849,7 @@ class ComItem:
         # self.owner = self.owner
 
     def pick_up(self, actor):
-        """ Picks up the item object and places it into specified actor's container inventory.
+        """Picks up the item object and places it into specified actor's container inventory.
 
         Appends item to actor's inventory (list) in its container component and removes the items from the list of
         current_objects in GAME (ObjGame). Displays appropriate messages indicating whether the item can be picked up.
@@ -864,7 +872,7 @@ class ComItem:
                 self.container = actor.container
 
     def drop(self, new_x, new_y):
-        """ Drops the item object onto the ground specified by the coordinate arguments.
+        """Drops the item object onto the ground specified by the coordinate arguments.
 
         Removes the item object from the actor's inventory that the item is being contained in and places it into the
         GAME's current_object list. Displays a game message indicating which object has been dropped.
@@ -886,7 +894,7 @@ class ComItem:
         game_message("Dropped [{}]".format(self.owner.name_object))
 
     def use(self):
-        """ Uses the item to produce an effect and removes it from the inventory.
+        """Uses the item to produce an effect and removes it from the inventory.
 
         Passes in the caster (the creature/actor using the item) and the value associated with the use_function.
         Removes the used item from the inventory that it was held in. Prints error message to console if an error
@@ -910,7 +918,7 @@ class ComItem:
 
 
 class ComContainer:
-    """ Container component gives actor objects an inventory that can hold item objects.
+    """Container component gives actor objects an inventory that can hold item objects.
 
     Attributes:
         inventory (arg, list): Optional argument that initializes a list of ObjActor with the item component. Default
@@ -934,7 +942,7 @@ class ComContainer:
     # Get volume within container
     @property
     def volume(self):
-        """ Gets the current total volume of the container.
+        """Gets the current total volume of the container.
 
         Returns:
             total_volume (float): The total volume that the current items in the inventory sum up to.
@@ -947,7 +955,7 @@ class ComContainer:
 
     @property
     def equipped_items(self):
-        """ Gives a list of all equipped items on the character.
+        """Gives a list of all equipped items on the character.
 
         Returns:
              list_of_equipped_items (list): list of all equipment items in the inventory that have their equipped
@@ -963,7 +971,7 @@ class ComContainer:
 
 
 class ComEquipment:
-    """ Equipment component gives actor objects item component properties as well as extra combat bonuses and statuses.
+    """Equipment component gives actor objects item component properties as well as extra combat bonuses and statuses.
 
     Equipments are a component of actor objects, but also contain the item component (see ObjActor initialization).
 
@@ -986,7 +994,7 @@ class ComEquipment:
         self.equipped = False
 
     def toggle_equip(self):
-        """ Toggles and sets equipment's status attribute "equipped".
+        """Toggles and sets equipment's status attribute "equipped".
 
         """
 
@@ -996,7 +1004,7 @@ class ComEquipment:
             self.equip()
 
     def equip(self):
-        """ Equips the item and sets the equipped attribute to True.
+        """Equips the item and sets the equipped attribute to True.
 
         Checks the slot of the equipment to see if that particular slot is already occupied. Display appropriate game
         messages to PLAYER. If the slot is empty, set equipped attribute to true.
@@ -1019,7 +1027,7 @@ class ComEquipment:
         game_message("Equipped [{}] in the {} slot".format(self.owner.name_object, self.slot))
 
     def unequip(self):
-        """ Unequips the item and sets the equipped attribute to False.
+        """Unequips the item and sets the equipped attribute to False.
 
         Display a game messages to PLAYER indicating the equipment has been unequipped.
 
@@ -1039,7 +1047,7 @@ class ComEquipment:
 
 
 class AiConfuse:
-    """ Ai component class that makes a creature actor walk in random directions.
+    """Ai component class that makes a creature actor walk in random directions.
 
     Attributes:
         original_ai (arg, Ai class): The ai component the actor had originally before being set to AiConfuse.
@@ -1054,7 +1062,7 @@ class AiConfuse:
         self.hurt_kin = True
 
     def take_turn(self):
-        """ Performs one move action towards a random direction/tile.
+        """Performs one move action towards a random direction/tile.
 
         Resets the affected creature's ai to its previous (normal) ai after num_turns have been exhausted to 0.
 
@@ -1076,7 +1084,7 @@ class AiConfuse:
 
 
 class AiChase:
-    """ Ai component class for enemy creatures that chases the PLAYER and attacks when the it is next to the PLAYER.
+    """Ai component class for enemy creatures that chases the PLAYER and attacks when the it is next to the PLAYER.
 
     Attributes:
         hurt_kin (bool): True if the ai is allowed to make the creature hurt its own kind/type. Default set to False.
@@ -1086,7 +1094,7 @@ class AiChase:
         self.hurt_kin = False
 
     def take_turn(self):
-        """ Performs one move action towards the PLAYER's current location when the creature is in the PLAYER's fov.
+        """Performs one move action towards the PLAYER's current location when the creature is in the PLAYER's fov.
 
         When the creature is adjacent to the PLAYER, attack. Prevents creatures from hurt other creatures when moving
         towards PLAYER together (implemented in the move() method of ComCreature).
@@ -1112,7 +1120,7 @@ class AiChase:
 # ================================================================= #
 
 def death_snake_monster(monster):
-    """ Death_function for dead snake creatures.
+    """Death_function for dead snake creatures.
 
     Creature stops moving, loses its creature component and its idle animation becomes a still piece of snake flesh.
 
@@ -1136,7 +1144,7 @@ def death_snake_monster(monster):
 # ================================================================= #
 
 def map_create():
-    """ Creates the default map.
+    """Creates the default map.
 
     Currently, only walls bordering the window are created, with 2 walls placed at (10,10) and (10, 15).
     This is for testing purposes and will change into a more procedurally generated map in the future.
@@ -1194,7 +1202,7 @@ def map_create():
 
 
 def map_create_room(map_array, new_room):
-    """ Creates a room in the map.
+    """Creates a room in the map.
 
     Turns all the tiles of the specified room to floor tiles.
 
@@ -1210,7 +1218,7 @@ def map_create_room(map_array, new_room):
 
 
 def map_place_items_creatures(room_list):
-    """ Randomly generates different items and creatures to random coordinates in each room on the map.
+    """Randomly generates different items and creatures to random coordinates in each room on the map.
 
     Args:
         room_list (list): List of ObjRoom objects.
@@ -1246,7 +1254,7 @@ def map_place_items_creatures(room_list):
 
 
 def map_create_tunnels(map_array, tup_center1, tup_center2):
-    """ Creates (one tile-width) a horizontal and a vertical tunnel connecting one room to another.
+    """Creates (one tile-width) a horizontal and a vertical tunnel connecting one room to another.
 
     Provides a 50% chance to create the horizontal tunnel first.
 
@@ -1285,7 +1293,18 @@ def map_create_tunnels(map_array, tup_center1, tup_center2):
             map_array[x][y2].block_path = False
 
 
-def map_check_for_creatures(x, y, exclude_object=None):
+def map_check_for_creatures(coords_x, coords_y, exclude_object=None):
+    """Check if there is a creature object at the specified x, y coordinates.
+
+    Args:
+        coords_x (int): x coordinate of tile to be checked for creatures.
+        coords_y (int): y coordinate of tile to be checked for creatures.
+        exclude_object (ObjActor): Optional argument for an actor to be excluded from the check.
+
+    Returns:
+        target (ObjActor):
+
+    """
 
     # if no creature on that tile, return None
     target = None
@@ -1294,8 +1313,8 @@ def map_check_for_creatures(x, y, exclude_object=None):
         # check object list to find creature at that location that isn't excluded
         for obj in GAME.current_objects:
             if (obj is not exclude_object and
-                obj.x == x and
-                obj.y == y and
+                obj.x == coords_x and
+                obj.y == coords_y and
                 obj.creature):
 
                 target = obj
@@ -1306,8 +1325,8 @@ def map_check_for_creatures(x, y, exclude_object=None):
     else:
         # check object list to find any creature at that location (eg. confuse spell hurting themselves)
         for obj in GAME.current_objects:
-            if (obj.x == x and
-                obj.y == y and
+            if (obj.x == coords_x and
+                obj.y == coords_y and
                 obj.creature):
                 target = obj
 
@@ -1316,6 +1335,17 @@ def map_check_for_creatures(x, y, exclude_object=None):
 
 
 def map_make_fov(incoming_map):
+    """Creates a fov map based on a specified map.
+
+    Generates the global tcod map object FOV_MAP.
+
+    Args:
+        incoming_map (2D array): A map that's usually created by map_create().
+
+    Returns:
+        None
+
+    """
     global FOV_MAP
 
     FOV_MAP = tcod.map_new(constants.MAP_WIDTH, constants.MAP_HEIGHT)
@@ -1327,15 +1357,32 @@ def map_make_fov(incoming_map):
 
 
 def map_calculate_fov():
+    """Calculates the fov based on the PLAYER's position on the map.
+
+    Only calculates the fov when the global variable FOV_CALCULATE is True.
+
+    Returns:
+        None
+    """
     global FOV_CALCULATE
 
     if FOV_CALCULATE:
-        FOV_CALCULATE = False
+        FOV_CALCULATE = False   # prevent calculating fov every frame, if standing still
         tcod.map_compute_fov(FOV_MAP, PLAYER.x, PLAYER.y, constants.TORCH_RADIUS, constants.FOV_LIGHT_WALLS,
                              constants.FOV_ALG)
 
 
 def map_object_at_coords(coords_x, coords_y):
+    """Check if there is an object at the specified x, y coordinates.
+
+    Args:
+        coords_x (int): x coordinate of tile to be checked for creatures.
+        coords_y (int): y coordinate of tile to be checked for creatures.
+
+    Returns:
+        object_options (List): List of all actor objects at specified coordinates.
+
+    """
 
     object_options = [obj for obj in GAME.current_objects if obj.x == coords_x and obj.y == coords_y]
 
@@ -1343,14 +1390,14 @@ def map_object_at_coords(coords_x, coords_y):
 
 
 def map_find_line(coords1, coords2):
-    """ Coverts two different (x, y) coordinates into a list of map tiles
+    """Coverts two different (x, y) coordinates into a list of map tiles
 
     Args:
         coords1 (tuple): (x1, y1) The start coordinates for the line.
         coords2 (tuple): (x2, y2) The end coordinates for the line.
 
     Returns:
-        A list of map tile coordinates.
+        coord_list (list): A list of map tile coordinates.
     """
 
     x1, y1 = coords1
@@ -1377,6 +1424,16 @@ def map_find_line(coords1, coords2):
 
 
 def map_find_radius(coords, radius):
+    """Converts a map coordinate to a list of all tiles in the area specified by the radius.
+
+    Args:
+        coords (tuple): X and y map coordinates of the center tile of the circular (square) area.
+        radius (int): Radius of the area.
+
+    Returns:
+        tile_coord_list (list): List of tuples containing all tile coordinates within the area.
+
+    """
 
     center_x, center_y = coords
 
@@ -1399,6 +1456,21 @@ def map_find_radius(coords, radius):
 # ================================================================= #
 
 def draw_game():
+    """Main function for drawing the entire game.
+
+    Order of draw operations:
+        1) Clear the screen window and map Surface
+        2) Update the camera position
+        3) Draw the map Surface
+        4) Draw all appropriate actor objects onto the map Surface
+        5) Render the map Surface onto the screen window
+        5) Draw the debug fps message in the top-left corner of the screen window
+        6) Draw the player messages on the screen window
+
+    Returns:
+        None
+
+    """
 
     # clear the surface (filling it with some color, wipe the color out)
     SURFACE_MAIN.fill(constants.COLOR_BLACK)
@@ -1406,23 +1478,37 @@ def draw_game():
 
     CAMERA.update_pos()
 
-    # draw the map
+    # draw the map Surface
     draw_map(GAME.current_map)
 
     # draw the character
     for obj in GAME.current_objects:
         obj.draw()
 
+    # Display map onto main game screen window
     SURFACE_MAIN.blit(SURFACE_MAP, (0, 0), CAMERA.rectangle)
 
+    # Draw fps message
     draw_debug()
+
+    # Draw all player interactive messages
     draw_messages()
 
 
 def draw_map(map_to_draw):
+    """ Draws specified map onto the main SURFACE_MAP map Surface.
+
+    Only renders the camera area of the map to prevent performance loss when exploring large maps.
+
+    Args:
+        map_to_draw (2D array): Map to be drawn onto SURFACE_MAP.
+
+    Returns:
+        None
+
+    """
 
     # render only the visible portion of the map
-
     cam_tile_x, cam_tile_y = CAMERA.map_address
 
     window_tile_width = int(constants.CAMERA_WIDTH / constants.CELL_WIDTH)
@@ -1466,14 +1552,35 @@ def draw_map(map_to_draw):
                     else:
                         SURFACE_MAP.blit(ASSETS.S_FLOOR_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
+            # else if not visible:
+                # the background fill color of the surface being drawn on is displayed (black at the moment)
+
 
 def draw_debug():
+    """Draws the debug console onto the game screen window.
+
+    Draws debug message text to the upper left corner of the screen.
+    Displays only the current FPS for now.
+
+    Returns:
+        None
+
+    """
 
     draw_text(SURFACE_MAIN, "fps: " + str(int(CLOCK.get_fps())), constants.FONT_BEST, (0, 0),
               constants.COLOR_WHITE, constants.COLOR_BLACK)
 
 
 def draw_messages():
+    """Draws the message console to the game screen window.
+
+    Displays a max number of messages from the game's list of messages stored in GAME.message_history in sequence to
+    the lower left corner of the screen. The order of messages starts at the bottom with the most recent message.
+
+    Returns:
+        None
+
+    """
     if len(GAME.message_history) <= constants.NUM_MESSAGES:
         GAME.message_history = GAME.message_history   # the last 4 messages in the list
     else:
@@ -1489,6 +1596,21 @@ def draw_messages():
 
 
 def draw_text(display_surface, text_to_display, font, t_coords, text_color, back_color=None, center=False):
+    """ Displays text to the specified Surface.
+
+    Args:
+        display_surface (pygame.Surface):
+        text_to_display (str):
+        font (pygame.font.Font):
+        t_coords (tuple):
+        text_color(tuple):
+        back_color (tuple):
+        center (bool):
+
+    Returns:
+        None
+
+    """
 
     text_surf, text_rect = helper_text_objects(text_to_display, font, text_color, back_color)
 
@@ -1665,7 +1787,7 @@ def cast_confusion(caster, effect_length):
 # ================================================================= #
 
 def menu_pause():
-    """ Menu that pauses the game and displays a simple pause message.
+    """Menu that pauses the game and displays a simple pause message.
 
     """
 
@@ -1776,7 +1898,7 @@ def menu_inventory():
 
 
 def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penetration=True, creature_penetration=True):
-    """ Enables the player to select a tile on the map.
+    """Enables the player to select a tile on the map.
 
     This function will produce a rectangular indication when the mouse is hovered over a tile. When the player
     left-clicks the selected tile, the map address will be returned for use in other functions like spells.
@@ -1953,7 +2075,7 @@ def gen_player(tup_coords):
 
 # ---> ITEMS
 def gen_item(tup_coords):
-    """ Generates a random item at the given coordinates specified by tup_coords.
+    """Generates a random item at the given coordinates specified by tup_coords.
 
     Args:
         tup_coords (tuple): The map tile coordinates to place the generated item.
@@ -2055,7 +2177,7 @@ def gen_armour_shield(tup_coords):
 
 # ---> CREATURES
 def gen_enemy(tup_coords):
-    """ Generates a random enemy at the given coordinates specified by tup_coords.
+    """Generates a random enemy at the given coordinates specified by tup_coords.
 
     Args:
         tup_coords (tuple): The map tile coordinates to place the generated enemy creature.
@@ -2129,7 +2251,7 @@ def gen_snake_cobra(tup_coords):
 
 
 def game_main_loop():
-    """ Main game loop.
+    """Main game loop.
 
     Draws the game, takes care of any keyboard or mouse events from the player, keeps track of time/turns, and
     quits the game when requested.
@@ -2170,7 +2292,7 @@ def game_main_loop():
 
 
 def game_initialize():
-    """ Initializes the main game window and other game assets.
+    """Initializes the main game window and other game assets.
 
     Initializes pygame, the main surface (game window), ObjGame, clock (time tracker), StructAssets, and PLAYER.
     Globalizes important variable constants.
