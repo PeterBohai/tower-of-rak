@@ -1,5 +1,8 @@
 # 3rd party modules
 import pygame
+import sys
+import pickle
+import gzip
 import tcod
 import textwrap
 import math
@@ -88,6 +91,24 @@ class StructAssets:
         self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
         self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
 
+        # animation dictionary to reference when generating objects (a way to avoid saving error)
+        self.animation_dict = {
+
+            "A_PLAYER": self.A_PLAYER,
+            "A_COBRA": self.A_COBRA,
+            "A_GIANT_BOA": self.A_GIANT_BOA,
+            "S_TOMATO": self.S_TOMATO,
+            "S_RADISH": self.S_RADISH,
+            "S_CABBAGE": self.S_CABBAGE,
+            "S_SCROLL_1": self.S_SCROLL_1,
+            "S_SCROLL_2": self.S_SCROLL_2,
+            "S_SCROLL_3": self.S_SCROLL_3,
+            "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
+            "S_32_SWORD": self.S_32_SWORD,
+            "S_32_SHIELD": self.S_32_SHIELD,
+
+        }
+
 
 # ================================================================= #
 #                       -----  Objects  -----                       #
@@ -120,7 +141,7 @@ class ObjActor:
 
     def __init__(self, x, y,
                  name_object,
-                 animation,
+                 animation_key,
                  animation_speed=0.5,
                  creature=None,
                  ai=None,
@@ -131,7 +152,8 @@ class ObjActor:
         self.x = x  # map address (not pixel address)
         self.y = y  # map address (not pixel address)
         self.name_object = name_object  # name of object, might change to object_name or name_object_type
-        self.animation = animation
+        self.animation_key = animation_key
+        self.animation = ASSETS.animation_dict[animation_key]
         self.animation_speed = animation_speed/1.0   # in seconds (always converted to a float, even if its an int)
 
         # animation flicker speed (over the course of # of secs)
@@ -261,6 +283,27 @@ class ObjActor:
 
         self.creature.move(dx, dy)
 
+    def animation_del(self):
+        """ Get rid of any animation assets.
+
+        For the purpose of avoiding pygame.Surface objects dump, which can't be pickled.
+
+        Returns:
+            None
+
+        """
+
+        self.animation = None
+
+    def animation_init(self):
+        """ Sets animation back to referencing animations from ASSETS (and not None after animation_del)
+
+        Returns:
+            None
+        """
+
+        self.animation = ASSETS.animation_dict[self.animation_key]
+
 
 class ObjGame:
     """A game object class that tracks game progress and entities.
@@ -291,19 +334,28 @@ class ObjGame:
 
         FOV_CALCULATE = True
 
+        for obj in self.current_objects:
+            obj.animation_del()
+
+        # save data of current map (before creating new map) on to maps_prev list
+        save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
+        self.maps_prev.append(save_data)
+
         if len(self.maps_next) == 0:
-            # save data of current map (before creating new map) on to maps_prev list
-            save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
-            self.maps_prev.append(save_data)
 
             # erase all items from previous map except the PLAYER
             self.current_objects = [PLAYER]
+            PLAYER.animation_init()
+
             self.current_map, self.current_rooms = map_create()
             map_place_items_creatures(self.current_rooms)
 
         else:
 
             (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_next[-1]
+
+            for obj in self.current_objects:
+                obj.animation_init()
 
             map_make_fov(self.current_map)
 
@@ -318,10 +370,16 @@ class ObjGame:
         global FOV_CALCULATE
 
         if len(self.maps_prev) != 0:
+            for obj in self.current_objects:
+                obj.animation_del()
+
             save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
             self.maps_next.append(save_data)
 
             (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_prev[-1]
+
+            for obj in self.current_objects:
+                obj.animation_init()
 
             map_make_fov(self.current_map)
 
@@ -868,6 +926,9 @@ class ComItem:
             else:
                 game_message("Picking up [{}]".format(self.owner.name_object))
                 actor.container.inventory.append(self.owner)
+
+                self.owner.animation_del()
+
                 GAME.current_objects.remove(self.owner)      # remove from global map and list of objects in the game
                 self.container = actor.container
 
@@ -888,6 +949,9 @@ class ComItem:
 
         # inserting at the front of the list to make sure that it is drawn underneath any creature or PLAYER
         GAME.current_objects.insert(0, self.owner)
+
+        self.owner.animation_init()
+
         self.container.inventory.remove(self.owner)
         self.owner.x = new_x
         self.owner.y = new_y
@@ -1133,7 +1197,9 @@ def death_snake_monster(monster):
     # death_msg = monster.creature.name_instance + " is dead!"
     game_message(death_msg, constants.COLOR_WHITE)
 
-    monster.animation = ASSETS.S_FLESH_SNAKE
+    monster.animation_key = "S_FLESH_SNAKE"
+    monster.animation = ASSETS.animation_dict[monster.animation_key]
+
     monster.creature = None
     monster.ai = None
 
@@ -1897,7 +1963,11 @@ def menu_inventory():
         pygame.display.flip()   # pygame.display.update() does the same thing if given without any arguments
 
 
-def menu_tile_select(coords_origin=None, max_range=None, radius=None, wall_penetration=True, creature_penetration=True):
+def menu_tile_select(coords_origin=None,
+                     max_range=None,
+                     radius=None,
+                     wall_penetration=True,
+                     creature_penetration=True):
     """Enables the player to select a tile on the map.
 
     This function will produce a rectangular indication when the mouse is hovered over a tile. When the player
@@ -2065,7 +2135,7 @@ def gen_player(tup_coords):
     creature_com = ComCreature("Rak", base_atk=3)
 
     PLAYER = ObjActor(x, y, "Alligator",
-                      ASSETS.A_PLAYER,
+                      "A_PLAYER",
                       animation_speed=1,
                       creature=creature_com,
                       container=container_com)
@@ -2111,7 +2181,7 @@ def gen_scroll_lightening(tup_coords):
     item_com = ComItem(use_function=cast_lightening, value=(damage, max_r))
 
     lightening_scroll_obj = ObjActor(x, y, "Lightening Scroll",
-                                     ASSETS.S_SCROLL_1,
+                                     "S_SCROLL_1",
                                      item=item_com)
 
     return lightening_scroll_obj
@@ -2127,7 +2197,7 @@ def gen_scroll_fireball(tup_coords):
     item_com = ComItem(use_function=cast_fireball, value=(damage, max_r, radius))
 
     fireball_scroll_obj = ObjActor(x, y, "Fireball Scroll",
-                                   ASSETS.S_SCROLL_2,
+                                   "S_SCROLL_2",
                                    item=item_com)
 
     return fireball_scroll_obj
@@ -2141,7 +2211,7 @@ def gen_scroll_confusion(tup_coords):
     item_com = ComItem(use_function=cast_confusion, value=effect_len)
 
     confusion_scroll_obj = ObjActor(x, y, "Confusion Scroll",
-                                    ASSETS.S_SCROLL_3,
+                                    "S_SCROLL_3",
                                     item=item_com)
 
     return confusion_scroll_obj
@@ -2155,7 +2225,7 @@ def gen_weapon_sword(tup_coords):
     equipment_com = ComEquipment(attack_bonus=bonus, slot="Right Hand")
 
     sword_obj = ObjActor(x, y, "Small Sword",
-                         ASSETS.S_32_SWORD,
+                         "S_32_SWORD",
                          equipment=equipment_com)
 
     return sword_obj
@@ -2169,7 +2239,7 @@ def gen_armour_shield(tup_coords):
     equipment_com = ComEquipment(defence_bonus=bonus, slot="Left Hand")
 
     shield_obj = ObjActor(x, y, "Small Shield",
-                          ASSETS.S_32_SHIELD,
+                          "S_32_SHIELD",
                           equipment=equipment_com)
 
     return shield_obj
@@ -2213,7 +2283,7 @@ def gen_snake_boa(tup_coords):
     ai_com = AiChase()
 
     snake_boa_obj = ObjActor(x, y, "Giant Boa",
-                             ASSETS.A_GIANT_BOA,
+                             "A_GIANT_BOA",
                              animation_speed=1,
                              creature=creature_com,
                              ai=ai_com,
@@ -2236,7 +2306,7 @@ def gen_snake_cobra(tup_coords):
     ai_com = AiChase()
 
     snake_cobra_obj = ObjActor(x, y, "Dark Cobra",
-                               ASSETS.A_COBRA,
+                               "A_COBRA",
                                animation_speed=1,
                                creature=creature_com,
                                ai=ai_com,
@@ -2269,8 +2339,9 @@ def game_main_loop():
 
         map_calculate_fov()
 
+        # quit the game
         if player_action == "QUIT":
-            game_quit = True
+            game_exit()
 
         if player_action != "no-action":     # this is how TURN-BASED is implemented for this game
             for obj in GAME.current_objects:
@@ -2285,10 +2356,6 @@ def game_main_loop():
 
         # tick the CLOCK
         CLOCK.tick(constants.GAME_FPS)
-
-    # quit the game
-    pygame.quit()
-    exit()
 
 
 def game_initialize():
@@ -2323,8 +2390,13 @@ def game_initialize():
 
     FOV_CALCULATE = True
 
-    # generate a completely new game
-    game_new()
+    # generate a new game or load a game if there is a save data avaliable
+    try:
+        game_load()
+
+    except:
+        print("No saved game data or error loading save data")
+        game_new()
 
 
 def game_handle_keys():
@@ -2429,6 +2501,47 @@ def game_new():
     GAME = ObjGame()
     gen_player((0, 0))
     map_place_items_creatures(GAME.current_rooms)
+
+
+def game_exit():
+
+    # save the game
+    game_save()
+
+    pygame.quit()
+    sys.exit()
+
+
+def game_save():
+
+    # destroy Surface object (from actor animations)
+    for obj in GAME.current_objects:
+        obj.animation_del()
+
+    # write GAME and PLAYER objects into compressed binary file
+    with gzip.open("data/saves/savegame", "wb") as save_file:
+        pickle.dump([GAME, PLAYER], save_file)
+
+
+def game_load():
+
+    # since re-assigning these globals
+    global GAME, PLAYER
+
+    with gzip.open("data/saves/savegame", "rb") as load_file:
+        GAME, PLAYER = pickle.load(load_file)
+
+    # reinitialize animations
+    for obj in GAME.current_objects:
+        obj.animation_init()
+
+    # create FOV_MAP
+    map_make_fov(GAME.current_map)
+
+
+
+
+
 
 
 if __name__ == '__main__':
