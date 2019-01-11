@@ -57,6 +57,8 @@ class StructAssets:
         # ---> Objects folder
         self.wall = ObjSpriteSheet("data/graphics/Objects/Wall.png")
         self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
+        self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
+
 
         # ============================ SPRITES ============================= #
 
@@ -91,6 +93,10 @@ class StructAssets:
         self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
         self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
 
+        # ---> Special Items
+        self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
+        self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
+
         # animation dictionary to reference when generating objects (a way to avoid saving error)
         self.animation_dict = {
 
@@ -106,7 +112,8 @@ class StructAssets:
             "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
             "S_32_SWORD": self.S_32_SWORD,
             "S_32_SHIELD": self.S_32_SHIELD,
-
+            "S_STAIRS_UP": self.S_STAIRS_UP,
+            "S_STAIRS_DOWN": self.S_STAIRS_DOWN
         }
 
 
@@ -126,8 +133,8 @@ class ObjActor:
         x (arg, int): Tile map address of the actor object on the x-axis.
         y (arg, int): Tile map address of the actor object on the y-axis.
         name_object (arg, str): Name of the object type, "scroll" or "snake" for example.
-        animation (arg, list): List of images for the object's display (can be a list of one image).
-                               Created in the StructAssets class and usually denoted as "A_..." or "S_...".
+        animation (list): List of images for the object's display (can be a list of one image).
+                          Created in the StructAssets class and usually denoted as "A_..." or "S_...".
         animation_speed (arg, float): Time in seconds it takes to loop through the object animation.
                                       Default value is initialized as 0.5
 
@@ -147,7 +154,8 @@ class ObjActor:
                  ai=None,
                  container=None,
                  item=None,
-                 equipment=None):   # None is implicitly False
+                 equipment=None,
+                 stairs=None):   # None is implicitly False
 
         self.x = x  # map address (not pixel address)
         self.y = y  # map address (not pixel address)
@@ -166,7 +174,7 @@ class ObjActor:
             self.creature.owner = self   # component system implementation
 
         self.ai = ai
-        if ai:
+        if self.ai:
             self.ai.owner = self
 
         self.container = container
@@ -184,6 +192,10 @@ class ObjActor:
             # automatically give item component to equipment actor object
             self.item = ComItem()
             self.item.owner = self
+
+        self.stairs = stairs
+        if self.stairs:
+            self.stairs.owner = self
 
     @property
     def display_name(self):
@@ -363,6 +375,8 @@ class ObjGame:
 
             del self.maps_next[-1]
 
+        game_message("{} moved up a floor!".format(PLAYER.creature.name_instance), constants.COLOR_BLUE)
+
     def map_transition_prev(self):
         """Loads the last map in maps_prev, saving data of current map before doing so.
 
@@ -386,6 +400,8 @@ class ObjGame:
             FOV_CALCULATE = True
 
             del self.maps_prev[-1]
+
+        game_message("{} moved down a floor!".format(PLAYER.creature.name_instance), constants.COLOR_BLUE)
 
 
 class ObjSpriteSheet:
@@ -1104,6 +1120,38 @@ class ComEquipment:
         game_message("Unequipped [{}]".format(self.owner.name_object))
 
 
+class ComStairs:
+    """Stairs component that is defaulted to lead the player up to the next floor.
+
+    Attributes:
+        upwards (arg, bool): Specifies whether it should take the player up/to the next map. Default set to True.
+                             False would mean stairs lead down and to the previous map.
+
+    """
+
+    def __init__(self, upwards=True):
+        self.upwards = upwards
+
+    def use(self):
+        """Implements map transitioning when called.
+
+        When only upwards attribute is set to True, the player progresses to the next map. Otherwise, the player goes
+        to the previous map.
+
+        TODO:  Possibly implement "locking" the player in until a task is done (rendering stairs unusable).
+
+        Returns:
+            None
+
+        """
+
+        if self.upwards:
+            GAME.map_transition_next()
+
+        else:
+            GAME.map_transition_prev()
+
+
 # ================================================================= #
 #                    -----  Ai Components  -----                    #
 #                          --- SECTION ---                          #
@@ -1291,7 +1339,13 @@ def map_place_items_creatures(room_list):
 
     """
 
+    top_level = (len(GAME.maps_prev) == 0)
+
     for i, room in enumerate(room_list):
+
+        first_room = (i == 0)
+        last_room = (room == room_list[-1])
+
         min_x = room.x1
         max_x = room.x2
         min_y = room.y1
@@ -1300,13 +1354,21 @@ def map_place_items_creatures(room_list):
         enemy_x = tcod.random_get_int(0, min_x, max_x)
         enemy_y = tcod.random_get_int(0, min_y, max_y)
 
-        # place PLAYER in the center of the first room
-        if i == 0:
+        # generate PLAYER in the center of the first room
+        if first_room:
             PLAYER.x, PLAYER.y = room.center
 
         # only generate enemies in the rooms that the player doesnt start in
-        if i != 0:
+        if not first_room:
             gen_enemy((enemy_x, enemy_y))
+
+        # only generate stairs leading down in the first room if the map is not the top level
+        if first_room and not top_level:
+            gen_stairs((PLAYER.x, PLAYER.y), up=False)
+
+        # generate stairs leading up in the last room
+        if last_room:
+            gen_stairs(room.center)
 
         item_x = PLAYER.x
         item_y = PLAYER.y
@@ -2245,6 +2307,36 @@ def gen_armour_shield(tup_coords):
     return shield_obj
 
 
+# ---> SPECIAL ITEMS
+
+def gen_stairs(tup_coords, up=True):
+    """ Generates a set of stairs going up or down a level/map.
+
+    Args:
+        tup_coords (tuple): The map tile coordinates the stairs will be placed.
+        up (bool): Specifies if the stairs will lead up or down. Default is set to True, which means stairs going up.
+
+    Returns:
+        None
+
+    """
+
+    x, y = tup_coords
+
+    if up:
+        stairs_com = ComStairs()
+        stairs_obj = ObjActor(x, y, "Upwards stairs",
+                                    "S_STAIRS_UP",
+                                    stairs=stairs_com)
+    else:
+        stairs_com = ComStairs(upwards=False)
+        stairs_obj = ObjActor(x, y, "Upwards stairs",
+                                    "S_STAIRS_DOWN",
+                                    stairs=stairs_com)
+
+    GAME.current_objects.insert(0, stairs_obj)
+
+
 # ---> CREATURES
 def gen_enemy(tup_coords):
     """Generates a random enemy at the given coordinates specified by tup_coords.
@@ -2404,6 +2496,10 @@ def game_handle_keys():
     global FOV_CALCULATE
     # get player input
     events_list = pygame.event.get()  # list of all events so far (like keys pressed and mouse clicks)
+    pressed_key_list = pygame.key.get_pressed()    # list of booleans for whether a key is pressed or not
+
+    # shift pressed
+    shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])
 
     # process input
     for event in events_list:
@@ -2458,11 +2554,17 @@ def game_handle_keys():
             if event.key == pygame.K_i:
                 menu_inventory()
 
-            if event.key == pygame.K_n:
-                GAME.map_transition_next()
+            if shift_pressed and event.key == pygame.K_PERIOD:
 
-            if event.key == pygame.K_b:
-                GAME.map_transition_prev()
+                # check if the player is standing on top of a set of stairs
+                list_of_obj = map_object_at_coords(PLAYER.x, PLAYER.y)
+
+                for obj in list_of_obj:
+
+                    # check if the object contains a stairs component
+                    if obj.stairs:
+                        obj.stairs.use()
+
 
             # 'l' key: enable tile selection (for lightening spell)
             # if event.key == pygame.K_l:
@@ -2537,6 +2639,8 @@ def game_load():
 
     # create FOV_MAP
     map_make_fov(GAME.current_map)
+
+
 
 
 
