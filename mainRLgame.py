@@ -7,6 +7,7 @@ import gzip
 import tcod
 import textwrap
 import math
+import random
 
 # game files
 import constants
@@ -120,6 +121,19 @@ class StructAssets:
             "S_STAIRS_UP": self.S_STAIRS_UP,
             "S_STAIRS_DOWN": self.S_STAIRS_DOWN
         }
+
+        self.main_menu_music = "data/audio/music/RPG-Blues_Looping.mp3"
+        self.sfx_hit_punch1 = pygame.mixer.Sound("data/audio/sfx/hit_punch_1.wav")
+        self.sfx_hit_punch2 = pygame.mixer.Sound("data/audio/sfx/hit_punch_2.wav")
+        self.sfx_hit_punch3 = pygame.mixer.Sound("data/audio/sfx/hit_punch_3.wav")
+        self.sfx_hit_punch4 = pygame.mixer.Sound("data/audio/sfx/hit_punch_4.wav")
+        self.sfx_hit_punch5 = pygame.mixer.Sound("data/audio/sfx/hit_punch_5.wav")
+
+        self.sfx_hit_punch_list = [self.sfx_hit_punch1,
+                                   self.sfx_hit_punch2,
+                                   self.sfx_hit_punch3,
+                                   self.sfx_hit_punch4,
+                                   self.sfx_hit_punch5]
 
 
 # ================================================================= #
@@ -806,6 +820,9 @@ class ComCreature:
             attacker_name = self.name_instance
         else:
             attacker_name = self.owner.display_name
+
+        if damage_dealt > 0 and self.owner is PLAYER:
+            pygame.mixer.Sound.play(random.choice(ASSETS.sfx_hit_punch_list))
 
         # attack message
         attack_msg = "{} attacks {} for {} damage!".format(attacker_name, victim_name, damage_dealt)
@@ -2051,8 +2068,6 @@ class UiButton:
                   self.color_text_current, self.color_button_current, center=True)
 
 
-
-
 # ================================================================= #
 #                         -----  Menu  -----                        #
 #                          --- SECTION ---                          #
@@ -2063,8 +2078,21 @@ def menu_main():
     menu_running = True
 
     start_button = UiButton(SURFACE_MAIN, "START GAME",
-                           (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2),
-                           (150, 30))
+                            (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2),
+                            (150, 30))
+
+    title_x = constants.CAMERA_WIDTH / 2
+    title_y = constants.CAMERA_HEIGHT / 2 - 40
+
+    # draw menu background and title
+    SURFACE_MAIN.fill(constants.COLOR_BLACK)
+    draw_text(SURFACE_MAIN, "Tower of Rak", constants.FONT_BEST, (title_x, title_y),
+              constants.COLOR_RED, center=True)
+
+    # play background music
+    pygame.mixer.music.load(ASSETS.main_menu_music)
+    pygame.mixer.music.play(-1)
+
 
     while menu_running:
 
@@ -2077,18 +2105,12 @@ def menu_main():
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.KEYDOWN:
-
-                # 'up arrow' key: move player one tile up, hold down to continuing moving automatically
-                if event.key == pygame.K_SPACE:
-                    game_start()
-
         # start game when button is clicked
         if start_button.update(mouse_pos):
+            pygame.mixer.music.fadeout(2000)
             game_start()
 
         # draw menu
-        SURFACE_MAIN.fill(constants.COLOR_BLACK)
         start_button.draw()
 
         pygame.display.update()
