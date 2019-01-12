@@ -46,6 +46,7 @@ class StructAssets:
         self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
         self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
         self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
+        self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
 
         # ---> Items folder
         self.flesh = ObjSpriteSheet("data/graphics/Items/Flesh.png")
@@ -59,7 +60,6 @@ class StructAssets:
         self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
         self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
 
-
         # ============================ SPRITES ============================= #
 
         #                        ||| Animations |||
@@ -70,6 +70,7 @@ class StructAssets:
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
         self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
+        self.A_HEALER_SLIME = self.slime.get_animation('a', 4, 2, 16, 16, (32, 32))
 
         #                        ||| Still Icons |||
 
@@ -84,6 +85,7 @@ class StructAssets:
         self.S_TOMATO = self.food.get_image('g', 3, 16, 16, (32, 32))
         self.S_RADISH = self.food.get_image('b', 4, 16, 16, (32, 32))
         self.S_CABBAGE = self.food.get_image('f', 4, 16, 16, (32, 32))
+        self.S_WATER_CUP = self.food.get_image('f', 5, 16, 16, (32, 32))
         self.S_SCROLL_1 = self.scroll.get_image('e', 2, 16, 16, (32, 32))
         self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
         self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
@@ -103,9 +105,11 @@ class StructAssets:
             "A_PLAYER": self.A_PLAYER,
             "A_COBRA": self.A_COBRA,
             "A_GIANT_BOA": self.A_GIANT_BOA,
+            "A_HEALER_SLIME": self.A_HEALER_SLIME,
             "S_TOMATO": self.S_TOMATO,
             "S_RADISH": self.S_RADISH,
             "S_CABBAGE": self.S_CABBAGE,
+            "S_WATER_CUP": self.S_WATER_CUP,
             "S_SCROLL_1": self.S_SCROLL_1,
             "S_SCROLL_2": self.S_SCROLL_2,
             "S_SCROLL_3": self.S_SCROLL_3,
@@ -286,6 +290,28 @@ class ObjActor:
 
         dx = other.x - self.x
         dy = other.y - self.y
+
+        # shortest distance to another actor object in tile number measurements
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        dx = round(dx / distance)
+        dy = round(dy / distance)
+
+        self.creature.move(dx, dy)
+
+    def move_away(self, other):
+        """Moves this actor object away from another object.
+
+            Used in the AiFlee to get away from a specified actor object.
+            Uses the move() method in the ComCreature component class.
+
+        Args:
+            other (ObjActor): Target actor object to move towards
+
+        """
+
+        dx = self.x - other.x
+        dy = self.y - other.y
 
         # shortest distance to another actor object in tile number measurements
         distance = math.sqrt(dx ** 2 + dy ** 2)
@@ -805,17 +831,17 @@ class ComCreature:
             msg_color = constants.COLOR_ORANGE
 
             if self.current_hp < 0:
-                damage_taken = "{}'s heath is 0/{}".format(self.owner.display_name, self.maxHp)
+                damage_taken = "{}'s health is 0/{}".format(self.owner.display_name, self.maxHp)
             else:
-                damage_taken = "{}'s heath is {}/{}".format(self.owner.display_name, self.current_hp, self.maxHp)
+                damage_taken = "{}'s health is {}/{}".format(self.owner.display_name, self.current_hp, self.maxHp)
 
         elif self.owner is PLAYER:
             msg_color = constants.COLOR_RED
 
             if self.current_hp < 0:
-                damage_taken = "{}'s heath is 0/{}".format(self.name_instance, self.maxHp)
+                damage_taken = "{}'s health is 0/{}".format(self.name_instance, self.maxHp)
             else:
-                damage_taken = "{}'s heath is {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
+                damage_taken = "{}'s health is {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
 
         game_message(damage_taken, msg_color)
 
@@ -834,12 +860,13 @@ class ComCreature:
             amount (int): Amount of health to be regained.
 
         """
+
         hp_before_heal = self.current_hp
         self.current_hp += amount
 
         if self.current_hp <= self.maxHp:
-            healed_amt_msg = self.name_instance + " healed for " + str(amount)
-            curr_hp_msg = self.name_instance + "'s health is now " + str(self.current_hp) + "/" + str(self.maxHp)
+            healed_amt_msg = "{} healed for {}".format(self.name_instance, amount)
+            curr_hp_msg = "{}'s health is now {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
 
             game_message(healed_amt_msg, constants.COLOR_GREEN)
             game_message(curr_hp_msg, constants.COLOR_WHITE)
@@ -849,8 +876,8 @@ class ComCreature:
             actual_healed_amt = self.maxHp - hp_before_heal
             self.current_hp = self.maxHp
 
-            healed_amt_msg = self.name_instance + " healed for " + str(actual_healed_amt)
-            curr_hp_msg = self.name_instance + "'s health is now " + str(self.current_hp) + "/" + str(self.maxHp)
+            healed_amt_msg = "{} healed for {}".format(self.name_instance, actual_healed_amt)
+            curr_hp_msg = "{}'s health is now {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
 
             game_message(healed_amt_msg, constants.COLOR_GREEN)
             game_message(curr_hp_msg, constants.COLOR_WHITE)
@@ -1226,6 +1253,34 @@ class AiChase:
                 monster.creature.attack(PLAYER)
 
 
+class AiFlee:
+    """Ai component class for enemy creatures that chases the PLAYER and attacks when the it is next to the PLAYER.
+
+    Attributes:
+        hurt_kin (bool): True if the ai is allowed to make the creature hurt its own kind/type. Default set to False.
+
+    """
+    def __init__(self):
+        self.hurt_kin = False
+
+    def take_turn(self):
+        """Performs one move action towards the PLAYER's current location when the creature is in the PLAYER's fov.
+
+        When the creature is adjacent to the PLAYER, attack. Prevents creatures from hurt other creatures when moving
+        towards PLAYER together (implemented in the move() method of ComCreature).
+
+        """
+
+        monster = self.owner
+
+        # when the monster creature is in the field of vision of the player
+        if tcod.map_is_in_fov(FOV_MAP, monster.x, monster.y):
+
+            # move away from player
+            monster.move_away(PLAYER)
+
+
+
 # ================================================================= #
 #                   -----  Death Functions -----                    #
 #                          --- SECTION ---                          #
@@ -1247,6 +1302,27 @@ def death_snake_monster(monster):
 
     monster.animation_key = "S_FLESH_SNAKE"
     monster.animation = ASSETS.animation_dict[monster.animation_key]
+
+    monster.creature = None
+    monster.ai = None
+
+
+def death_healer_monster(monster):
+    """Death_function for dead healing creatures.
+
+    Creature stops moving, loses its creature component and its idle animation becomes a still piece of healing item.
+
+    Args:
+        monster (ObjActor): The actor creature object that will execute this death function when it dies.
+
+    """
+
+    death_msg = "{} is dead and dropped a healing element!".format(monster.display_name)
+    game_message(death_msg, constants.COLOR_GREEN)
+
+    monster.animation_key = "S_WATER_CUP"
+    monster.animation = ASSETS.animation_dict[monster.animation_key]
+    monster.name_object = "Water Cup"
 
     monster.creature = None
     monster.ai = None
@@ -2357,6 +2433,10 @@ def gen_enemy(tup_coords):
     else:
         new_enemy = gen_snake_boa(tup_coords)
 
+    if choice_num <= 100:
+        new_healer = gen_healer_slime(tup_coords)
+        GAME.current_objects.insert(-1, new_healer)
+
     GAME.current_objects.insert(-1, new_enemy)
 
 
@@ -2404,6 +2484,32 @@ def gen_snake_cobra(tup_coords):
                                ai=ai_com,
                                item=item_com)
     return snake_cobra_obj
+
+
+def gen_healer_slime(tup_coords):
+    x, y = tup_coords
+
+    base_attack = 0
+    max_health = 5
+    creature_name = tcod.namegen_generate("Fantasy male")
+
+    creature_com = ComCreature(creature_name,
+                               base_atk=base_attack,
+                               max_hp=max_health,
+                               death_function=death_healer_monster)
+
+    item_com = ComItem(use_function=cast_heal, value=2)
+    ai_com = AiFlee()
+
+    healer_zom_obj = ObjActor(x, y, "Healer Slime",
+                              "A_HEALER_SLIME",
+                              animation_speed=1,
+                              creature=creature_com,
+                              ai=ai_com,
+                              item=item_com)
+    return healer_zom_obj
+
+
 
 
 # ================================================================= #
@@ -2565,7 +2671,6 @@ def game_handle_keys():
                     if obj.stairs:
                         obj.stairs.use()
 
-
             # 'l' key: enable tile selection (for lightening spell)
             # if event.key == pygame.K_l:
                 # cast_lightening(5)
@@ -2577,11 +2682,6 @@ def game_handle_keys():
             # 'c' key: enable tile selection (for confuse spell)
             # if event.key == pygame.K_c:
                 # cast_confusion()
-
-
-
-
-
 
     return "no-action"
 
