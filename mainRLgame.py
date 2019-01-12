@@ -1,3 +1,4 @@
+# Game Title: Tower of Rak
 # 3rd party modules
 import pygame
 import sys
@@ -1985,10 +1986,113 @@ def cast_confusion(caster, effect_length):
         return "unused"
 
 
+
+# ================================================================= #
+#                         -----  UI  -----                          #
+#                          --- SECTION ---                          #
+# ================================================================= #
+
+class UiButton:
+
+    def __init__(self, surface, text, tup_coords_center, tup_size,
+                 color_button_hovered=constants.COLOR_GREEN,
+                 color_button_default=constants.COLOR_BLUE,
+                 color_text_hovered=constants.COLOR_WHITE,
+                 color_text_default=constants.COLOR_GREY):
+
+        self.surface = surface
+        self.text = text
+        self.coords_center = tup_coords_center
+        self.size = tup_size
+
+        self.color_button_hovered = color_button_hovered
+        self.color_button_default = color_button_default
+        self.color_text_hovered = color_text_hovered
+        self.color_text_default = color_text_default
+
+        self.color_button_current = color_button_default
+        self.color_text_current = color_text_default
+
+        self.button_rect = pygame.Rect((0, 0), self.size)
+        self.button_rect.center = self.coords_center
+
+    def update(self, mouse_input):
+
+        button_clicked = False
+        mouse_clicked = False
+
+        mouse_x, mouse_y = mouse_input
+        pygame.event.get()
+
+        if pygame.mouse.get_pressed()[0]:
+            mouse_clicked = True
+
+        mouse_hovered = (self.button_rect.left <= mouse_x <= self.button_rect.right and
+                         self.button_rect.top <= mouse_y <= self.button_rect.bottom)
+
+        if mouse_hovered:
+            self.color_button_current = self.color_button_hovered
+            self.color_text_current = self.color_text_hovered
+
+        else:
+            self.color_button_current = self.color_button_default
+            self.color_text_current = self.color_text_default
+
+        if mouse_hovered and mouse_clicked:
+            button_clicked = True
+
+        return button_clicked
+
+
+    def draw(self):
+        pygame.draw.rect(self.surface, self.color_button_current, self.button_rect)
+
+        draw_text(self.surface, self.text, constants.FONT_BEST, self.coords_center,
+                  self.color_text_current, self.color_button_current, center=True)
+
+
+
+
 # ================================================================= #
 #                         -----  Menu  -----                        #
 #                          --- SECTION ---                          #
 # ================================================================= #
+
+def menu_main():
+    game_initialize()
+    menu_running = True
+
+    start_button = UiButton(SURFACE_MAIN, "START GAME",
+                           (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2),
+                           (150, 30))
+
+    while menu_running:
+
+        # process inputs
+        mouse_pos = pygame.mouse.get_pos()
+        events_list = pygame.event.get()
+
+        for event in events_list:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+
+                # 'up arrow' key: move player one tile up, hold down to continuing moving automatically
+                if event.key == pygame.K_SPACE:
+                    game_start()
+
+        # start game when button is clicked
+        if start_button.update(mouse_pos):
+            game_start()
+
+        # draw menu
+        SURFACE_MAIN.fill(constants.COLOR_BLACK)
+        start_button.draw()
+
+        pygame.display.update()
+
 
 def menu_pause():
     """Menu that pauses the game and displays a simple pause message.
@@ -2510,8 +2614,6 @@ def gen_healer_slime(tup_coords):
     return healer_zom_obj
 
 
-
-
 # ================================================================= #
 #                         -----  Game  -----                        #
 #                          --- SECTION ---                          #
@@ -2587,14 +2689,6 @@ def game_initialize():
     CLOCK = pygame.time.Clock()
 
     FOV_CALCULATE = True
-
-    # generate a new game or load a game if there is a save data avaliable
-    try:
-        game_load()
-
-    except:
-        print("No saved game data or error loading save data")
-        game_new()
 
 
 def game_handle_keys():
@@ -2741,13 +2835,18 @@ def game_load():
     map_make_fov(GAME.current_map)
 
 
+def game_start():
+    # generate a new game or load a game if there is a save data available
+    try:
+        game_load()
 
+    except:
+        print("No saved game data or error loading save data")
+        game_new()
 
-
-
+    game_main_loop()
 
 
 
 if __name__ == '__main__':
-    game_initialize()
-    game_main_loop()
+    menu_main()
