@@ -56,5 +56,6 @@ MSG_WIDTH = 600
 # FONTS
 FONT_DEBUG_MESSAGE = pygame.font.Font('data/fonts/LiberationMono-Regular.ttf', 20)
 FONT_DEBUG_MESSAGE2 = pygame.font.Font('data/fonts/AppleII.ttf', 16)
+FONT_GAME_TILE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
 FONT_TARGET_X = pygame.font.Font('data/fonts/fixedsys300.ttf', CELL_HEIGHT + 10)

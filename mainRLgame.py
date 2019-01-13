@@ -74,7 +74,7 @@ class StructAssets:
         self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
         self.A_HEALER_SLIME = self.slime.get_animation('a', 4, 2, 16, 16, (32, 32))
 
-        #                        ||| Still Icons |||
+        #                        ||| Still Sprites |||
 
         # ---> Dungeon structures
         self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
@@ -97,9 +97,12 @@ class StructAssets:
         self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
         self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
 
-        # ---> Special Items
+        # ---> Special
         self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
         self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
+        self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
+        self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
 
         # animation dictionary to reference when generating objects (a way to avoid saving error)
         self.animation_dict = {
@@ -122,18 +125,44 @@ class StructAssets:
             "S_STAIRS_DOWN": self.S_STAIRS_DOWN
         }
 
-        self.main_menu_music = "data/audio/music/RPG-Blues_Looping.mp3"
-        self.sfx_hit_punch1 = pygame.mixer.Sound("data/audio/sfx/hit_punch_1.wav")
-        self.sfx_hit_punch2 = pygame.mixer.Sound("data/audio/sfx/hit_punch_2.wav")
-        self.sfx_hit_punch3 = pygame.mixer.Sound("data/audio/sfx/hit_punch_3.wav")
-        self.sfx_hit_punch4 = pygame.mixer.Sound("data/audio/sfx/hit_punch_4.wav")
-        self.sfx_hit_punch5 = pygame.mixer.Sound("data/audio/sfx/hit_punch_5.wav")
+        # =============================== AUDIO ================================== #
+
+        #                             ||| Music |||
+
+        self.main_menu_music = "data/audio/music/RPG-Blues_Looping.ogg"
+
+        #                          ||| Sound Effects |||
+
+        self.sfx_list = []
+
+        self.sfx_hit_punch1 = self.sfx_add("data/audio/sfx/hit_punch_1.wav")
+        self.sfx_hit_punch2 = self.sfx_add("data/audio/sfx/hit_punch_2.wav")
+        self.sfx_hit_punch3 = self.sfx_add("data/audio/sfx/hit_punch_3.wav")
+        self.sfx_hit_punch4 = self.sfx_add("data/audio/sfx/hit_punch_4.wav")
+        self.sfx_hit_punch5 = self.sfx_add("data/audio/sfx/hit_punch_5.wav")
 
         self.sfx_hit_punch_list = [self.sfx_hit_punch1,
                                    self.sfx_hit_punch2,
                                    self.sfx_hit_punch3,
                                    self.sfx_hit_punch4,
                                    self.sfx_hit_punch5]
+
+    def sfx_add(self, file_address):
+        """ Loads new sound effect and adds the sfx to the master sfx list.
+
+        Args:
+            file_address (str): File address of the sfx to be loaded in.
+
+        Returns:
+            new_sfx (Sound obj): The loaded sfx Sound object.
+
+        """
+
+        new_sfx = pygame.mixer.Sound(file_address)
+
+        self.sfx_list.append(new_sfx)
+
+        return new_sfx
 
 
 # ================================================================= #
@@ -2077,22 +2106,49 @@ def menu_main():
     game_initialize()
     menu_running = True
 
-    start_button = UiButton(SURFACE_MAIN, "START GAME",
-                            (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2),
-                            (150, 30))
+    # tile address
+    center_x = constants.CAMERA_WIDTH / 2
+    title_y = constants.CAMERA_HEIGHT / 2 - (constants.CAMERA_HEIGHT/4)
 
-    title_x = constants.CAMERA_WIDTH / 2
-    title_y = constants.CAMERA_HEIGHT / 2 - 40
+    # button sizes
+    button_width = 150
+    button_height = 30
+    button_offset_y = 5/4 * button_height
+
+    # button address
+    new_game_button_y = title_y + constants.CAMERA_HEIGHT/5
+    cont_button_y = new_game_button_y + button_offset_y
+    options_button_y = cont_button_y + button_offset_y
+    quit_button_y = options_button_y + button_offset_y
+
+    # buttons
+    new_game_button = UiButton(SURFACE_MAIN, "NEW GAME",
+                            (center_x, new_game_button_y),
+                            (button_width, button_height))
+
+    cont_button = UiButton(SURFACE_MAIN, "CONTINUE",
+                           (center_x, cont_button_y),
+                           (button_width, button_height))
+
+    options_button = UiButton(SURFACE_MAIN, "OPTIONS",
+                              (center_x, options_button_y),
+                              (button_width, button_height))
+
+    quit_button = UiButton(SURFACE_MAIN, "QUIT",
+                           (center_x, quit_button_y),
+                           (button_width, button_height))
 
     # draw menu background and title
-    SURFACE_MAIN.fill(constants.COLOR_BLACK)
-    draw_text(SURFACE_MAIN, "Tower of Rak", constants.FONT_BEST, (title_x, title_y),
-              constants.COLOR_RED, center=True)
+    SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
+    draw_text(SURFACE_MAIN, "Tower of Rak",
+              constants.FONT_GAME_TILE,
+              (center_x, title_y),
+              constants.COLOR_RED,
+              center=True)
 
     # play background music
     pygame.mixer.music.load(ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
-
 
     while menu_running:
 
@@ -2105,15 +2161,70 @@ def menu_main():
                 pygame.quit()
                 sys.exit()
 
-        # start game when button is clicked
-        if start_button.update(mouse_pos):
-            pygame.mixer.music.fadeout(2000)
+        # start new game if clicked
+        if new_game_button.update(mouse_pos):
+            pygame.mixer.music.fadeout(3000)
+            game_new()
+            game_main_loop()
+
+        # load previous game if clicked
+        if cont_button.update(mouse_pos):
+            pygame.mixer.music.fadeout(3000)
             game_start()
 
-        # draw menu
-        start_button.draw()
+        # display options menu
+        if options_button.update(mouse_pos):
+            menu_main_options()
+            SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
+            draw_text(SURFACE_MAIN, "Tower of Rak",
+                      constants.FONT_GAME_TILE,
+                      (center_x, title_y),
+                      constants.COLOR_RED,
+                      center=True)
+
+
+        # quit the game
+        if quit_button.update(mouse_pos):
+            pygame.mixer.music.stop()
+            pygame.quit()
+            sys.exit()
+
+        # draw buttons
+        new_game_button.draw()
+        cont_button.draw()
+        options_button.draw()
+        quit_button.draw()
 
         pygame.display.update()
+
+
+def menu_main_options():
+    menu_width = 300
+    menu_height = 200
+    center_x = constants.CAMERA_WIDTH / 2
+    center_y = constants.CAMERA_HEIGHT / 2
+
+    option_menu_surface = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
+    menu_rect.center = (center_x, center_y)
+
+    menu_close = False
+
+    while not menu_close:
+
+        option_menu_surface.fill(constants.COLOR_YELLOW)
+        SURFACE_MAIN.blit(option_menu_surface, menu_rect.topleft, menu_rect)
+
+        # get player input
+        mouse_pos = pygame.mouse.get_pos()
+        events_list = pygame.event.get()
+        for event in events_list:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    menu_close = True
+
+        pygame.display.update(menu_rect)
+
 
 
 def menu_pause():
