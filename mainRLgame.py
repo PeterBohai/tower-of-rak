@@ -103,6 +103,11 @@ class StructAssets:
         self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
         self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
 
+        # ---> GUI
+        self.slider_button_size = (26, 20)
+        self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")
+        self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
+
 
         # animation dictionary to reference when generating objects (a way to avoid saving error)
         self.animation_dict = {
@@ -2034,11 +2039,11 @@ def cast_confusion(caster, effect_length):
 
 
 # ================================================================= #
-#                         -----  UI  -----                          #
+#                         -----  GUI  -----                          #
 #                          --- SECTION ---                          #
 # ================================================================= #
 
-class UiButton:
+class GuiButton:
 
     def __init__(self, surface, text, tup_coords_center, tup_size,
                  color_button_hovered=constants.COLOR_GREEN,
@@ -2089,12 +2094,74 @@ class UiButton:
 
         return button_clicked
 
-
     def draw(self):
         pygame.draw.rect(self.surface, self.color_button_current, self.button_rect)
 
         draw_text(self.surface, self.text, constants.FONT_BEST, self.coords_center,
                   self.color_text_current, self.color_button_current, center=True)
+
+
+class GuiSlider:
+    def __init__(self,
+                 surface,
+                 tup_coords_center,
+                 tup_size,
+                 slider_value,
+                 color_slider_bg=constants.COLOR_GREY,
+                 color_slider_fg=constants.COLOR_WHITE):
+
+        self.surface = surface
+        self.coords_center = tup_coords_center
+        self.size = tup_size
+        self.slider_value = slider_value
+
+        self.color_slider_bg = color_slider_bg
+        self.color_slider_fg = color_slider_fg
+
+        self.slider_rect = pygame.Rect((0, 0), self.size)
+        self.slider_rect.center = self.coords_center
+        self.fg_rect = pygame.Rect((0, 0), (self.slider_rect.width * self.slider_value, self.slider_rect.height))
+        self.fg_rect.topleft = self.slider_rect.topleft
+
+        self.grab_button = pygame.Rect((0, 0), (20, self.slider_rect.height + 6))
+        self.grab_button.center = (self.fg_rect.right, self.slider_rect.centery)
+        self.grab_button_width, self.grab_button_height = ASSETS.slider_button_size
+
+    def update(self, player_input):
+
+        events_list, mouse_input = player_input
+        mouse_x, mouse_y = mouse_input
+
+        button_y = self.grab_button.centery - int(self.grab_button_height/2)
+
+        mouse_pressed = pygame.mouse.get_pressed()[0]
+
+        mouse_over_slider = (self.slider_rect.left <= mouse_x <= self.slider_rect.right and
+                             button_y <= mouse_y <= button_y + self.grab_button_height)
+
+        if mouse_pressed and mouse_over_slider:
+            # update slider value
+            self.slider_value = (mouse_x - self.slider_rect.left) / self.slider_rect.width
+
+            # update foreground slider width
+            self.fg_rect.width = self.slider_rect.width * self.slider_value
+
+            # update grab center
+            self.grab_button.center = (self.fg_rect.right, self.slider_rect.centery)
+
+    def draw(self):
+
+        # draw background slider rectangle
+        pygame.draw.rect(self.surface, self.color_slider_bg, self.slider_rect)
+
+        # draw foreground slider rectangle
+        pygame.draw.rect(self.surface, self.color_slider_fg, self.fg_rect)
+
+        # draw grab button rectangle
+        # pygame.draw.rect(self.surface, constants.COLOR_WHITE, self.grab_button)
+
+        self.surface.blit(ASSETS.S_SLIDER_BUTTON, (self.grab_button.centerx - int(self.grab_button_width/2),
+                                                   self.grab_button.centery - int(self.grab_button_height/2)))
 
 
 # ================================================================= #
@@ -2122,21 +2189,22 @@ def menu_main():
     quit_button_y = options_button_y + button_offset_y
 
     # buttons
-    new_game_button = UiButton(SURFACE_MAIN, "NEW GAME",
+    new_game_button = GuiButton(SURFACE_MAIN, "NEW GAME",
                             (center_x, new_game_button_y),
                             (button_width, button_height))
 
-    cont_button = UiButton(SURFACE_MAIN, "CONTINUE",
+    cont_button = GuiButton(SURFACE_MAIN, "CONTINUE",
                            (center_x, cont_button_y),
                            (button_width, button_height))
 
-    options_button = UiButton(SURFACE_MAIN, "OPTIONS",
+    options_button = GuiButton(SURFACE_MAIN, "OPTIONS",
                               (center_x, options_button_y),
                               (button_width, button_height))
 
-    quit_button = UiButton(SURFACE_MAIN, "QUIT",
+    quit_button = GuiButton(SURFACE_MAIN, "QUIT",
                            (center_x, quit_button_y),
                            (button_width, button_height))
+
 
     # draw menu background and title
     SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
@@ -2149,6 +2217,7 @@ def menu_main():
     # play background music
     pygame.mixer.music.load(ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.15)
 
     while menu_running:
 
@@ -2199,31 +2268,58 @@ def menu_main():
 
 
 def menu_main_options():
+
+    # options menu dimensions
     menu_width = 300
     menu_height = 200
+
+    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
+    # slider dimensions
+    sfx_slider_width = 170
+    sfx_slider_height = 8
+    sfx_slider_val = 0.5    # default volume to 0.5
+
+    # menu surface, shape, bg color
     option_menu_surface = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
+    # volume slider initialization for sfx
+    sfx_slider = GuiSlider(option_menu_surface,
+                           (center_x, center_y),
+                           (sfx_slider_width, sfx_slider_height),
+                           sfx_slider_val)
+
+    # menu loop
     menu_close = False
-
     while not menu_close:
-
-        option_menu_surface.fill(constants.COLOR_YELLOW)
-        SURFACE_MAIN.blit(option_menu_surface, menu_rect.topleft, menu_rect)
 
         # get player input
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
+
+        player_events = (events_list, mouse_pos)
+
+        # process player input
         for event in events_list:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menu_close = True
 
-        pygame.display.update(menu_rect)
+
+        # when mouse is dragging over the sfx slider
+        sfx_slider.update(player_events)
+
+        # draw functions
+        sfx_slider.draw()
+
+        # update display
+        SURFACE_MAIN.blit(option_menu_surface, menu_rect.topleft, menu_rect)
+        option_menu_surface.fill(constants.COLOR_BROWN)
+        pygame.display.update()
 
 
 
