@@ -31,143 +31,11 @@ class StructTile:
         self.explored = False
 
 
-class StructAssets:
-    """A class which functions like a struct and contains all the assets used in the game.
-
-    Loads sprite sheets using the ObjSpriteSheet class and creates individual sprite images and animations from the
-    ObjActor class. Will also include music and sound effects.
-
-    """
-
+class StructPreferences:
     def __init__(self):
-
-        # ========================== SPRITE SHEETS ========================== #
-
-        # ---> Character folder
-        self.reptile = ObjSpriteSheet("data/graphics/Characters/Reptile.png")
-        self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
-        self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
-        self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
-        self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
-
-        # ---> Items folder
-        self.flesh = ObjSpriteSheet("data/graphics/Items/Flesh.png")
-        self.food = ObjSpriteSheet("data/graphics/Items/Food.png")
-        self.medium_weapon = ObjSpriteSheet("data/graphics/Items/MedWep.png")
-        self.shield = ObjSpriteSheet("data/graphics/Items/Shield.png")
-        self.scroll = ObjSpriteSheet("data/graphics/Items/Scroll.png")
-
-        # ---> Objects folder
-        self.wall = ObjSpriteSheet("data/graphics/Objects/Wall.png")
-        self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
-        self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
-
-        # ============================ SPRITES ============================= #
-
-        #                        ||| Animations |||
-
-        # ---> Player
-        self.A_PLAYER = self.player.get_animation('a', 15, 2, 16, 16, (32, 32))
-
-        # ---> Enemy creatures
-        self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
-        self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
-        self.A_HEALER_SLIME = self.slime.get_animation('a', 4, 2, 16, 16, (32, 32))
-
-        #                        ||| Still Sprites |||
-
-        # ---> Dungeon structures
-        self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED = self.wall.get_image('d', 13, 16, 16, (32, 32))[0]
-
-        self.S_FLOOR = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED = self.floor.get_image('b', 14, 16, 16, (32, 32))[0]
-
-        # ---> Items
-        self.S_TOMATO = self.food.get_image('g', 3, 16, 16, (32, 32))
-        self.S_RADISH = self.food.get_image('b', 4, 16, 16, (32, 32))
-        self.S_CABBAGE = self.food.get_image('f', 4, 16, 16, (32, 32))
-        self.S_WATER_CUP = self.food.get_image('f', 5, 16, 16, (32, 32))
-        self.S_SCROLL_1 = self.scroll.get_image('e', 2, 16, 16, (32, 32))
-        self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
-        self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
-        self.S_FLESH_SNAKE = self.flesh.get_image('b', 4, 16, 16, (32, 32))
-
-        # ---> Equipment
-        self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
-        self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
-
-        # ---> Special
-        self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
-        self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
-        self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
-        self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
-
-        # ---> GUI
-        self.slider_button_size = (26, 20)
-        self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")
-        self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
-
-
-        # animation dictionary to reference when generating objects (a way to avoid saving error)
-        self.animation_dict = {
-
-            "A_PLAYER": self.A_PLAYER,
-            "A_COBRA": self.A_COBRA,
-            "A_GIANT_BOA": self.A_GIANT_BOA,
-            "A_HEALER_SLIME": self.A_HEALER_SLIME,
-            "S_TOMATO": self.S_TOMATO,
-            "S_RADISH": self.S_RADISH,
-            "S_CABBAGE": self.S_CABBAGE,
-            "S_WATER_CUP": self.S_WATER_CUP,
-            "S_SCROLL_1": self.S_SCROLL_1,
-            "S_SCROLL_2": self.S_SCROLL_2,
-            "S_SCROLL_3": self.S_SCROLL_3,
-            "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
-            "S_32_SWORD": self.S_32_SWORD,
-            "S_32_SHIELD": self.S_32_SHIELD,
-            "S_STAIRS_UP": self.S_STAIRS_UP,
-            "S_STAIRS_DOWN": self.S_STAIRS_DOWN
-        }
-
-        # =============================== AUDIO ================================== #
-
-        #                             ||| Music |||
-
-        self.main_menu_music = "data/audio/music/RPG-Blues_Looping.ogg"
-
-        #                          ||| Sound Effects |||
-
-        self.sfx_list = []
-
-        self.sfx_hit_punch1 = self.sfx_add("data/audio/sfx/hit_punch_1.wav")
-        self.sfx_hit_punch2 = self.sfx_add("data/audio/sfx/hit_punch_2.wav")
-        self.sfx_hit_punch3 = self.sfx_add("data/audio/sfx/hit_punch_3.wav")
-        self.sfx_hit_punch4 = self.sfx_add("data/audio/sfx/hit_punch_4.wav")
-        self.sfx_hit_punch5 = self.sfx_add("data/audio/sfx/hit_punch_5.wav")
-
-        self.sfx_hit_punch_list = [self.sfx_hit_punch1,
-                                   self.sfx_hit_punch2,
-                                   self.sfx_hit_punch3,
-                                   self.sfx_hit_punch4,
-                                   self.sfx_hit_punch5]
-
-    def sfx_add(self, file_address):
-        """ Loads new sound effect and adds the sfx to the master sfx list.
-
-        Args:
-            file_address (str): File address of the sfx to be loaded in.
-
-        Returns:
-            new_sfx (Sound obj): The loaded sfx Sound object.
-
-        """
-
-        new_sfx = pygame.mixer.Sound(file_address)
-
-        self.sfx_list.append(new_sfx)
-
-        return new_sfx
+        self.sfx_volume_val = 0.5
+        self.music_volume_val = 0.15
+        self.master_volume_vol = 0.5
 
 
 # ================================================================= #
@@ -187,7 +55,7 @@ class ObjActor:
         y (arg, int): Tile map address of the actor object on the y-axis.
         name_object (arg, str): Name of the object type, "scroll" or "snake" for example.
         animation (list): List of images for the object's display (can be a list of one image).
-                          Created in the StructAssets class and usually denoted as "A_..." or "S_...".
+                          Created in the ObjAssets class and usually denoted as "A_..." or "S_...".
         animation_speed (arg, float): Time in seconds it takes to loop through the object animation.
                                       Default value is initialized as 0.5
 
@@ -580,6 +448,159 @@ class ObjSpriteSheet:
             image_list.append(image)
 
         return image_list
+
+
+class ObjAssets:
+    """A class which functions like a struct and contains all the assets used in the game.
+
+    Loads sprite sheets using the ObjSpriteSheet class and creates individual sprite images and animations from the
+    ObjActor class. Will also include music and sound effects.
+
+    """
+
+    def __init__(self):
+
+        # ========================== SPRITE SHEETS ========================== #
+
+        # ---> Character folder
+        self.reptile = ObjSpriteSheet("data/graphics/Characters/Reptile.png")
+        self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
+        self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
+        self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
+        self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
+
+        # ---> Items folder
+        self.flesh = ObjSpriteSheet("data/graphics/Items/Flesh.png")
+        self.food = ObjSpriteSheet("data/graphics/Items/Food.png")
+        self.medium_weapon = ObjSpriteSheet("data/graphics/Items/MedWep.png")
+        self.shield = ObjSpriteSheet("data/graphics/Items/Shield.png")
+        self.scroll = ObjSpriteSheet("data/graphics/Items/Scroll.png")
+
+        # ---> Objects folder
+        self.wall = ObjSpriteSheet("data/graphics/Objects/Wall.png")
+        self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
+        self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
+
+        # ============================ SPRITES ============================= #
+
+        #                        ||| Animations |||
+
+        # ---> Player
+        self.A_PLAYER = self.player.get_animation('a', 15, 2, 16, 16, (32, 32))
+
+        # ---> Enemy creatures
+        self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
+        self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
+        self.A_HEALER_SLIME = self.slime.get_animation('a', 4, 2, 16, 16, (32, 32))
+
+        #                        ||| Still Sprites |||
+
+        # ---> Dungeon structures
+        self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED = self.wall.get_image('d', 13, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED = self.floor.get_image('b', 14, 16, 16, (32, 32))[0]
+
+        # ---> Items
+        self.S_TOMATO = self.food.get_image('g', 3, 16, 16, (32, 32))
+        self.S_RADISH = self.food.get_image('b', 4, 16, 16, (32, 32))
+        self.S_CABBAGE = self.food.get_image('f', 4, 16, 16, (32, 32))
+        self.S_WATER_CUP = self.food.get_image('f', 5, 16, 16, (32, 32))
+        self.S_SCROLL_1 = self.scroll.get_image('e', 2, 16, 16, (32, 32))
+        self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
+        self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
+        self.S_FLESH_SNAKE = self.flesh.get_image('b', 4, 16, 16, (32, 32))
+
+        # ---> Equipment
+        self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
+        self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
+
+        # ---> Special
+        self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
+        self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
+        self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
+        self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
+        # ---> GUI
+        self.slider_button_size = (26, 20)
+        self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")
+        self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
+
+
+        # animation dictionary to reference when generating objects (a way to avoid saving error)
+        self.animation_dict = {
+
+            "A_PLAYER": self.A_PLAYER,
+            "A_COBRA": self.A_COBRA,
+            "A_GIANT_BOA": self.A_GIANT_BOA,
+            "A_HEALER_SLIME": self.A_HEALER_SLIME,
+            "S_TOMATO": self.S_TOMATO,
+            "S_RADISH": self.S_RADISH,
+            "S_CABBAGE": self.S_CABBAGE,
+            "S_WATER_CUP": self.S_WATER_CUP,
+            "S_SCROLL_1": self.S_SCROLL_1,
+            "S_SCROLL_2": self.S_SCROLL_2,
+            "S_SCROLL_3": self.S_SCROLL_3,
+            "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
+            "S_32_SWORD": self.S_32_SWORD,
+            "S_32_SHIELD": self.S_32_SHIELD,
+            "S_STAIRS_UP": self.S_STAIRS_UP,
+            "S_STAIRS_DOWN": self.S_STAIRS_DOWN
+        }
+
+        # =============================== AUDIO ================================== #
+
+        #                             ||| Music |||
+
+        self.main_menu_music = "data/audio/music/RPG-Blues_Looping.ogg"
+
+        #                          ||| Sound Effects |||
+
+        # complete sfx list
+        self.sfx_list = []
+
+        self.sfx_hit_punch1 = self.sfx_add("data/audio/sfx/hit_punch_1.wav")
+        self.sfx_hit_punch2 = self.sfx_add("data/audio/sfx/hit_punch_2.wav")
+        self.sfx_hit_punch3 = self.sfx_add("data/audio/sfx/hit_punch_3.wav")
+        self.sfx_hit_punch4 = self.sfx_add("data/audio/sfx/hit_punch_4.wav")
+        self.sfx_hit_punch5 = self.sfx_add("data/audio/sfx/hit_punch_5.wav")
+
+        # sfx list for hitting creature
+        self.sfx_hit_punch_list = [self.sfx_hit_punch1,
+                                   self.sfx_hit_punch2,
+                                   self.sfx_hit_punch3,
+                                   self.sfx_hit_punch4,
+                                   self.sfx_hit_punch5]
+        # adjust volume
+        self.volume_adjust()
+
+    def sfx_add(self, file_address):
+        """ Loads new sound effect and adds the sfx to the master sfx list.
+
+        Args:
+            file_address (str): File address of the sfx to be loaded in.
+
+        Returns:
+            new_sfx (Sound obj): The loaded sfx Sound object.
+
+        """
+
+        new_sfx = pygame.mixer.Sound(file_address)
+
+        self.sfx_list.append(new_sfx)
+
+        return new_sfx
+
+    def volume_adjust(self):
+
+        for sfx in self.sfx_list:
+            sfx.set_volume(PREFERENCES.sfx_volume_val)
+
+        pygame.mixer.music.set_volume(PREFERENCES.music_volume_val)
+
+
+
 
 
 class ObjRoom:
@@ -1332,7 +1353,6 @@ class AiFlee:
             monster.move_away(PLAYER)
 
 
-
 # ================================================================= #
 #                   -----  Death Functions -----                    #
 #                          --- SECTION ---                          #
@@ -2037,7 +2057,6 @@ def cast_confusion(caster, effect_length):
         return "unused"
 
 
-
 # ================================================================= #
 #                         -----  GUI  -----                          #
 #                          --- SECTION ---                          #
@@ -2067,16 +2086,18 @@ class GuiButton:
         self.button_rect = pygame.Rect((0, 0), self.size)
         self.button_rect.center = self.coords_center
 
-    def update(self, mouse_input):
+    def update(self, player_input):
 
         button_clicked = False
         mouse_clicked = False
 
+        events_list, mouse_input = player_input
         mouse_x, mouse_y = mouse_input
-        pygame.event.get()
 
-        if pygame.mouse.get_pressed()[0]:
-            mouse_clicked = True
+        for event in events_list:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mouse_clicked = True
 
         mouse_hovered = (self.button_rect.left <= mouse_x <= self.button_rect.right and
                          self.button_rect.top <= mouse_y <= self.button_rect.bottom)
@@ -2217,7 +2238,6 @@ def menu_main():
     # play background music
     pygame.mixer.music.load(ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(0.15)
 
     while menu_running:
 
@@ -2225,24 +2245,32 @@ def menu_main():
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
 
+        player_events = (events_list, mouse_pos)
+
         for event in events_list:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
         # start new game if clicked
-        if new_game_button.update(mouse_pos):
+        if new_game_button.update(player_events):
             pygame.mixer.music.fadeout(3000)
             game_new()
             game_main_loop()
 
         # load previous game if clicked
-        if cont_button.update(mouse_pos):
+        if cont_button.update(player_events):
             pygame.mixer.music.fadeout(3000)
             game_start()
 
+        # quit the game
+        if quit_button.update(player_events):
+            pygame.mixer.music.stop()
+            pygame.quit()
+            sys.exit()
+
         # display options menu
-        if options_button.update(mouse_pos):
+        if options_button.update(player_events):
             menu_main_options()
             SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
             draw_text(SURFACE_MAIN, "Tower of Rak",
@@ -2250,13 +2278,6 @@ def menu_main():
                       (center_x, title_y),
                       constants.COLOR_RED,
                       center=True)
-
-
-        # quit the game
-        if quit_button.update(mouse_pos):
-            pygame.mixer.music.stop()
-            pygame.quit()
-            sys.exit()
 
         # draw buttons
         new_game_button.draw()
@@ -2269,29 +2290,61 @@ def menu_main():
 
 def menu_main_options():
 
+    # ============== options menu dimensions ============== #
     # options menu dimensions
-    menu_width = 300
-    menu_height = 200
+    menu_width = 366
+    menu_height = 221
 
     # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # slider dimensions
-    sfx_slider_width = 170
-    sfx_slider_height = 8
-    sfx_slider_val = 0.5    # default volume to 0.5
-
-    # menu surface, shape, bg color
-    option_menu_surface = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    # =============== options menu surface init =============== #
+    surface_option_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
-    # volume slider initialization for sfx
-    sfx_slider = GuiSlider(option_menu_surface,
-                           (center_x, center_y),
-                           (sfx_slider_width, sfx_slider_height),
-                           sfx_slider_val)
+    # title
+    title_x = center_x
+    title_y = menu_rect.top + 30
+
+    # ================= slider/button dimensions ================ #
+    slider_width = 170
+    slider_height = 8
+    slider_text_offset_y = 18
+
+    music_slider_x = center_x
+    music_slider_y = center_y - 20
+    sfx_slider_x = music_slider_x
+    sfx_slider_y = music_slider_y + 45
+
+    # buttons
+    button_width = 50
+    button_height = 25
+
+    save_button_y = menu_rect.bottom - 30
+
+    # ============== volume slider initialization ============== #
+
+    music_slider = GuiSlider(surface_option_menu,
+                             (music_slider_x, music_slider_y),
+                             (slider_width, slider_height),
+                             PREFERENCES.music_volume_val)
+
+    sfx_slider = GuiSlider(surface_option_menu,
+                           (sfx_slider_x, sfx_slider_y),
+                           (slider_width, slider_height),
+                           PREFERENCES.sfx_volume_val)
+
+    # ====================== button section ===================== #
+
+    save_button = GuiButton(surface_option_menu, "SAVE",
+                            (center_x, save_button_y),
+                            (button_width, button_height),
+                            color_button_hovered=constants.COLOR_BLACK,
+                            color_button_default=constants.COLOR_GREY,
+                            color_text_hovered=constants.COLOR_WHITE,
+                            color_text_default=constants.COLOR_WHITE)
 
     # menu loop
     menu_close = False
@@ -2309,18 +2362,49 @@ def menu_main_options():
                 if event.key == pygame.K_ESCAPE:
                     menu_close = True
 
+        # volume values before updating
+        current_music_vol = PREFERENCES.music_volume_val
+        current_sfx_vol = PREFERENCES.sfx_volume_val
 
-        # when mouse is dragging over the sfx slider
+        # Update slider when mouse is dragging over the sfx slider
+        music_slider.update(player_events)
         sfx_slider.update(player_events)
 
+        # Update any changes
+        if music_slider.slider_value is not current_music_vol:
+            PREFERENCES.music_volume_val = music_slider.slider_value
+            ASSETS.volume_adjust()
+
+        elif sfx_slider.slider_value is not current_sfx_vol:
+            PREFERENCES.sfx_volume_val = sfx_slider.slider_value
+            ASSETS.volume_adjust()
+
+        if save_button.update(player_events):
+            preferences_save()
+            menu_close = True
+
         # draw functions
+        draw_text(surface_option_menu, "Options", constants.FONT_MENU_TITLE,
+                  (title_x, title_y),
+                  constants.COLOR_WHITE,
+                  center=True)
+
+        music_slider.draw()
+        draw_text(surface_option_menu, "Music Volume", constants.FONT_BEST,
+                  (music_slider_x, music_slider_y - slider_text_offset_y),
+                  constants.COLOR_BLACK, center=True)
+
         sfx_slider.draw()
+        draw_text(surface_option_menu, "SFX Volume", constants.FONT_BEST,
+                  (sfx_slider_x, sfx_slider_y - slider_text_offset_y),
+                  constants.COLOR_BLACK, center=True)
+
+        save_button.draw()
 
         # update display
-        SURFACE_MAIN.blit(option_menu_surface, menu_rect.topleft, menu_rect)
-        option_menu_surface.fill(constants.COLOR_BROWN)
+        SURFACE_MAIN.blit(surface_option_menu, menu_rect.topleft, menu_rect)
+        surface_option_menu.fill(constants.COLOR_BROWN)
         pygame.display.update()
-
 
 
 def menu_pause():
@@ -2890,16 +2974,21 @@ def game_main_loop():
 def game_initialize():
     """Initializes the main game window and other game assets.
 
-    Initializes pygame, the main surface (game window), ObjGame, clock (time tracker), StructAssets, and PLAYER.
+    Initializes pygame, the main surface (game window), ObjGame, clock (time tracker), ObjAssets, and PLAYER.
     Globalizes important variable constants.
 
     """
 
-    global SURFACE_MAIN, CLOCK, FOV_CALCULATE, ASSETS, SURFACE_MAP, CAMERA
+    global SURFACE_MAIN, CLOCK, FOV_CALCULATE, ASSETS, SURFACE_MAP, CAMERA, PREFERENCES
 
     # initialize pygame
     pygame.init()
     pygame.key.set_repeat(180, 90)     # (delay, interval) in milliseconds for movement when holding down keys
+
+    try:
+        preferences_load()
+    except:
+        PREFERENCES = StructPreferences()
 
     # Parse name generation files
     tcod.namegen_parse("data/namegen/jice_fantasy.cfg")
@@ -2913,7 +3002,7 @@ def game_initialize():
 
     CAMERA = ObjCamera()
 
-    ASSETS = StructAssets()
+    ASSETS = ObjAssets()
 
     CLOCK = pygame.time.Clock()
 
@@ -3063,6 +3152,18 @@ def game_load():
     # create FOV_MAP
     map_make_fov(GAME.current_map)
 
+def preferences_save():
+
+    with gzip.open("data/saves/settings", "wb") as save_file:
+        pickle.dump(PREFERENCES, save_file)
+
+
+def preferences_load():
+
+    global PREFERENCES
+
+    with gzip.open("data/saves/settings", "rb") as load_file:
+        PREFERENCES = pickle.load(load_file)
 
 def game_start():
     # generate a new game or load a game if there is a save data available
