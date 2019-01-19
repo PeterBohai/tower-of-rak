@@ -2,12 +2,14 @@
 # 3rd party modules
 import pygame
 import sys
+import os
 import pickle
 import gzip
 import tcod
 import textwrap
 import math
 import random
+import datetime
 
 # game files
 import constants
@@ -71,6 +73,7 @@ class ObjActor:
                  name_object,
                  animation_key,
                  animation_speed=0.5,
+                 status=None,
                  creature=None,
                  ai=None,
                  container=None,
@@ -84,6 +87,7 @@ class ObjActor:
         self.animation_key = animation_key
         self.animation = ASSETS.animation_dict[animation_key]
         self.animation_speed = animation_speed/1.0   # in seconds (always converted to a float, even if its an int)
+        self.status = status
 
         # animation flicker speed (over the course of # of secs)
         self.flicker_speed = self.animation_speed/len(self.animation)   # amount of display time for each img
@@ -598,9 +602,6 @@ class ObjAssets:
             sfx.set_volume(PREFERENCES.sfx_volume_val)
 
         pygame.mixer.music.set_volume(PREFERENCES.music_volume_val)
-
-
-
 
 
 class ObjRoom:
@@ -1357,6 +1358,80 @@ class AiFlee:
 #                   -----  Death Functions -----                    #
 #                          --- SECTION ---                          #
 # ================================================================= #
+
+def death_player(player):
+    """Death_function for the player.
+
+    Display a death message and kick player out of game and into the main menu.
+
+    Args:
+        player (ObjActor): The PLAYER object that executes this death function when it dies.
+
+    """
+
+    player.status = "STATUS_DEAD"
+
+    center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
+
+    # button variables
+    button_width = 80
+    button_height = 30
+    quit_button_x = constants.CAMERA_WIDTH/2
+    quit_button_y = constants.CAMERA_HEIGHT * 3/4
+
+    quit_button = GuiButton(SURFACE_MAIN, "Quit",
+                            (quit_button_x, quit_button_y),
+                            (button_width, button_height),
+                            color_button_hovered=constants.COLOR_GREY,
+                            color_button_default=constants.COLOR_DARK_GREY,
+                            color_text_hovered=constants.COLOR_WHITE,
+                            color_text_default=constants.COLOR_WHITE)
+
+    # make a legacy file
+    file_name = "legacy_{}_{}.txt".format(player.creature.name_instance,
+                                          datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
+
+    with open("data/saves/{}".format(file_name), 'a+') as legacy_file:
+        legacy_file.write("{}'s LEGACY FILE: \n\n".format(player.creature.name_instance))
+        for (message, color) in GAME.message_history:
+            legacy_file.write(message + '\n')
+
+        legacy_file.write("Deleted any game save files\n")
+
+    # delete save game file
+    save_to_rm = "data/saves/savegame"
+    try:
+        os.remove(save_to_rm)
+    except OSError as e:
+        print("Error: {} - {}".format(e.filename, e.strerror))
+
+    # For exiting out of the game
+    death_popup = True
+    while death_popup:
+
+        # get player input
+        events_list = pygame.event.get()
+        mouse_pos = pygame.mouse.get_pos()
+        player_events = (events_list, mouse_pos)
+
+        for event in events_list:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    death_popup = False
+
+        if quit_button.update(player_events):
+            death_popup = False
+
+        SURFACE_MAIN.fill(constants.COLOR_BLACK)
+        draw_text(SURFACE_MAIN, "You Died!", constants.FONT_PLAYER_DEATH,
+                  center_coords,
+                  constants.COLOR_RED,
+                  center=True)
+
+        quit_button.draw()
+
+        pygame.display.update()
+
 
 def death_snake_monster(monster):
     """Death_function for dead snake creatures.
@@ -2226,15 +2301,6 @@ def menu_main():
                            (center_x, quit_button_y),
                            (button_width, button_height))
 
-
-    # draw menu background and title
-    SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
-    draw_text(SURFACE_MAIN, "Tower of Rak",
-              constants.FONT_GAME_TILE,
-              (center_x, title_y),
-              constants.COLOR_RED,
-              center=True)
-
     # play background music
     pygame.mixer.music.load(ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
@@ -2257,11 +2323,13 @@ def menu_main():
             pygame.mixer.music.fadeout(3000)
             game_new()
             game_main_loop()
+            menu_main()
 
         # load previous game if clicked
         if cont_button.update(player_events):
             pygame.mixer.music.fadeout(3000)
             game_start()
+            menu_main()
 
         # quit the game
         if quit_button.update(player_events):
@@ -2272,12 +2340,14 @@ def menu_main():
         # display options menu
         if options_button.update(player_events):
             menu_main_options()
-            SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
-            draw_text(SURFACE_MAIN, "Tower of Rak",
-                      constants.FONT_GAME_TILE,
-                      (center_x, title_y),
-                      constants.COLOR_RED,
-                      center=True)
+
+        # draw menu background and title
+        SURFACE_MAIN.blit(ASSETS.S_MAIN_MENU, (0, 0))
+        draw_text(SURFACE_MAIN, "Tower of Rak",
+                  constants.FONT_GAME_TITLE,
+                  (center_x, title_y),
+                  constants.COLOR_RED,
+                  center=True)
 
         # draw buttons
         new_game_button.draw()
@@ -2288,7 +2358,7 @@ def menu_main():
         pygame.display.update()
 
 
-def menu_main_options():
+def menu_main_options(game_menu_options=False):
 
     # ============== options menu dimensions ============== #
     # options menu dimensions
@@ -2308,7 +2378,7 @@ def menu_main_options():
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= slider/button dimensions ================ #
+    # ================= slider/button variables ================ #
     slider_width = 170
     slider_height = 8
     slider_text_offset_y = 18
@@ -2322,7 +2392,9 @@ def menu_main_options():
     button_width = 50
     button_height = 25
 
+    save_button_x = center_x
     save_button_y = menu_rect.bottom - 30
+    save_button_text = "SAVE"
 
     # ============== volume slider initialization ============== #
 
@@ -2336,15 +2408,35 @@ def menu_main_options():
                            (slider_width, slider_height),
                            PREFERENCES.sfx_volume_val)
 
+    # ================== Options menu is in-game =================== #
+    if game_menu_options:
+        button_width = 80
+        button_height = 25
+
+        save_button_x = center_x - button_width
+        save_button_text = "Save game"
+
+        mm_button_x = center_x + button_width
+        mm_button_y = menu_rect.bottom - 30
+
+        main_menu_button = GuiButton(surface_option_menu, "Main Menu",
+                                     (mm_button_x, mm_button_y),
+                                     (button_width, button_height),
+                                     color_button_hovered=constants.COLOR_BLACK,
+                                     color_button_default=constants.COLOR_GREY,
+                                     color_text_hovered=constants.COLOR_WHITE,
+                                     color_text_default=constants.COLOR_WHITE)
+
     # ====================== button section ===================== #
 
-    save_button = GuiButton(surface_option_menu, "SAVE",
-                            (center_x, save_button_y),
+    save_button = GuiButton(surface_option_menu, save_button_text,
+                            (save_button_x, save_button_y),
                             (button_width, button_height),
                             color_button_hovered=constants.COLOR_BLACK,
                             color_button_default=constants.COLOR_GREY,
                             color_text_hovered=constants.COLOR_WHITE,
                             color_text_default=constants.COLOR_WHITE)
+
 
     # menu loop
     menu_close = False
@@ -2380,8 +2472,14 @@ def menu_main_options():
             ASSETS.volume_adjust()
 
         if save_button.update(player_events):
-            preferences_save()
-            menu_close = True
+            if game_menu_options:
+                ingame_save()
+                print("game saved")
+                # causing problems as need to quit options menu first, which enters main game loop for a few frames
+                # and the draw_game() can't draw saved game cuz when it saves, it turns stuff to none..?
+            else:
+                preferences_save()
+                menu_close = True
 
         # draw functions
         draw_text(surface_option_menu, "Options", constants.FONT_MENU_TITLE,
@@ -2400,6 +2498,20 @@ def menu_main_options():
                   constants.COLOR_BLACK, center=True)
 
         save_button.draw()
+
+        if game_menu_options:
+
+            #
+            if main_menu_button.update(player_events):
+                global GAME_QUIT
+
+                GAME_QUIT = True
+                menu_close = True
+
+
+
+            main_menu_button.draw()
+            CLOCK.tick(constants.GAME_FPS)
 
         # update display
         SURFACE_MAIN.blit(surface_option_menu, menu_rect.topleft, menu_rect)
@@ -2687,7 +2799,7 @@ def gen_player(tup_coords):
     x, y = tup_coords
 
     container_com = ComContainer()
-    creature_com = ComCreature("Rak", base_atk=3)
+    creature_com = ComCreature("Rak", base_atk=3, death_function=death_player)
 
     PLAYER = ObjActor(x, y, "Alligator",
                       "A_PLAYER",
@@ -2940,12 +3052,14 @@ def game_main_loop():
     quits the game when requested.
 
     """
-    game_quit = False
+
+    global GAME_QUIT
+    GAME_QUIT = False
 
     # player action definition
     player_action = "no-action"
 
-    while not game_quit:
+    while not GAME_QUIT:
 
         # handle player input
         player_action = game_handle_keys()
@@ -2960,6 +3074,9 @@ def game_main_loop():
             for obj in GAME.current_objects:
                 if obj.ai:
                     obj.ai.take_turn()
+
+        if PLAYER.status is "STATUS_DEAD":
+            GAME_QUIT = True
 
         # draw the game
         draw_game()
@@ -3083,17 +3200,8 @@ def game_handle_keys():
                     if obj.stairs:
                         obj.stairs.use()
 
-            # 'l' key: enable tile selection (for lightening spell)
-            # if event.key == pygame.K_l:
-                # cast_lightening(5)
-
-            # 'f' key: enable tile selection (for fireball spell)
-            # if event.key == pygame.K_f:
-                # cast_fireball()
-
-            # 'c' key: enable tile selection (for confuse spell)
-            # if event.key == pygame.K_c:
-                # cast_confusion()
+            if event.key == pygame.K_ESCAPE:
+                menu_main_options(game_menu_options=True)
 
     return "no-action"
 
@@ -3110,11 +3218,12 @@ def game_message(game_msg, msg_color=constants.COLOR_GREY):
 
 
 def game_new():
-    global GAME
+    global GAME, FOV_CALCULATE
 
     GAME = ObjGame()
     gen_player((0, 0))
     map_place_items_creatures(GAME.current_rooms)
+    FOV_CALCULATE = True
 
 
 def game_exit():
@@ -3140,7 +3249,7 @@ def game_save():
 def game_load():
 
     # since re-assigning these globals
-    global GAME, PLAYER
+    global GAME, PLAYER, FOV_CALCULATE
 
     with gzip.open("data/saves/savegame", "rb") as load_file:
         GAME, PLAYER = pickle.load(load_file)
@@ -3151,6 +3260,22 @@ def game_load():
 
     # create FOV_MAP
     map_make_fov(GAME.current_map)
+    FOV_CALCULATE = True
+
+
+def ingame_save():
+    # destroy Surface object (from actor animations)
+    for obj in GAME.current_objects:
+        obj.animation_del()
+
+    # write GAME and PLAYER objects into compressed binary file
+    with gzip.open("data/saves/savegame", "wb") as save_file:
+        pickle.dump([GAME, PLAYER], save_file)
+
+    # reinitialize animations
+    for obj in GAME.current_objects:
+        obj.animation_init()
+
 
 def preferences_save():
 
@@ -3164,6 +3289,7 @@ def preferences_load():
 
     with gzip.open("data/saves/settings", "rb") as load_file:
         PREFERENCES = pickle.load(load_file)
+
 
 def game_start():
     # generate a new game or load a game if there is a save data available

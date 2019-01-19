@@ -33,6 +33,7 @@ ROOM_MIN_WIDTH = 5
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 COLOR_GREY = (100, 100, 100)
+COLOR_DARK_GREY = (70, 70, 70)
 COLOR_RED = (255, 0, 0)
 COLOR_GREEN = (0, 255, 0)
 COLOR_BLUE = (66, 167, 244)
@@ -57,7 +58,8 @@ MSG_WIDTH = 600
 # FONTS
 FONT_DEBUG_MESSAGE = pygame.font.Font('data/fonts/LiberationMono-Regular.ttf', 20)
 FONT_DEBUG_MESSAGE2 = pygame.font.Font('data/fonts/AppleII.ttf', 16)
-FONT_GAME_TILE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
+FONT_GAME_TITLE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
+FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
 FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
 FONT_TARGET_X = pygame.font.Font('data/fonts/fixedsys300.ttf', CELL_HEIGHT + 10)
