@@ -79,7 +79,8 @@ class ObjActor:
                  container=None,
                  item=None,
                  equipment=None,
-                 stairs=None):   # None is implicitly False
+                 stairs=None,
+                 portal=None):   # None is implicitly False
 
         self.x = x  # map address (not pixel address)
         self.y = y  # map address (not pixel address)
@@ -121,6 +122,10 @@ class ObjActor:
         self.stairs = stairs
         if self.stairs:
             self.stairs.owner = self
+
+        self.portal = portal
+        if self.portal:
+            self.portal.owner = self
 
     @property
     def display_name(self):
@@ -300,6 +305,7 @@ class ObjGame:
         save_data = (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
         self.maps_prev.append(save_data)
 
+        # if the current floor is the top floor so far
         if len(self.maps_next) == 0:
 
             # erase all items from previous map except the PLAYER
@@ -309,6 +315,7 @@ class ObjGame:
             self.current_map, self.current_rooms = map_create()
             map_place_items_creatures(self.current_rooms)
 
+        # if there are floors above the current floor
         else:
 
             (PLAYER.x, PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_next[-1]
@@ -323,6 +330,7 @@ class ObjGame:
             del self.maps_next[-1]
 
         game_message("{} moved up a floor!".format(PLAYER.creature.name_instance), constants.COLOR_BLUE)
+
 
     def map_transition_prev(self):
         """Loads the last map in maps_prev, saving data of current map before doing so.
@@ -479,11 +487,16 @@ class ObjAssets:
         self.medium_weapon = ObjSpriteSheet("data/graphics/Items/MedWep.png")
         self.shield = ObjSpriteSheet("data/graphics/Items/Shield.png")
         self.scroll = ObjSpriteSheet("data/graphics/Items/Scroll.png")
+        self.rock = ObjSpriteSheet("data/graphics/Items/Rock.png")
+
 
         # ---> Objects folder
         self.wall = ObjSpriteSheet("data/graphics/Objects/Wall.png")
         self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
         self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
+        self.door = ObjSpriteSheet("data/graphics/Objects/Door.png")
+
+
 
         # ============================ SPRITES ============================= #
 
@@ -525,6 +538,9 @@ class ObjAssets:
         self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
         self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
         self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+        self.S_MAGIC_ROCK = self.rock.get_image('b', 1, 16, 16, (32, 32))
+        self.A_PORTAL_OPEN = self.door.get_animation('c', 6, 2, 16, 16, (32, 32))
+        self.S_PORTAL_CLOSED = self.door.get_image('b', 6, 16, 16, (32, 32))
 
         # ---> GUI
         self.slider_button_size = (26, 20)
@@ -550,7 +566,11 @@ class ObjAssets:
             "S_32_SWORD": self.S_32_SWORD,
             "S_32_SHIELD": self.S_32_SHIELD,
             "S_STAIRS_UP": self.S_STAIRS_UP,
-            "S_STAIRS_DOWN": self.S_STAIRS_DOWN
+            "S_STAIRS_DOWN": self.S_STAIRS_DOWN,
+            "S_MAGIC_ROCK": self.S_MAGIC_ROCK,
+            "A_PORTAL_OPEN": self.A_PORTAL_OPEN,
+            "S_PORTAL_CLOSED": self.S_PORTAL_CLOSED
+
         }
 
         # =============================== AUDIO ================================== #
@@ -628,6 +648,8 @@ class ObjRoom:
 
         self.x2 = self.x1 + self.width
         self.y2 = self.y1 + self.height
+        self.center_x = None
+        self.center_y = None
 
     @property
     def center(self):
@@ -638,10 +660,10 @@ class ObjRoom:
             center_y (int): The y coordinate of the center of the room.
 
         """
-        center_x = int((self.x1 + self.x2)/2)
-        center_y = int((self.y1 + self.y2)/2)
+        self.center_x = int((self.x1 + self.x2)/2)
+        self.center_y = int((self.y1 + self.y2)/2)
 
-        return center_x, center_y
+        return self.center_x, self.center_y
 
     def intersect(self, other):
         """Determines whether a room object intersects with another room object.
@@ -864,6 +886,8 @@ class ComCreature:
         """
 
         damage_dealt = self.power - target.creature.defence
+        if damage_dealt <= 0:
+            damage_dealt = 0
 
         # naming convention for attack message
         # (PLAYER will only display nickname, creatures display nickname and creature type)
@@ -1253,6 +1277,100 @@ class ComStairs:
             GAME.map_transition_prev()
 
 
+class ComPortal:
+    def __init__(self):
+        self.open_animation = "A_PORTAL_OPEN"
+        self.closed_animation = "S_PORTAL_CLOSED"
+
+    def update(self):
+        # flag intialization
+        found_lamp = False
+
+        portal_is_open = (self.owner.status == "STATUS_OPEN")
+
+        for obj in PLAYER.container.inventory:
+            if obj.name_object == "MAGIC ROCK":
+                found_lamp = True
+
+        # open the portal if player has lamp in their inventory
+        if found_lamp and not portal_is_open:
+            self.owner.status = "STATUS_OPEN"
+            self.owner.animation_key = self.open_animation
+            self.owner.animation_init()
+
+        # close the portal if player does not have the lamp (or somehow decided to drop it)
+        if not found_lamp and portal_is_open:
+            self.owner.status = "STATUS_CLOSED"
+            self.owner.animation_key = self.closed_animation
+            self.owner.animation_init()
+
+    def use(self):
+
+        if self.owner.status == "STATUS_OPEN":
+            PLAYER.status = "STATUS_WIN"
+
+            center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
+
+            # button variables
+            button_width = 80
+            button_height = 30
+            quit_button_x = constants.CAMERA_WIDTH / 2
+            quit_button_y = constants.CAMERA_HEIGHT * 3 / 4
+
+            quit_button = GuiButton(SURFACE_MAIN, "Quit",
+                                    (quit_button_x, quit_button_y),
+                                    (button_width, button_height),
+                                    color_button_hovered=constants.COLOR_GREY,
+                                    color_button_default=constants.COLOR_DARK_GREY,
+                                    color_text_hovered=constants.COLOR_WHITE,
+                                    color_text_default=constants.COLOR_WHITE)
+
+            # make a legacy file
+            file_name = "win_{}_{}.txt".format(PLAYER.creature.name_instance,
+                                               datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
+
+            with open("data/saves/{}".format(file_name), 'a+') as win_file:
+                win_file.write("************* {}'s WIN RECORD ************* \n\n".format(PLAYER.creature.name_instance))
+                for (message, color) in GAME.message_history:
+                    win_file.write(message + '\n')
+
+                win_file.write("Deleted any game save files\n")
+
+            # delete save game file
+            save_to_rm = "data/saves/savegame"
+            try:
+                os.remove(save_to_rm)
+            except OSError as e:
+                print("Error: {} - {}".format(e.filename, e.strerror))
+
+            # For exiting out of the game
+            win_popup = True
+            while win_popup:
+
+                # get player input
+                events_list = pygame.event.get()
+                mouse_pos = pygame.mouse.get_pos()
+                player_events = (events_list, mouse_pos)
+
+                for event in events_list:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            win_popup = False
+
+                if quit_button.update(player_events):
+                    win_popup = False
+
+                SURFACE_MAIN.fill(constants.COLOR_WHITE)
+                draw_text(SURFACE_MAIN, "You WON!", constants.FONT_PLAYER_DEATH,
+                          center_coords,
+                          constants.COLOR_BLUE,
+                          center=True)
+
+                quit_button.draw()
+
+                pygame.display.update()
+
+
 # ================================================================= #
 #                    -----  Ai Components  -----                    #
 #                          --- SECTION ---                          #
@@ -1392,7 +1510,7 @@ def death_player(player):
                                           datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
 
     with open("data/saves/{}".format(file_name), 'a+') as legacy_file:
-        legacy_file.write("{}'s LEGACY FILE: \n\n".format(player.creature.name_instance))
+        legacy_file.write("************* {}'s LEGACY FILE ************* \n\n".format(player.creature.name_instance))
         for (message, color) in GAME.message_history:
             legacy_file.write(message + '\n')
 
@@ -1562,7 +1680,9 @@ def map_place_items_creatures(room_list):
 
     """
 
-    top_level = (len(GAME.maps_prev) == 0)
+    floor_num = len(GAME.maps_prev) + 1
+    top_floor = (floor_num == constants.MAP_MAX_NUM_FLOORS)
+    first_floor = (len(GAME.maps_prev) == 0)
 
     for i, room in enumerate(room_list):
 
@@ -1586,12 +1706,17 @@ def map_place_items_creatures(room_list):
             gen_enemy((enemy_x, enemy_y))
 
         # only generate stairs leading down in the first room if the map is not the top level
-        if first_room and not top_level:
+        if first_room and not first_floor:
             gen_stairs((PLAYER.x, PLAYER.y), up=False)
 
         # generate stairs leading up in the last room
-        if last_room:
+        if last_room and not top_floor:
             gen_stairs(room.center)
+
+        # generate magic rock as item to obtain in order to win
+        elif last_room and top_floor:
+            gen_magic_rock(room.center)
+            gen_portal((room.center_x, room.center_y - 1))
 
         item_x = PLAYER.x
         item_y = PLAYER.y
@@ -2437,7 +2562,6 @@ def menu_main_options(game_menu_options=False):
                             color_text_hovered=constants.COLOR_WHITE,
                             color_text_default=constants.COLOR_WHITE)
 
-
     # menu loop
     menu_close = False
     while not menu_close:
@@ -2799,7 +2923,7 @@ def gen_player(tup_coords):
     x, y = tup_coords
 
     container_com = ComContainer()
-    creature_com = ComCreature("Rak", base_atk=3, death_function=death_player)
+    creature_com = ComCreature("Rak", max_hp=100, base_atk=3, base_def=40, death_function=death_player)
 
     PLAYER = ObjActor(x, y, "Alligator",
                       "A_PLAYER",
@@ -2942,6 +3066,29 @@ def gen_stairs(tup_coords, up=True):
     GAME.current_objects.insert(0, stairs_obj)
 
 
+def gen_magic_rock(tup_coords):
+    x, y = tup_coords
+
+    item_com = ComItem()
+    rock_obj = ObjActor(x, y, "MAGIC ROCK",
+                        "S_MAGIC_ROCK",
+                        item=item_com)
+
+    GAME.current_objects.insert(0, rock_obj)
+
+
+def gen_portal(tup_coords):
+
+    x, y = tup_coords
+
+    portal_com = ComPortal()
+    portal_obj = ObjActor(x, y, "Portal",
+                                "S_PORTAL_CLOSED",
+                                portal=portal_com)
+
+    GAME.current_objects.insert(0, portal_obj)
+
+
 # ---> CREATURES
 def gen_enemy(tup_coords):
     """Generates a random enemy at the given coordinates specified by tup_coords.
@@ -2956,7 +3103,7 @@ def gen_enemy(tup_coords):
 
     choice_num = tcod.random_get_int(0, 1, 100)
 
-    if choice_num <= 20:
+    if choice_num <= 15:
         new_enemy = gen_snake_cobra(tup_coords)
 
     else:
@@ -2972,7 +3119,7 @@ def gen_enemy(tup_coords):
 def gen_snake_boa(tup_coords):
     x, y = tup_coords
 
-    base_attack = tcod.random_get_int(0, 1, 3)
+    base_attack = tcod.random_get_int(0, 1, 2)
     max_health = tcod.random_get_int(0, 7, 10)
     creature_name = tcod.namegen_generate("Fantasy male")
 
@@ -2995,7 +3142,7 @@ def gen_snake_boa(tup_coords):
 def gen_snake_cobra(tup_coords):
     x, y = tup_coords
 
-    base_attack = tcod.random_get_int(0, 4, 6)
+    base_attack = tcod.random_get_int(0, 2, 3)
     max_health = tcod.random_get_int(0, 15, 18)
     creature_name = tcod.namegen_generate("Fantasy female")
 
@@ -3053,16 +3200,38 @@ def game_main_loop():
 
     """
 
-    global GAME_QUIT
+    global GAME_QUIT, FLOOR_CHANGED
     GAME_QUIT = False
+    FLOOR_CHANGED = False
 
     # player action definition
     player_action = "no-action"
+    display_time = 0
+    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - 40)
 
     while not GAME_QUIT:
 
+        draw_game()
+
         # handle player input
         player_action = game_handle_keys()
+
+        # display floor number in the middle for a few seconds when floor changes
+        if FLOOR_CHANGED and player_action == "Just Changed Floors":
+            display_time = 180
+
+        elif FLOOR_CHANGED:
+            floor_num = len(GAME.maps_prev) + 1
+            draw_text(SURFACE_MAIN, "Floor - {}".format(floor_num),
+                      constants.FONT_BEST,
+                      text_coords,
+                      constants.COLOR_WHITE,
+                      center=True)
+
+        if display_time > 0:
+            display_time -= 1
+        elif display_time <= 0 and FLOOR_CHANGED is True:
+            FLOOR_CHANGED = False
 
         map_calculate_fov()
 
@@ -3070,16 +3239,16 @@ def game_main_loop():
         if player_action == "QUIT":
             game_exit()
 
-        if player_action != "no-action":     # this is how TURN-BASED is implemented for this game
-            for obj in GAME.current_objects:
-                if obj.ai:
+            # this is how TURN-BASED is implemented for this game
+        for obj in GAME.current_objects:
+            if obj.ai:
+                if player_action != "no-action":
                     obj.ai.take_turn()
+            if obj.portal:
+                obj.portal.update()
 
-        if PLAYER.status is "STATUS_DEAD":
+        if PLAYER.status == "STATUS_DEAD" or PLAYER.status == "STATUS_WIN":
             GAME_QUIT = True
-
-        # draw the game
-        draw_game()
 
         # update the display
         pygame.display.flip()
@@ -3128,7 +3297,7 @@ def game_initialize():
 
 def game_handle_keys():
 
-    global FOV_CALCULATE
+    global FOV_CALCULATE, FLOOR_CHANGED
     # get player input
     events_list = pygame.event.get()  # list of all events so far (like keys pressed and mouse clicks)
     pressed_key_list = pygame.key.get_pressed()    # list of booleans for whether a key is pressed or not
@@ -3189,6 +3358,7 @@ def game_handle_keys():
             if event.key == pygame.K_i:
                 menu_inventory()
 
+            # '>' key: use stairs or portal
             if shift_pressed and event.key == pygame.K_PERIOD:
 
                 # check if the player is standing on top of a set of stairs
@@ -3199,6 +3369,12 @@ def game_handle_keys():
                     # check if the object contains a stairs component
                     if obj.stairs:
                         obj.stairs.use()
+                        FLOOR_CHANGED = True
+                        return "Just Changed Floors"
+
+                    if obj.portal:
+                        pass
+
 
             if event.key == pygame.K_ESCAPE:
                 menu_main_options(game_menu_options=True)
