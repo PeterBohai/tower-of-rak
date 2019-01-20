@@ -3373,6 +3373,7 @@ def game_handle_keys():
                         return "Just Changed Floors"
 
                     if obj.portal:
+
                         obj.portal.use()
 
             if event.key == pygame.K_ESCAPE:
