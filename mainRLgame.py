@@ -2923,7 +2923,7 @@ def gen_player(tup_coords):
     x, y = tup_coords
 
     container_com = ComContainer()
-    creature_com = ComCreature("Rak", max_hp=100, base_atk=3, base_def=40, death_function=death_player)
+    creature_com = ComCreature("Rak", max_hp=20, base_atk=3, base_def=2, death_function=death_player)
 
     PLAYER = ObjActor(x, y, "Alligator",
                       "A_PLAYER",
@@ -3373,7 +3373,6 @@ def game_handle_keys():
                         return "Just Changed Floors"
 
                     if obj.portal:
-
                         obj.portal.use()
 
             if event.key == pygame.K_ESCAPE:
