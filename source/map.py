@@ -125,6 +125,9 @@ def map_create():
 
             list_of_rooms.append(new_room)
 
+    # load in created map
+    assign_tiles(new_map)
+
     # create FOV_MAP
     map_make_fov(new_map)
 
@@ -396,3 +399,35 @@ def map_find_radius(coords, radius):
             tile_coord_list.append((tile_in_radius_x, tile_in_radius_y))
 
     return tile_coord_list
+
+
+def map_check_for_wall(incoming_map, coords_x, coords_y):
+
+    if coords_x < 0 or coords_y < 0 or coords_x >= constants.MAP_WIDTH or coords_y >= constants.MAP_HEIGHT:
+        return False
+
+    else:
+        return incoming_map[coords_x][coords_y].block_path
+
+
+def assign_tiles(incoming_map):
+
+    for x in range(len(incoming_map)):
+        for y in range(len(incoming_map[0])):
+
+            tile_is_wall = map_check_for_wall(incoming_map, x, y)
+
+            if tile_is_wall:
+                assign_num = 0
+
+                # TODO: implement more complicated bitmasking for better wall display
+                # check surrounding walls
+                if map_check_for_wall(incoming_map, x, y-1):
+                    assign_num += 1
+                if map_check_for_wall(incoming_map, x+1, y):
+                    assign_num += 2
+                if map_check_for_wall(incoming_map, x, y+1):
+                    assign_num += 4
+                if map_check_for_wall(incoming_map, x-1, y):
+                    assign_num += 8
+                incoming_map[x][y].assignment = assign_num

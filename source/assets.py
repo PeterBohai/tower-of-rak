@@ -143,8 +143,6 @@ class ObjAssets:
         self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
         self.door = ObjSpriteSheet("data/graphics/Objects/Door.png")
 
-
-
         # ============================ SPRITES ============================= #
 
         #                        ||| Animations |||
@@ -162,6 +160,40 @@ class ObjAssets:
         # ---> Dungeon structures
         self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
         self.S_WALL_EXPLORED = self.wall.get_image('d', 13, 16, 16, (32, 32))[0]
+
+        self.S_WALL_00 = self.wall.get_image('i', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_01 = self.wall.get_image('i', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_02 = self.wall.get_image('i', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_03 = self.wall.get_image('h', 45, 16, 16, (32, 32))[0]
+        self.S_WALL_04 = self.wall.get_image('h', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_05 = self.wall.get_image('h', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_06 = self.wall.get_image('h', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_07 = self.wall.get_image('k', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_08 = self.wall.get_image('i', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_09 = self.wall.get_image('j', 45, 16, 16, (32, 32))[0]
+        self.S_WALL_10 = self.wall.get_image('i', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_11 = self.wall.get_image('l', 45, 16, 16, (32, 32))[0]
+        self.S_WALL_12 = self.wall.get_image('j', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_13 = self.wall.get_image('m', 44, 16, 16, (32, 32))[0]
+        self.S_WALL_14 = self.wall.get_image('l', 43, 16, 16, (32, 32))[0]
+        self.S_WALL_15 = self.wall.get_image('l', 44, 16, 16, (32, 32))[0]
+
+        self.S_WALL_EXPLORED_00 = self.wall.get_image('i', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_01 = self.wall.get_image('i', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_02 = self.wall.get_image('i', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_03 = self.wall.get_image('h', (45+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_04 = self.wall.get_image('h', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_05 = self.wall.get_image('h', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_06 = self.wall.get_image('h', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_07 = self.wall.get_image('k', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_08 = self.wall.get_image('i', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_09 = self.wall.get_image('j', (45+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_10 = self.wall.get_image('i', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_11 = self.wall.get_image('l', (45+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_12 = self.wall.get_image('j', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_13 = self.wall.get_image('m', (44+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_14 = self.wall.get_image('l', (43+3), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_15 = self.wall.get_image('l', (44+3), 16, 16, (32, 32))[0]
 
         self.S_FLOOR = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
         self.S_FLOOR_EXPLORED = self.floor.get_image('b', 14, 16, 16, (32, 32))[0]
@@ -194,10 +226,8 @@ class ObjAssets:
         self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")
         self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
 
-
         # animation dictionary to reference when generating objects (a way to avoid saving error)
         self.animation_dict = {
-
             "A_PLAYER": self.A_PLAYER,
             "A_COBRA": self.A_COBRA,
             "A_GIANT_BOA": self.A_GIANT_BOA,
@@ -217,7 +247,44 @@ class ObjAssets:
             "S_MAGIC_ROCK": self.S_MAGIC_ROCK,
             "A_PORTAL_OPEN": self.A_PORTAL_OPEN,
             "S_PORTAL_CLOSED": self.S_PORTAL_CLOSED
+        }
 
+        self.wall_dict = {
+            0: self.S_WALL_00,
+            1: self.S_WALL_01,
+            2: self.S_WALL_02,
+            3: self.S_WALL_03,
+            4: self.S_WALL_04,
+            5: self.S_WALL_05,
+            6: self.S_WALL_06,
+            7: self.S_WALL_07,
+            8: self.S_WALL_08,
+            9: self.S_WALL_09,
+            10: self.S_WALL_10,
+            11: self.S_WALL_11,
+            12: self.S_WALL_12,
+            13: self.S_WALL_13,
+            14: self.S_WALL_14,
+            15: self.S_WALL_15
+        }
+
+        self.wall_explored_dict = {
+            0: self.S_WALL_EXPLORED_00,
+            1: self.S_WALL_EXPLORED_01,
+            2: self.S_WALL_EXPLORED_02,
+            3: self.S_WALL_EXPLORED_03,
+            4: self.S_WALL_EXPLORED_04,
+            5: self.S_WALL_EXPLORED_05,
+            6: self.S_WALL_EXPLORED_06,
+            7: self.S_WALL_EXPLORED_07,
+            8: self.S_WALL_EXPLORED_08,
+            9: self.S_WALL_EXPLORED_09,
+            10: self.S_WALL_EXPLORED_10,
+            11: self.S_WALL_EXPLORED_11,
+            12: self.S_WALL_EXPLORED_12,
+            13: self.S_WALL_EXPLORED_13,
+            14: self.S_WALL_EXPLORED_14,
+            15: self.S_WALL_EXPLORED_15
         }
 
         # =============================== AUDIO ================================== #

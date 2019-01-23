@@ -123,9 +123,7 @@ def menu_main_options(game_menu_options=False):
         if save_button.update(player_events):
             if game_menu_options:
                 game.ingame_save()
-                print("game saved")
-                # causing problems as need to quit options menu first, which enters main game loop for a few frames
-                # and the draw_game() can't draw saved game cuz when it saves, it turns stuff to none..?
+
             else:
                 game.preferences_save()
                 menu_close = True

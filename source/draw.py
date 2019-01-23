@@ -92,6 +92,8 @@ def draw_map(map_to_draw):
     for x in range(render_min_x, render_max_x):
         for y in range(render_min_y, render_max_y):
 
+            tile_assign_num = map_to_draw[x][y].assignment
+
             is_visible = tcod.map_is_in_fov(globalvars.FOV_MAP, x, y)      # to check whether or not a tile is visible
 
             if is_visible:
@@ -99,18 +101,23 @@ def draw_map(map_to_draw):
                 map_to_draw[x][y].explored = True
 
                 if map_to_draw[x][y].block_path is True:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_WALL, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_dict[tile_assign_num],
+                                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                 else:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR,
+                                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             else:
                 if map_to_draw[x][y].explored:
+
                     if map_to_draw[x][y].block_path is True:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_WALL_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_explored_dict[tile_assign_num],
+                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                     else:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR_EXPLORED, (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR_EXPLORED,
+                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             # else if not visible:
                 # the background fill color of the surface being drawn on is displayed (black at the moment)
