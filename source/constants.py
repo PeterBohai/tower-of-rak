@@ -39,7 +39,12 @@ COLOR_GREY = (100, 100, 100)
 COLOR_DARK_GREY = (70, 70, 70)
 COLOR_RED = (255, 0, 0)
 COLOR_GREEN = (0, 255, 0)
+
 COLOR_BLUE = (66, 167, 244)
+COLOR_BLUE1 = (114, 156, 224)
+COLOR_BLUE2 = (45, 95, 175)
+COLOR_BLUE3 = (33, 70, 130)
+
 COLOR_YELLOW = (255, 233, 147)
 COLOR_ORANGE = (255, 155, 84)
 COLOR_BROWN = (213, 178, 171)
@@ -66,3 +71,5 @@ FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
 FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
 FONT_TARGET_X = pygame.font.Font('data/fonts/fixedsys300.ttf', CELL_HEIGHT + 10)
+FONT_CREDITS = pygame.font.SysFont("comicsansms", 15)
+

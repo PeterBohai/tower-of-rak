@@ -14,10 +14,10 @@ from source import constants, globalvars, text
 class GuiButton:
 
     def __init__(self, surface, text, tup_coords_center, tup_size,
-                 color_button_hovered=constants.COLOR_GREEN,
-                 color_button_default=constants.COLOR_BLUE,
+                 color_button_hovered=constants.COLOR_BLUE2,
+                 color_button_default=constants.COLOR_BLUE1,
                  color_text_hovered=constants.COLOR_WHITE,
-                 color_text_default=constants.COLOR_GREY):
+                 color_text_default=constants.COLOR_WHITE):
 
         self.surface = surface
         self.text = text
