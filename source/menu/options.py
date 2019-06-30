@@ -8,7 +8,7 @@ import pygame
 from source import constants, globalvars, text, gui, game
 
 
-def menu_main_options(game_menu_options=False):
+def menu_main_options(ingame_menu_options=False):
 
     # ============== options menu dimensions ============== #
     # options menu dimensions
@@ -42,9 +42,13 @@ def menu_main_options(game_menu_options=False):
     button_width = 50
     button_height = 25
 
-    save_button_x = center_x
+    save_button_x = center_x - button_width
     save_button_y = menu_rect.bottom - 30
     save_button_text = "SAVE"
+
+    back_button_x = center_x + button_width
+    back_button_y = menu_rect.bottom - 30
+    back_button_text = "BACK"
 
     # ============== volume slider initialization ============== #
 
@@ -59,7 +63,7 @@ def menu_main_options(game_menu_options=False):
                            globalvars.PREFERENCES.sfx_volume_val)
 
     # ================== Options menu is in-game =================== #
-    if game_menu_options:
+    if ingame_menu_options:
         button_width = 80
         button_height = 25
 
@@ -81,6 +85,14 @@ def menu_main_options(game_menu_options=False):
 
     save_button = gui.GuiButton(surface_option_menu, save_button_text,
                                 (save_button_x, save_button_y),
+                                (button_width, button_height),
+                                color_button_hovered=constants.COLOR_BLACK,
+                                color_button_default=constants.COLOR_GREY,
+                                color_text_hovered=constants.COLOR_WHITE,
+                                color_text_default=constants.COLOR_WHITE)
+
+    back_button = gui.GuiButton(surface_option_menu, back_button_text,
+                                (back_button_x, back_button_y),
                                 (button_width, button_height),
                                 color_button_hovered=constants.COLOR_BLACK,
                                 color_button_default=constants.COLOR_GREY,
@@ -121,17 +133,20 @@ def menu_main_options(game_menu_options=False):
             globalvars.ASSETS.volume_adjust()
 
         if save_button.update(player_events):
-            if game_menu_options:
+            if ingame_menu_options:
                 game.ingame_save()
 
             else:
                 game.preferences_save()
                 menu_close = True
 
+        if back_button.update(player_events):
+            menu_close = True
+
         # draw functions
         text.draw_text(surface_option_menu, "Options", constants.FONT_MENU_TITLE,
                        (title_x, title_y),
-                       constants.COLOR_WHITE,
+                       constants.COLOR_BLACK,
                        center=True)
 
         music_slider.draw()
@@ -146,7 +161,9 @@ def menu_main_options(game_menu_options=False):
 
         save_button.draw()
 
-        if game_menu_options:
+        back_button.draw()
+
+        if ingame_menu_options:
 
             if main_menu_button.update(player_events):
                 globalvars.GAME_QUIT = True

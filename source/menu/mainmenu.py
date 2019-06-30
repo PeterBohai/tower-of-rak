@@ -1,4 +1,4 @@
-# Standrad library imports
+# Standard library imports
 import sys
 
 # Third party imports
@@ -135,9 +135,12 @@ def menu_credits():
     title_x = center_x
     title_y = menu_rect.top + 20
 
-    text_x = menu_rect.left + 5
+    text_x = menu_rect.left + 20
     line1_y = title_y + 30
-    line2_y = line1_y + text.helper_text_height(constants.FONT_CREDITS)
+    line2_y = line1_y + text.helper_text_height(constants.FONT_CREDITS) + 2
+    line3_y = line2_y + text.helper_text_height(constants.FONT_CREDITS) + 15
+    line4_y = line3_y + text.helper_text_height(constants.FONT_CREDITS) + 2
+
 
     # ================= slider/button variables ================ #
     # buttons
@@ -180,16 +183,27 @@ def menu_credits():
         # draw functions
         text.draw_text(surface_credits_menu, "Credits", constants.FONT_MENU_TITLE,
                        (title_x, title_y),
-                       constants.COLOR_WHITE,
+                       constants.COLOR_BLACK,
                        center=True)
+
+        text.draw_text(surface_credits_menu, "GRAPHICS:",
+                       constants.FONT_CREDIT_LABELS,
+                       (text_x, line1_y),
+                       constants.COLOR_BLACK)
 
         text.draw_text(surface_credits_menu, "DAWNLIKE 16x16 Universal Rogue-like tileset v1.81 by DawnBringer",
                        constants.FONT_CREDITS,
-                       (text_x, line1_y ),
+                       (text_x, line2_y),
                        constants.COLOR_WHITE)
+
+        text.draw_text(surface_credits_menu, "SOUND:",
+                       constants.FONT_CREDIT_LABELS,
+                       (text_x, line3_y),
+                       constants.COLOR_BLACK)
+
         text.draw_text(surface_credits_menu, "Music by Eric Matyas - www.soundimage.org",
                        constants.FONT_CREDITS,
-                       (text_x, line2_y),
+                       (text_x, line4_y),
                        constants.COLOR_WHITE)
 
 

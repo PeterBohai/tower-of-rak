@@ -64,12 +64,20 @@ NUM_MESSAGES = 6
 MSG_WIDTH = 600
 
 # FONTS
-FONT_DEBUG_MESSAGE = pygame.font.Font('data/fonts/LiberationMono-Regular.ttf', 20)
 FONT_DEBUG_MESSAGE2 = pygame.font.Font('data/fonts/AppleII.ttf', 16)
+
 FONT_GAME_TITLE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
+
 FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
+
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
+
 FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
+FONT_MENU_TITLE.set_underline(True)
+
 FONT_TARGET_X = pygame.font.Font('data/fonts/fixedsys300.ttf', CELL_HEIGHT + 10)
-FONT_CREDITS = pygame.font.SysFont("comicsansms", 15)
+
+FONT_CREDITS = pygame.font.SysFont('arial', 14)
+
+FONT_CREDIT_LABELS = pygame.font.SysFont('data/fonts/fixedsys300.ttf', 20)
 
