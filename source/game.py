@@ -248,7 +248,7 @@ def game_handle_keys():
                         obj.portal.use()
 
             if event.key == pygame.K_ESCAPE:
-                options.menu_main_options(game_menu_options=True)
+                options.menu_main_options(ingame_menu_options=True)
 
     return "no-action"
 

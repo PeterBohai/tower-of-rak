@@ -26,7 +26,12 @@ class ObjSpriteSheet:
                          'a': 1, 'b': 2, 'c': 3, 'd': 4,
                          'e': 5, 'f': 6, 'g': 7, 'h': 8,
                          'i': 9, 'j': 10, 'k': 11, 'l': 12,
-                         'm': 13, 'n': 14, 'o': 15, 'p': 16}    # Thus, (A, 0) will get the upper left corner sprite
+                         'm': 13, 'n': 14, 'o': 15, 'p': 16,
+                         'q': 17, 'r': 18, 's': 19, 't': 20,
+                         'u': 21, 'v': 22, 'w': 23, 'x': 24,
+                         'y': 25, 'z': 26,
+                         'a1': 27, 'b1': 28, 'c1': 29,
+                         'd1': 30, 'e1': 31, 'f1': 32, 'g1': 33}    # Thus, (A, 0) will get the upper left corner sprite
 
     def get_image(self, column, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None):
         """Returns a single sprite.
@@ -143,6 +148,10 @@ class ObjAssets:
         self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
         self.door = ObjSpriteSheet("data/graphics/Objects/Door.png")
 
+        # ---> Menu folder
+        self.menugui = ObjSpriteSheet("data/graphics/menu/menugui.png")
+
+
         # ============================ SPRITES ============================= #
 
         #                        ||| Animations |||
@@ -215,8 +224,33 @@ class ObjAssets:
         # ---> Special
         self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
         self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
+
         self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
         self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
+        self.S_CREDITS_MENU = pygame.image.load("data/graphics/menu/brown_bg.jpg")
+        self.S_CREDITS_MENU = pygame.transform.scale(self.S_CREDITS_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
+        self.S_TOP_L_MENU_LIGHT = self.menugui.get_image('b1', 8, 16, 16, (32, 32))[0]
+        self.S_TOP_R_MENU_LIGHT = self.menugui.get_image('e1', 8, 16, 16, (32, 32))[0]
+        self.S_TOP_MENU_LIGHT = self.menugui.get_image('c1', 8, 16, 16, (32, 32))[0]
+        self.S_BOT_L_MENU_LIGHT = self.menugui.get_image('b1', 10, 16, 16, (32, 32))[0]
+        self.S_BOT_R_MENU_LIGHT = self.menugui.get_image('e1', 10, 16, 16, (32, 32))[0]
+        self.S_BOT_MENU_LIGHT = self.menugui.get_image('c1', 10, 16, 16, (32, 32))[0]
+        self.S_SIDE_L_MENU_LIGHT = self.menugui.get_image('b1', 9, 16, 16, (32, 32))[0]
+        self.S_SIDE_R_MENU_LIGHT = self.menugui.get_image('e1', 9, 16, 16, (32, 32))[0]
+        self.S_MID_MENU_LIGHT = self.menugui.get_image('c1', 9, 16, 16, (32, 32))[0]
+
+        self.S_TOP_L_MENU_BROWN = self.menugui.get_image('b1', 14, 16, 16, (32, 32))[0]
+        self.S_TOP_R_MENU_BROWN = self.menugui.get_image('e1', 14, 16, 16, (32, 32))[0]
+        self.S_TOP_MENU_BROWN = self.menugui.get_image('c1', 14, 16, 16, (32, 32))[0]
+        self.S_BOT_L_MENU_BROWN = self.menugui.get_image('b1', 16, 16, 16, (32, 32))[0]
+        self.S_BOT_R_MENU_BROWN = self.menugui.get_image('e1', 16, 16, 16, (32, 32))[0]
+        self.S_BOT_MENU_BROWN = self.menugui.get_image('c1', 16, 16, 16, (32, 32))[0]
+        self.S_SIDE_L_MENU_BROWN = self.menugui.get_image('b1', 15, 16, 16, (32, 32))[0]
+        self.S_SIDE_R_MENU_BROWN = self.menugui.get_image('e1', 15, 16, 16, (32, 32))[0]
+        self.S_MID_MENU_BROWN = self.menugui.get_image('c1', 15, 16, 16, (32, 32))[0]
+
         self.S_MAGIC_ROCK = self.rock.get_image('b', 1, 16, 16, (32, 32))
         self.A_PORTAL_OPEN = self.door.get_animation('c', 6, 2, 16, 16, (32, 32))
         self.S_PORTAL_CLOSED = self.door.get_image('b', 6, 16, 16, (32, 32))

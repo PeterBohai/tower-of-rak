@@ -1,5 +1,5 @@
 # Standrad library imports
-import sys
+import numpy
 
 # Third party imports
 import pygame
@@ -11,9 +11,9 @@ from source import constants, globalvars, text, gui, game
 def menu_main_options(ingame_menu_options=False):
 
     # ============== options menu dimensions ============== #
-    # options menu dimensions
-    menu_width = 366
-    menu_height = 221
+    # options menu dimensions (in MAIN MENU)
+    menu_width = 448
+    menu_height = 224
 
     # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
@@ -172,7 +172,38 @@ def menu_main_options(ingame_menu_options=False):
             main_menu_button.draw()
             globalvars.CLOCK.tick(constants.GAME_FPS)
 
-        # update display
+        # background tile positions
+        topL = menu_rect.topleft
+        topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+        botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+        botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+
+
+        # >>>>> update display <<<<<
         globalvars.SURFACE_MAIN.blit(surface_option_menu, menu_rect.topleft, menu_rect)
-        surface_option_menu.fill(constants.COLOR_BROWN)
+
+        # blit the corners
+        surface_option_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
+        surface_option_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
+        surface_option_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
+        surface_option_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
+
+        # blit the top and bottom
+        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
+        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+
+        for w in range(1, num_tiles_width + 1):
+            surface_option_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
+            surface_option_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
+
+        # blit the left and right sides
+        for h in range(1, num_tiles_height + 1):
+            surface_option_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
+            surface_option_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
+
+        # blit the middle pieces
+        for r in range(1, num_tiles_height + 1):
+            for c in range(1, num_tiles_width + 1):
+                surface_option_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
+
         pygame.display.update()

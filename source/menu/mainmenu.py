@@ -1,5 +1,6 @@
 # Standard library imports
 import sys
+import numpy
 
 # Third party imports
 import pygame
@@ -19,8 +20,8 @@ def menu_main():
 
     # ======================= button variables ====================== #
     # button sizes
-    button_width = 150
-    button_height = 30
+    button_width = 160
+    button_height = 32
     button_offset_y = 5/4 * button_height
 
     # button address
@@ -119,8 +120,8 @@ def menu_credits():
 
     # ============== options menu dimensions ============== #
     # options menu dimensions
-    menu_width = 600
-    menu_height = 221
+    menu_width = 608
+    menu_height = 224
 
     # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
@@ -145,7 +146,7 @@ def menu_credits():
     # ================= slider/button variables ================ #
     # buttons
     button_width = 80
-    button_height = 30
+    button_height = 32
 
     menu_button_x = center_x
     menu_button_y = menu_rect.bottom - 30
@@ -161,7 +162,7 @@ def menu_credits():
                                 color_text_hovered=constants.COLOR_WHITE,
                                 color_text_default=constants.COLOR_WHITE)
 
-    # menu loop
+    # ====================== MENU LOOP ===================== #
     menu_close = False
     while not menu_close:
 
@@ -194,7 +195,7 @@ def menu_credits():
         text.draw_text(surface_credits_menu, "DAWNLIKE 16x16 Universal Rogue-like tileset v1.81 by DawnBringer",
                        constants.FONT_CREDITS,
                        (text_x, line2_y),
-                       constants.COLOR_WHITE)
+                       constants.COLOR_BLUE3)
 
         text.draw_text(surface_credits_menu, "SOUND:",
                        constants.FONT_CREDIT_LABELS,
@@ -204,12 +205,42 @@ def menu_credits():
         text.draw_text(surface_credits_menu, "Music by Eric Matyas - www.soundimage.org",
                        constants.FONT_CREDITS,
                        (text_x, line4_y),
-                       constants.COLOR_WHITE)
-
+                       constants.COLOR_BLUE3)
 
         menu_button.draw()
 
-        # update display
+        # background tile positions
+        topL = menu_rect.topleft
+        topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+        botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+        botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+
+        # >>>>> update display <<<<<
         globalvars.SURFACE_MAIN.blit(surface_credits_menu, menu_rect.topleft, menu_rect)
-        surface_credits_menu.fill(constants.COLOR_BROWN)
+
+        # blit the corners
+        surface_credits_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_LIGHT, topL)
+        surface_credits_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_LIGHT, topR)
+        surface_credits_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_LIGHT, botL)
+        surface_credits_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_LIGHT, botR)
+
+        # blit the top and bottom
+        num_tiles_width = int(menu_width / 32) - 2  # number of tiles width-wise ignoring the 2 corners
+        num_tiles_height = int(menu_height / 32) - 2  # number of tiles height-wise ignoring the 2 corners
+
+        for w in range(1, num_tiles_width + 1):
+            surface_credits_menu.blit(globalvars.ASSETS.S_TOP_MENU_LIGHT, tuple(numpy.add(topL, (32*w, 0))))
+            surface_credits_menu.blit(globalvars.ASSETS.S_BOT_MENU_LIGHT, tuple(numpy.add(botL, (32*w, 0))))
+
+        # blit the left and right sides
+        for h in range(1, num_tiles_height + 1):
+            surface_credits_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_LIGHT, tuple(numpy.add(topL, (0, 32 * h))))
+            surface_credits_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_LIGHT, tuple(numpy.add(topR, (0, 32 * h))))
+
+        # blit the middle pieces
+        for r in range(1, num_tiles_height + 1):
+            for c in range(1, num_tiles_width + 1):
+                surface_credits_menu.blit(globalvars.ASSETS.S_MID_MENU_LIGHT, tuple(numpy.add(topL, (32 * c, 32 * r))))
+
+
         pygame.display.update()
