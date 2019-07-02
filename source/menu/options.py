@@ -39,8 +39,10 @@ def menu_main_options(ingame_menu_options=False):
     sfx_slider_y = music_slider_y + 45
 
     # buttons
-    button_width = 50
-    button_height = 25
+    button_width = 64
+    button_height = 32
+    back_button_width = 64
+    button_offset = int(button_height/2)
 
     save_button_x = center_x - button_width
     save_button_y = menu_rect.bottom - 30
@@ -64,40 +66,30 @@ def menu_main_options(ingame_menu_options=False):
 
     # ================== Options menu is in-game =================== #
     if ingame_menu_options:
-        button_width = 80
-        button_height = 25
+        button_width = 96
+        back_button_width = 64
 
-        save_button_x = center_x - button_width
         save_button_text = "Save game"
 
-        mm_button_x = center_x + button_width
+        back_button_x = center_x
+        save_button_x = back_button_x - (button_width + button_offset)
+
+        mm_button_x = back_button_x + (button_width + button_offset)
         mm_button_y = menu_rect.bottom - 30
 
         main_menu_button = gui.GuiButton(surface_option_menu, "Main Menu",
                                          (mm_button_x, mm_button_y),
-                                         (button_width, button_height),
-                                         color_button_hovered=constants.COLOR_BLACK,
-                                         color_button_default=constants.COLOR_GREY,
-                                         color_text_hovered=constants.COLOR_WHITE,
-                                         color_text_default=constants.COLOR_WHITE)
+                                         (button_width, button_height))
 
     # ====================== button section ===================== #
 
     save_button = gui.GuiButton(surface_option_menu, save_button_text,
                                 (save_button_x, save_button_y),
-                                (button_width, button_height),
-                                color_button_hovered=constants.COLOR_BLACK,
-                                color_button_default=constants.COLOR_GREY,
-                                color_text_hovered=constants.COLOR_WHITE,
-                                color_text_default=constants.COLOR_WHITE)
+                                (button_width, button_height))
 
     back_button = gui.GuiButton(surface_option_menu, back_button_text,
                                 (back_button_x, back_button_y),
-                                (button_width, button_height),
-                                color_button_hovered=constants.COLOR_BLACK,
-                                color_button_default=constants.COLOR_GREY,
-                                color_text_hovered=constants.COLOR_WHITE,
-                                color_text_default=constants.COLOR_WHITE)
+                                (back_button_width, button_height))
 
     # menu loop
     menu_close = False

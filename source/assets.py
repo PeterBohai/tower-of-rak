@@ -251,6 +251,14 @@ class ObjAssets:
         self.S_SIDE_R_MENU_BROWN = self.menugui.get_image('e1', 15, 16, 16, (32, 32))[0]
         self.S_MID_MENU_BROWN = self.menugui.get_image('c1', 15, 16, 16, (32, 32))[0]
 
+        self.S_SIDE_L_BUTTON_BLUE = self.menugui.get_image('c1', 1, 16, 16, (32, 32))[0]
+        self.S_SIDE_R_BUTTON_BLUE = self.menugui.get_image('e1', 1, 16, 16, (32, 32))[0]
+        self.S_MID_BUTTON_BLUE = self.menugui.get_image('d1', 1, 16, 16, (32, 32))[0]
+
+        self.S_SIDE_L_BUTTON_BLUE_HOVER = self.menugui.get_image('y', 1, 16, 16, (32, 32))[0]
+        self.S_SIDE_R_BUTTON_BLUE_HOVER = self.menugui.get_image('a1', 1, 16, 16, (32, 32))[0]
+        self.S_MID_BUTTON_BLUE_HOVER = self.menugui.get_image('z', 1, 16, 16, (32, 32))[0]
+
         self.S_MAGIC_ROCK = self.rock.get_image('b', 1, 16, 16, (32, 32))
         self.A_PORTAL_OPEN = self.door.get_animation('c', 6, 2, 16, 16, (32, 32))
         self.S_PORTAL_CLOSED = self.door.get_image('b', 6, 16, 16, (32, 32))

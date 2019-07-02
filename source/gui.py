@@ -1,3 +1,4 @@
+import numpy
 
 # Third party imports
 import pygame
@@ -34,6 +35,7 @@ class GuiButton:
 
         self.button_rect = pygame.Rect((0, 0), self.size)
         self.button_rect.center = self.coords_center
+        self.mouse_hover = False
 
     def update(self, player_input):
 
@@ -54,10 +56,12 @@ class GuiButton:
         if mouse_hovered:
             self.color_button_current = self.color_button_hovered
             self.color_text_current = self.color_text_hovered
+            self.mouse_hover = True
 
         else:
             self.color_button_current = self.color_button_default
             self.color_text_current = self.color_text_default
+            self.mouse_hover = False
 
         if mouse_hovered and mouse_clicked:
             button_clicked = True
@@ -65,10 +69,37 @@ class GuiButton:
         return button_clicked
 
     def draw(self):
-        pygame.draw.rect(self.surface, self.color_button_current, self.button_rect)
+        surface_button = pygame.Surface(self.size)
+        surface_button.fill(self.color_button_current)
+
+        topL = (0, 0)
+        topR = numpy.subtract(self.size, (32, self.size[1]))
+        num_tiles_width = int(self.size[0] / 32) - 2
+
+        if not self.mouse_hover:
+            surface_button.blit(globalvars.ASSETS.S_SIDE_L_BUTTON_BLUE, topL)
+            surface_button.blit(globalvars.ASSETS.S_SIDE_R_BUTTON_BLUE, topR)
+            for w in range(1, num_tiles_width + 1):
+                surface_button.blit(globalvars.ASSETS.S_MID_BUTTON_BLUE, tuple(numpy.add(topL, (32*w, 0))))
+
+        elif self.mouse_hover:
+            surface_button.blit(globalvars.ASSETS.S_SIDE_L_BUTTON_BLUE_HOVER, topL)
+            surface_button.blit(globalvars.ASSETS.S_SIDE_R_BUTTON_BLUE_HOVER, topR)
+            for w in range(1, num_tiles_width + 1):
+                surface_button.blit(globalvars.ASSETS.S_MID_BUTTON_BLUE_HOVER, tuple(numpy.add(topL, (32 * w, 0))))
+
+        self.surface.blit(surface_button, self.button_rect.topleft)
+
+
+
+        # pygame.draw.rect(self.surface, self.color_button_current, self.button_rect)
 
         text.draw_text(self.surface, self.text, constants.FONT_BEST, self.coords_center,
                        self.color_text_current, self.color_button_current, center=True)
+
+
+
+
 
 
 class GuiSlider:

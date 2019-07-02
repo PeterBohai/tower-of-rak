@@ -145,7 +145,7 @@ def menu_credits():
 
     # ================= slider/button variables ================ #
     # buttons
-    button_width = 80
+    button_width = 96
     button_height = 32
 
     menu_button_x = center_x
@@ -156,11 +156,7 @@ def menu_credits():
 
     menu_button = gui.GuiButton(surface_credits_menu, menu_button_text,
                                 (menu_button_x, menu_button_y),
-                                (button_width, button_height),
-                                color_button_hovered=constants.COLOR_BLACK,
-                                color_button_default=constants.COLOR_GREY,
-                                color_text_hovered=constants.COLOR_WHITE,
-                                color_text_default=constants.COLOR_WHITE)
+                                (button_width, button_height))
 
     # ====================== MENU LOOP ===================== #
     menu_close = False
