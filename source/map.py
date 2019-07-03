@@ -125,7 +125,7 @@ def map_create():
 
             list_of_rooms.append(new_room)
 
-    # load in created map
+    # load in created map and assign bitmasking
     assign_tiles(new_map)
 
     # create FOV_MAP
@@ -411,6 +411,15 @@ def map_check_for_wall(incoming_map, coords_x, coords_y):
 
 
 def assign_tiles(incoming_map):
+    """ Assigns bitmasking value to each wall piece.
+
+    Args:
+        incoming_map: map object
+
+    Returns:
+        None
+
+    """
 
     for x in range(len(incoming_map)):
         for y in range(len(incoming_map[0])):
@@ -420,7 +429,6 @@ def assign_tiles(incoming_map):
             if tile_is_wall:
                 assign_num = 0
 
-                # TODO: implement more complicated bitmasking for better wall display
                 # check surrounding walls
                 if map_check_for_wall(incoming_map, x, y-1):
                     assign_num += 1
@@ -430,4 +438,14 @@ def assign_tiles(incoming_map):
                     assign_num += 4
                 if map_check_for_wall(incoming_map, x-1, y):
                     assign_num += 8
+
+                if assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y-1):
+                    assign_num = 22
+                elif assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y-1):
+                    assign_num = 33
+                elif assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y+1):
+                    assign_num = 44
+                elif assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y+1):
+                    assign_num = 55
+
                 incoming_map[x][y].assignment = assign_num

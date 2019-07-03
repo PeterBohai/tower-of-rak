@@ -12,7 +12,7 @@ class StructTile:
     def __init__(self, block_path):
         self.block_path = block_path
         self.explored = False
-        self.assignment = 0
+        self.assignment = 0     # for bitmasking purposes
 
 class StructPreferences:
     def __init__(self):

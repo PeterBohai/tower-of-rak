@@ -76,18 +76,14 @@ class ComPortal:
             center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
 
             # button variables
-            button_width = 80
-            button_height = 30
+            button_width = 96
+            button_height = 32
             quit_button_x = constants.CAMERA_WIDTH / 2
             quit_button_y = constants.CAMERA_HEIGHT * 3 / 4
 
             quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Quit",
                                         (quit_button_x, quit_button_y),
-                                        (button_width, button_height),
-                                        color_button_hovered=constants.COLOR_GREY,
-                                        color_button_default=constants.COLOR_DARK_GREY,
-                                        color_text_hovered=constants.COLOR_WHITE,
-                                        color_text_default=constants.COLOR_WHITE)
+                                        (button_width, button_height))
 
             # make a legacy file
             file_name = "win_{}_{}.txt".format(globalvars.PLAYER.creature.name_instance,
