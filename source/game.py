@@ -13,7 +13,6 @@ from source.menu import pause, inventory, options
 from source.generators import playergen
 
 
-
 # ================================================================= #
 #                         -----  Game  -----                        #
 # ================================================================= #
@@ -173,6 +172,9 @@ def game_handle_keys():
     # get player input
     events_list = pygame.event.get()  # list of all events so far (like keys pressed and mouse clicks)
     pressed_key_list = pygame.key.get_pressed()    # list of booleans for whether a key is pressed or not
+
+    # load in keybindings from preferences
+    keys = globalvars.PREFERENCES.keybindings
 
     # shift pressed
     shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])

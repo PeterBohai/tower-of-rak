@@ -158,6 +158,12 @@ def menu_credits():
                                 (menu_button_x, menu_button_y),
                                 (button_width, button_height))
 
+    # background tile positions
+    topL = menu_rect.topleft
+    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+
     # ====================== MENU LOOP ===================== #
     menu_close = False
     while not menu_close:
@@ -204,12 +210,6 @@ def menu_credits():
                        constants.COLOR_BLUE3)
 
         menu_button.draw()
-
-        # background tile positions
-        topL = menu_rect.topleft
-        topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-        botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-        botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
 
         # >>>>> update display <<<<<
         globalvars.SURFACE_MAIN.blit(surface_credits_menu, menu_rect.topleft, menu_rect)

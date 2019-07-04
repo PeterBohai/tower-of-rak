@@ -1,3 +1,4 @@
+import pygame
 
 class StructTile:
 
@@ -14,8 +15,21 @@ class StructTile:
         self.explored = False
         self.assignment = 0     # for bitmasking purposes
 
+
 class StructPreferences:
     def __init__(self):
         self.sfx_volume_val = 0.5
         self.music_volume_val = 0.15
         self.master_volume_vol = 0.5
+        self.right = "right"
+
+        self.keybindings = {"left": ("←", pygame.K_LEFT),
+                            "right": ("→", pygame.K_RIGHT),
+                            "up": ("↑", pygame.K_UP),
+                            "down": ("↓", pygame.K_DOWN),
+                            "grab": ("G", pygame.K_g),
+                            "inventory": ("I", pygame.K_i),
+                            "next": (">", pygame.K_PERIOD, pygame.K_LSHIFT),
+                            "back": ("Esc", pygame.K_ESCAPE)
+                            }
+

@@ -16,9 +16,9 @@ class GuiButton:
 
     def __init__(self, surface, text, tup_coords_center, tup_size,
                  color_button_hovered=constants.COLOR_BLUE2,
-                 color_button_default=constants.COLOR_BLUE1,
+                 color_button_default=constants.COLOR_BLUE1_LIGHTER,
                  color_text_hovered=constants.COLOR_WHITE,
-                 color_text_default=constants.COLOR_WHITE):
+                 color_text_default=constants.COLOR_BLACK):
 
         self.surface = surface
         self.text = text
@@ -76,13 +76,13 @@ class GuiButton:
         topR = numpy.subtract(self.size, (32, self.size[1]))
         num_tiles_width = int(self.size[0] / 32) - 2
 
-        if not self.mouse_hover:
+        if not self.mouse_hover and self.size != (16, 16):
             surface_button.blit(globalvars.ASSETS.S_SIDE_L_BUTTON_BLUE, topL)
             surface_button.blit(globalvars.ASSETS.S_SIDE_R_BUTTON_BLUE, topR)
             for w in range(1, num_tiles_width + 1):
                 surface_button.blit(globalvars.ASSETS.S_MID_BUTTON_BLUE, tuple(numpy.add(topL, (32*w, 0))))
 
-        elif self.mouse_hover:
+        elif self.mouse_hover and self.size != (16,16):
             surface_button.blit(globalvars.ASSETS.S_SIDE_L_BUTTON_BLUE_HOVER, topL)
             surface_button.blit(globalvars.ASSETS.S_SIDE_R_BUTTON_BLUE_HOVER, topR)
             for w in range(1, num_tiles_width + 1):
@@ -96,9 +96,6 @@ class GuiButton:
 
         text.draw_text(self.surface, self.text, constants.FONT_BEST, self.coords_center,
                        self.color_text_current, self.color_button_current, center=True)
-
-
-
 
 
 
