@@ -28,8 +28,10 @@ class StructPreferences:
                             "up": ("↑", pygame.K_UP),
                             "down": ("↓", pygame.K_DOWN),
                             "grab": ("G", pygame.K_g),
+                            "drop": ("D", pygame.K_d),
                             "inventory": ("I", pygame.K_i),
                             "next": (">", pygame.K_PERIOD, pygame.K_LSHIFT),
-                            "back": ("Esc", pygame.K_ESCAPE)
+                            "back": ("Esc", pygame.K_ESCAPE),
+                            "pause": ("P", pygame.K_p)
                             }
 

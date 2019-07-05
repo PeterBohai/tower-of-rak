@@ -8,7 +8,7 @@ import textwrap
 import pygame
 
 # Local project imports
-from source import constants, globalvars, map, draw, text
+from source import constants, globalvars, map, draw, text, actions
 from source.menu import pause, inventory, options
 from source.generators import playergen
 
@@ -173,7 +173,7 @@ def game_handle_keys():
     events_list = pygame.event.get()  # list of all events so far (like keys pressed and mouse clicks)
     pressed_key_list = pygame.key.get_pressed()    # list of booleans for whether a key is pressed or not
 
-    # load in keybindings from preferences
+    # load in keybindings from preferences (note this is not a copy of the keybindings dict, just a reference/alias)
     keys = globalvars.PREFERENCES.keybindings
 
     # shift pressed
@@ -189,68 +189,113 @@ def game_handle_keys():
         if event.type == pygame.KEYDOWN:
 
             # 'up arrow' key: move player one tile up, hold down to continuing moving automatically
-            if event.key == pygame.K_UP:
-                globalvars.PLAYER.creature.move(0, -1)
-                globalvars.FOV_CALCULATE = True
-                return "player moved"
+            if event.key == keys["up"][1]:
+                if len(keys["up"]) == 2:
+                    actions.move_one_tile("up")
+                    return "player moved"
+
+                elif len(keys["up"]) == 3 and \
+                        (keys["up"][2] == pygame.K_LSHIFT or keys["up"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.move_one_tile("up")
+                        return "player moved"
 
             # 'down arrow' key: move player one tile down, hold down to continuing moving automatically
-            if event.key == pygame.K_DOWN:
-                globalvars.PLAYER.creature.move(0, 1)
-                globalvars.FOV_CALCULATE = True
-                return "player moved"
+            if event.key == keys["down"][1]:
+                if len(keys["down"]) == 2:
+                    actions.move_one_tile("down")
+                    return "player moved"
+
+                elif len(keys["down"]) == 3 and \
+                        (keys["down"][2] == pygame.K_LSHIFT or keys["down"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.move_one_tile("down")
+                        return "player moved"
 
             # 'left arrow' key: move player one tile to the left, hold down to continuing moving automatically
-            if event.key == pygame.K_LEFT:
-                globalvars.PLAYER.creature.move(-1, 0)
-                globalvars.FOV_CALCULATE = True
-                return "player moved"
+            if event.key == keys["left"][1]:
+                if len(keys["left"]) == 2:
+                    actions.move_one_tile("left")
+                    return "player moved"
+
+                elif len(keys["left"]) == 3 and \
+                        (keys["left"][2] == pygame.K_LSHIFT or keys["left"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.move_one_tile("left")
+                        return "player moved"
 
             # 'right arrow' key: move player one tile to the right, hold down to continuing moving automatically
-            if event.key == pygame.K_RIGHT:
-                globalvars.PLAYER.creature.move(1, 0)
-                globalvars.FOV_CALCULATE = True
-                return "player moved"
+            if event.key == keys["right"][1]:
+                if len(keys["right"]) == 2:
+                    actions.move_one_tile("right")
+                    return "player moved"
+
+                elif len(keys["right"]) == 3 and \
+                        (keys["right"][2] == pygame.K_LSHIFT or keys["right"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.move_one_tile("right")
+                        return "player moved"
 
             # 'g' key: pickup item at the player's current position
-            if event.key == pygame.K_g:
-                objects_at_player = map.map_object_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
-                for obj in objects_at_player:
-                    if obj.item:
-                        obj.item.pick_up(globalvars.PLAYER)
+            if event.key == keys["grab"][1]:
+                if len(keys["grab"]) == 2:
+                    actions.grab_item()
+
+                elif len(keys["grab"]) == 3 and \
+                        (keys["grab"][2] == pygame.K_LSHIFT or keys["grab"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.grab_item()
 
             # 'd' key: drop object from inventory
-            if event.key == pygame.K_d:
-                if len(globalvars.PLAYER.container.inventory) > 0:
-                    globalvars.PLAYER.container.inventory[-1].item.drop(globalvars.PLAYER.x, globalvars.PLAYER.y)
+            if event.key == keys["drop"][1]:
+                if len(keys["drop"]) == 2:
+                    actions.drop_item()
+
+                elif len(keys["drop"]) == 3 and \
+                        (keys["drop"][2] == pygame.K_LSHIFT or keys["drop"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.drop_item()
 
             # 'p' key: pause the game
-            if event.key == pygame.K_p:
-                pause.menu_pause()
+            if event.key == keys["pause"][1]:
+                if len(keys["pause"]) == 2:
+                    pause.menu_pause()
+
+                elif len(keys["pause"]) == 3 and \
+                        (keys["pause"][2] == pygame.K_LSHIFT or keys["pause"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        pause.menu_pause()
 
             # 'i' key: open inventory menu
-            if event.key == pygame.K_i:
-                inventory.menu_inventory()
+            if event.key == keys["inventory"][1]:
+                if len(keys["inventory"]) == 2:
+                    inventory.menu_inventory()
+
+                elif len(keys["inventory"]) == 3 and \
+                        (keys["inventory"][2] == pygame.K_LSHIFT or keys["inventory"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        inventory.menu_inventory()
 
             # '>' key: use stairs or portal
-            if shift_pressed and event.key == pygame.K_PERIOD:
+            if event.key == keys["next"][1]:
+                if len(keys["next"]) == 2:
+                    actions.use_stairs()
 
-                # check if the player is standing on top of a set of stairs
-                list_of_obj = map.map_object_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
+                elif len(keys["next"]) == 3 and \
+                        (keys["next"][2] == pygame.K_LSHIFT or keys["next"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        actions.use_stairs()
 
-                for obj in list_of_obj:
+            # access in-game options menu or exit from a popup/menu
+            if event.key == keys["back"][1]:
+                if len(keys["back"]) == 2:
+                    options.menu_main_options(ingame_menu_options=True)
 
-                    # check if the object contains a stairs component
-                    if obj.stairs:
-                        obj.stairs.use()
-                        FLOOR_CHANGED = True
-                        return "Just Changed Floors"
+                elif len(keys["back"]) == 3 and \
+                        (keys["back"][2] == pygame.K_LSHIFT or keys["back"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        options.menu_main_options(ingame_menu_options=True)
 
-                    if obj.portal:
-                        obj.portal.use()
-
-            if event.key == pygame.K_ESCAPE:
-                options.menu_main_options(ingame_menu_options=True)
 
     return "no-action"
 
