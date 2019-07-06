@@ -12,6 +12,7 @@ from source import constants, globalvars, text
 #                          --- SECTION ---                          #
 # ================================================================= #
 
+
 class GuiButton:
 
     def __init__(self, surface, text, tup_coords_center, tup_size,

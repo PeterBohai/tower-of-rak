@@ -1,5 +1,5 @@
 # Standard library imports
-import numpy
+import numpy, copy
 
 # Third party imports
 import pygame
@@ -212,7 +212,6 @@ def menu_options_audio():
     button_width = 64
     button_height = 32
     back_button_width = 64
-    button_offset = int(button_height/2)
 
     save_button_x = center_x - button_width
     save_button_y = menu_rect.bottom - 30
@@ -279,7 +278,6 @@ def menu_options_audio():
 
         if save_button.update(player_events):
             game.preferences_save()
-            menu_close = True
 
         if back_button.update(player_events):
             menu_close = True
@@ -366,18 +364,21 @@ def menu_options_controls():
     # buttons
     button_width = 64
     button_height = 32
-    back_button_width = 64
-    button_offset = int(button_height/2)
     small_button_width = 50
     small_button_height = 32
+    button_x_offset = button_width + 32
 
-    save_button_x = center_x - button_width
+    save_button_x = center_x
     save_button_y = menu_rect.bottom - 30
     save_button_text = "SAVE"
 
-    back_button_x = center_x + button_width
+    back_button_x = center_x + button_x_offset
     back_button_y = menu_rect.bottom - 30
     back_button_text = "BACK"
+
+    reset_button_x = center_x - button_x_offset
+    reset_button_y = menu_rect.bottom - 30
+    reset_button_text = "RESET"
 
     # ====================== button section ===================== #
 
@@ -387,9 +388,11 @@ def menu_options_controls():
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
-                                (back_button_width, button_height))
+                                (button_width, button_height))
 
-
+    reset_button = gui.GuiButton(surface_menu, reset_button_text,
+                                 (reset_button_x, reset_button_y),
+                                 (button_width, button_height))
 
     # menu background tile positions
     topL = menu_rect.topleft
@@ -407,11 +410,11 @@ def menu_options_controls():
     keys_button_x = center_x
     keys_button_y = list(map(lambda x: x + int(small_button_height/2) - 8, line_y[::]))
 
-    esc_button_text = "Esc"
-
+    previous_key_bindings = copy.deepcopy(globalvars.PREFERENCES.keybindings)
 
     # ====================== Menu LOOP ===================== #
     menu_close = False
+    saved = False
     while not menu_close:
         left_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["left"][0],
                                     (keys_button_x, keys_button_y[0]),
@@ -451,41 +454,60 @@ def menu_options_controls():
         for event in events_list:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+
+                    # will not save controls if exit without selecting "SAVE"
+                    if not saved:
+                        globalvars.PREFERENCES.keybindings = previous_key_bindings
                     menu_close = True
 
         if save_button.update(player_events):
+            saved = True
             game.preferences_save()
-            menu_close = True
 
         if back_button.update(player_events):
+            # will not save controls if exit without selecting "SAVE"
+            if not saved:
+                globalvars.PREFERENCES.keybindings = previous_key_bindings
             menu_close = True
+
+        if reset_button.update(player_events):
+            globalvars.PREFERENCES.keybindings = copy.deepcopy(globalvars.PREFERENCES.default_keybindings)
 
         if left_button.update(player_events):
             menu_change_controls("left")
+            saved = False
 
         if right_button.update(player_events):
             menu_change_controls("right")
+            saved = False
 
         if up_button.update(player_events):
             menu_change_controls("up")
+            saved = False
 
         if down_button.update(player_events):
             menu_change_controls("down")
+            saved = False
 
         if grab_button.update(player_events):
             menu_change_controls("grab")
+            saved = False
 
         if drop_button.update(player_events):
             menu_change_controls("drop")
+            saved = False
 
         if inventory_button.update(player_events):
             menu_change_controls("inventory")
+            saved = False
 
         if next_button.update(player_events):
             menu_change_controls("next")
+            saved = False
 
         if esc_button.update(player_events):
             menu_change_controls("back")
+            saved = False
 
 
         # draw functions
@@ -521,6 +543,7 @@ def menu_options_controls():
 
         save_button.draw()
         back_button.draw()
+        reset_button.draw()
         left_button.draw()
         right_button.draw()
         up_button.draw()
@@ -565,7 +588,7 @@ def menu_change_controls(action):
 
     # ============== options menu dimensions ============== #
     # options menu dimensions (in MAIN MENU)
-    menu_width = 320
+    menu_width = 352
     menu_height = 128
 
     # window coordinates
@@ -582,73 +605,113 @@ def menu_change_controls(action):
     message_y = center_y - text.helper_text_height(constants.FONT_BEST) + 5
     text_y_offset = text.helper_text_height(constants.FONT_BEST) + 10
 
-    # menu loop
+    # =============== Menu LOOP =============== #
     menu_close = False
+    is_duplicate = False
+    is_invalid = False
+
     while not menu_close:
 
         # get player input
-        mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
         pressed_key_list = pygame.key.get_pressed()
         shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])
 
-        player_events = (events_list, mouse_pos)
+        if is_duplicate:
+            text_1 = "Already in use, please choose another."
+        elif is_invalid:
+            text_1 = "Please choose a valid character."
+        else:
+            text_1 = "Press any character to change."
+
+        text_2 = "Or press 'Esc' key to cancel."
+
+        non_alpha_num = (".", ",", "/", ";", "'", "[", "]", "\\", "-", "=", "`")
+        arrow_keys = {"up": "↑",
+                      "down": "↓",
+                      "left": "←",
+                      "right": "→"}
+
+        shift_chars = {pygame.K_PERIOD: ">",
+                       pygame.K_COMMA: "<",
+                       pygame.K_SLASH: "?",
+                       pygame.K_SEMICOLON: ":",
+                       pygame.K_QUOTE: "\"",
+                       pygame.K_LEFTBRACKET: "{",
+                       pygame.K_RIGHTBRACKET: "}",
+                       pygame.K_BACKSLASH: "|",
+                       pygame.K_MINUS: "_",
+                       pygame.K_EQUALS: "+",
+                       pygame.K_BACKQUOTE: "~",
+                       pygame.K_1: "!",
+                       pygame.K_2: "@",
+                       pygame.K_3: "#",
+                       pygame.K_4: "$",
+                       pygame.K_5: "%",
+                       pygame.K_6: "^",
+                       pygame.K_7: "&",
+                       pygame.K_8: "*",
+                       pygame.K_9: "(",
+                       pygame.K_0: ")"}
 
         # process player input
         for event in events_list:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    menu_close = True
+                try:
+                    if event.key == pygame.K_ESCAPE:
+                        menu_close = True
 
-                elif not shift_pressed:
-                    non_alpha_num = {"period": ".",
-                                     "comma": ",",
-                                     "forward slash": "/",
-                                     "semicolon": ";",
-                                     "quote": "'",
-                                     "left bracket": "[",
-                                     "right bracket": "]",
-                                     "backslash": "\\",
-                                     "minus sign": "-",
-                                     "equals sign": "="}
+                    elif not shift_pressed:
 
-                    if pygame.key.name(event.key).isalnum():
-                        key_char = pygame.key.name(event.key).upper()
-                    else:
-                        key_char = non_alpha_num[pygame.key.name(event.key)]
+                        if len(pygame.key.name(event.key)) > 1:
+                            key_char = arrow_keys[pygame.key.name(event.key)]
+                        else:
+                            key_char = pygame.key.name(event.key).upper()
 
-                    globalvars.PREFERENCES.keybindings[action] = (key_char, event.key)
-                    menu_close = True
+                        is_invalid = False
+                        is_duplicate = False
 
-                elif shift_pressed and event.key == pygame.K_PERIOD:
-                    globalvars.PREFERENCES.keybindings[action] = (">", event.key, pygame.K_LSHIFT)
-                    menu_close = True
+                        # Check for duplicate keys
+                        for tup in globalvars.PREFERENCES.keybindings.values():
+                            if tup[0] == key_char:
+                                key_char = globalvars.PREFERENCES.keybindings[action][0]
+                                is_duplicate = True
+                                break
+                        if is_duplicate:
+                            break
 
-                elif shift_pressed and event.key == pygame.K_COMMA:
-                    globalvars.PREFERENCES.keybindings[action] = ("<", event.key, pygame.K_LSHIFT)
-                    menu_close = True
+                        globalvars.PREFERENCES.keybindings[action] = (key_char, event.key)
+                        menu_close = True
 
-                elif shift_pressed and event.key == pygame.K_6:
-                    globalvars.PREFERENCES.keybindings[action] = ("^", event.key, pygame.K_LSHIFT)
-                    menu_close = True
+                    elif event.key in shift_chars.keys() and shift_pressed:
+                        key_char = shift_chars[event.key]
 
-                elif shift_pressed and event.key == pygame.K_SLASH:
-                    globalvars.PREFERENCES.keybindings[action] = ("?", event.key, pygame.K_LSHIFT)
-                    menu_close = True
+                        is_invalid = False
+                        is_duplicate = False
 
-                else:
-                    key_char = globalvars.PREFERENCES.keybindings[action][0]
-                    globalvars.PREFERENCES.keybindings[action] = (key_char, event.key, pygame.K_LSHIFT)
-                    menu_close = True
+                        # Check for duplicate keys
+                        for tup in globalvars.PREFERENCES.keybindings.values():
+                            if tup[0] == key_char:
+                                key_char = globalvars.PREFERENCES.keybindings[action][0]
+                                is_duplicate = True
+                                break
+                        if is_duplicate:
+                            break
 
+                        globalvars.PREFERENCES.keybindings[action] = (key_char, event.key, pygame.K_LSHIFT)
+                        menu_close = True
+
+                except:
+                    is_invalid = True
+                    break
 
 
         # draw functions
-        text.draw_text(surface_menu, "Press any character to change.", constants.FONT_BEST,
-                       (message_x, message_y ),
+        text.draw_text(surface_menu, text_1, constants.FONT_BEST,
+                       (message_x, message_y),
                        constants.COLOR_BLACK, center=True)
 
-        text.draw_text(surface_menu, "Or press 'Esc' key to cancel.", constants.FONT_BEST,
+        text.draw_text(surface_menu, text_2, constants.FONT_BEST,
                        (message_x, message_y + text_y_offset),
                        constants.COLOR_BLACK, center=True)
 
@@ -687,5 +750,9 @@ def menu_change_controls(action):
                 surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
 
         pygame.display.update()
+
+
+
+
 
 
