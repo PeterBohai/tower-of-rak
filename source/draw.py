@@ -185,3 +185,18 @@ def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=None):
                   constants.COLOR_BLACK, center=True)
 
     display_surface.blit(new_surface, (map_x, map_y))
+
+
+def fade(width, height, redraw_func, redraw_args):
+
+    fade_surface = pygame.Surface((width, height))
+    fade_surface.fill((0, 0, 0))
+    for alpha in range(0, 303, 3):
+        fade_surface.set_alpha(alpha)
+
+        # redraw background while fading
+        redraw_func(redraw_args)
+
+        globalvars.SURFACE_MAIN.blit(fade_surface, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(0)

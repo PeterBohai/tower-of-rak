@@ -119,6 +119,10 @@ def game_main_loop():
     display_time = 0
     text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - 40)
 
+    # play in-game music
+    pygame.mixer.music.load(globalvars.ASSETS.ingame_music)
+    pygame.mixer.music.play(-1)
+
     while not globalvars.GAME_QUIT:
 
         draw.draw_game()
@@ -387,7 +391,6 @@ def game_start():
         game_load()
 
     except:
-        print("No saved game data or error loading save data")
         game_new()
 
     game_main_loop()

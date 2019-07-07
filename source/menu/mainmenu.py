@@ -6,7 +6,7 @@ import numpy
 import pygame
 
 # Local project imports
-from source import constants, globalvars, text, startup, gui, game
+from source import constants, globalvars, text, startup, gui, game, draw
 from source.menu import options
 
 
@@ -51,7 +51,8 @@ def menu_main():
     quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "QUIT",
                                 (center_x, quit_button_y),
                                 (button_width, button_height))
-    print(new_game_button_y - title_y)
+
+    menu_buttons_tup = (new_game_button, cont_button, options_button, credits_button, quit_button, (center_x, title_y))
 
     # play background music
     pygame.mixer.music.load(globalvars.ASSETS.main_menu_music)
@@ -73,14 +74,16 @@ def menu_main():
         # ================ button interaction ================ #
         # start new game if clicked
         if new_game_button.update(player_events):
-            pygame.mixer.music.fadeout(3000)
+            pygame.mixer.music.fadeout(1500)
+            draw.fade(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
             game.game_new()
             game.game_main_loop()
             menu_main()
 
         # load previous game if clicked
         if cont_button.update(player_events):
-            pygame.mixer.music.fadeout(3000)
+            pygame.mixer.music.fadeout(1500)
+            draw.fade(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
             game.game_start()
             menu_main()
 
@@ -99,19 +102,7 @@ def menu_main():
 
         # ================== draw elements ================== #
         # draw menu background and title
-        globalvars.SURFACE_MAIN.blit(globalvars.ASSETS.S_MAIN_MENU, (0, 0))
-        text.draw_text(globalvars.SURFACE_MAIN, "Tower of Rak",
-                       constants.FONT_GAME_TITLE,
-                       (center_x, title_y),
-                       constants.COLOR_RED,
-                       center=True)
-
-        # draw buttons
-        new_game_button.draw()
-        cont_button.draw()
-        options_button.draw()
-        quit_button.draw()
-        credits_button.draw()
+        draw_main_menu(menu_buttons_tup)
 
         pygame.display.update()
 
@@ -240,3 +231,21 @@ def menu_credits():
 
 
         pygame.display.update()
+
+
+def draw_main_menu(button_tup):
+
+    # draw menu background and title (last element of button_tup hold title position)
+    globalvars.SURFACE_MAIN.blit(globalvars.ASSETS.S_MAIN_MENU, (0, 0))
+    text.draw_text(globalvars.SURFACE_MAIN, "Tower of Rak",
+                   constants.FONT_GAME_TITLE,
+                   button_tup[-1],
+                   constants.COLOR_RED,
+                   center=True)
+
+    # draw buttons
+    button_tup[0].draw()
+    button_tup[1].draw()
+    button_tup[2].draw()
+    button_tup[3].draw()
+    button_tup[4].draw()

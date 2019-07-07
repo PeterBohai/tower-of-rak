@@ -355,6 +355,7 @@ class ObjAssets:
         #                             ||| Music |||
 
         self.main_menu_music = "data/audio/music/RPG-Blues_Looping.ogg"
+        self.ingame_music = "data/audio/music/Bog-Creatures-On-the-Move_Looping.ogg"
 
         #                          ||| Sound Effects |||
 
