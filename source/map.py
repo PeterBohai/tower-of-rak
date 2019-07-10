@@ -207,6 +207,7 @@ def map_place_items_creatures(room_list):
         itemgen.gen_item((item_x, item_y))
 
 
+
 def map_create_tunnels(map_array, tup_center1, tup_center2):
     """Creates (one tile-width) a horizontal and a vertical tunnel connecting one room to another.
 

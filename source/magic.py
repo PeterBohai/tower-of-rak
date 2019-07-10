@@ -36,7 +36,8 @@ def cast_lightening(caster, tup_dmg_range):
     # prompt player for a target tile
     selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location,
                                                         max_range=max_r,
-                                                        wall_penetration=False)
+                                                        wall_penetration=False,
+                                                        base_color=constants.COLOR_YELLOW)
 
     # continue with casting of spell only if caster did not "cancel" the spell (by escaping from tileselect.menu_tile_select)
     if selected_tile_address:
@@ -91,7 +92,9 @@ def cast_fireball(caster, tup_dmg_range_radius):
 def cast_confusion(caster, effect_length):
 
     # prompt player for a target tile
-    selected_tile_address = tileselect.menu_tile_select(wall_penetration=False)
+    selected_tile_address = tileselect.menu_tile_select(wall_penetration=False,
+                                                        single_tile=True,
+                                                        target_color=constants.COLOR_GREEN)
 
     # get target
     if selected_tile_address:

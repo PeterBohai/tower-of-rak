@@ -134,15 +134,16 @@ def draw_debug():
 
     """
 
-    text.draw_text(globalvars.SURFACE_MAIN, "fps: " + str(int(globalvars.CLOCK.get_fps())), constants.FONT_BEST, (0, 0),
-              constants.COLOR_WHITE, constants.COLOR_BLACK)
+    text.draw_text(globalvars.SURFACE_MAIN, "fps: " + str(int(globalvars.CLOCK.get_fps())),
+                   constants.FONT_BEST, (0, 0), constants.COLOR_WHITE, constants.COLOR_BLACK)
 
 
 def draw_messages():
     """Draws the message console to the game screen window.
 
-    Displays a max number of messages from the game's list of messages stored in globalvars.GAME.message_history in sequence to
-    the lower left corner of the screen. The order of messages starts at the bottom with the most recent message.
+    Displays a max number of messages from the game's list of messages stored in globalvars.GAME.message_history
+    in sequence to the lower left corner of the screen. The order of messages starts at the bottom with the most
+    recent message.
 
     Returns:
         None
@@ -159,10 +160,11 @@ def draw_messages():
 
     for i, (message, color) in enumerate(globalvars.GAME.message_history):
 
-        text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST, (0, start_y + (i * text_height)), color, constants.COLOR_BLACK)
+        text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST,
+                       (0, start_y + (i * text_height)), color, constants.COLOR_BLACK)
 
 
-def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=None):
+def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):
 
     x, y = tile_coords
 
@@ -173,18 +175,25 @@ def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=None):
     # Create a rectangular image/Surface object that's the size of one tile (cell)
     new_surface = pygame.Surface((constants.CELL_WIDTH, constants.CELL_HEIGHT))
 
+
     # fill the Surface with a solid color
     new_surface.fill(color)
 
     # Draw pixels of this Surface slightly transparent according to value (0 being transparent and 255 being opaque)
     new_surface.set_alpha(alpha)
-
     if mark:
-        text.draw_text(new_surface, mark, constants.FONT_TARGET_X,
-                  (constants.CELL_WIDTH/2, constants.CELL_HEIGHT/2),
-                  constants.COLOR_BLACK, center=True)
+        display_surface.blit(new_surface, (map_x, map_y))
+        display_surface.blit(globalvars.ASSETS.S_TARGET_MARK, (map_x, map_y))
+    else:
+        display_surface.blit(new_surface, (map_x, map_y))
 
-    display_surface.blit(new_surface, (map_x, map_y))
+
+
+
+
+
+
+
 
 
 def fade(width, height, redraw_func, redraw_args):

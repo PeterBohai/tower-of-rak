@@ -273,6 +273,9 @@ class ObjAssets:
         self.A_PORTAL_OPEN = self.door.get_animation('c', 6, 2, 16, 16, (32, 32))
         self.S_PORTAL_CLOSED = self.door.get_image('b', 6, 16, 16, (32, 32))
 
+        self.S_TARGET_MARK = self.menugui.get_image('c1', 2, 16, 16, (32, 32))[0]
+
+
         # ---> GUI
         self.slider_button_size = (26, 20)
         self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")

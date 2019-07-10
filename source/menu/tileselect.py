@@ -10,7 +10,10 @@ def menu_tile_select(coords_origin=None,
                      max_range=None,
                      radius=None,
                      wall_penetration=True,
-                     creature_penetration=True):
+                     creature_penetration=True,
+                     base_color=constants.COLOR_WHITE,
+                     target_color=constants.COLOR_RED,
+                     single_tile=False):
     """Enables the player to select a tile on the map.
 
     This function will produce a rectangular indication when the mouse is hovered over a tile. When the player
@@ -115,39 +118,42 @@ def menu_tile_select(coords_origin=None,
                 if target_creature:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED, alpha=200, mark="X")
+                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, mark=True)
 
                     else:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED, alpha=150)
+                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color)
 
-                # highlight anything else (walls, floor, items) in pale yellow
+                # highlight anything else (walls, floor, items) in orange
                 else:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=200, mark="X")
+                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y),
+                                            constants.COLOR_ORANGE, alpha=200, mark=True)
                     else:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=100)
+                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=125)
 
         # Draw rectangle at mouse position over game visuals
+
         for (tile_x, tile_y) in list_of_tiles:
 
             # mark target with an "X"
             if (tile_x, tile_y) == list_of_tiles[-1] and not radius:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=200, mark="X")
+                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
             target_creature = map.map_check_for_creatures(tile_x, tile_y)
 
             # highlight tile in red if tile contains a monster
-            if target_creature and target_creature is not globalvars.PLAYER:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_RED)
+            if target_creature:
+                if target_creature is not globalvars.PLAYER:
+                    draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, alpha=100, mark=True)
 
-            # no highlight of tile if tile is PLAYER (setting transparency to max)
-            elif target_creature is globalvars.PLAYER:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=0)
+                # no highlight of tile if tile is PLAYER (setting transparency to max)
+                elif target_creature and target_creature is globalvars.PLAYER and single_tile:
+                    draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, mark=True)
 
             # highlight anything else (walls, floor, items) in white
             else:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_WHITE, alpha=150)
+                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
         # next half of draw_game()
         globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)
