@@ -141,6 +141,9 @@ class ComCreature:
             if self.death_function is not None:
                 self.death_function(self.owner)
 
+    def get_health_percentage(self):
+        return self.current_hp / self.maxHp
+
     def heal(self, amount):
         """Applies health to creature's current_hp.
 

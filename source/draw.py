@@ -9,6 +9,7 @@ import tcod
 from source import constants
 from source import globalvars
 from source import text
+from source import hud
 
 # ================================================================= #
 #                        -----  Draw  -----                         #
@@ -50,6 +51,9 @@ def draw_game():
 
     # Draw fps message
     draw_debug()
+
+    # HUD draw functions
+    hud.draw_player_health(globalvars.SURFACE_MAIN, (10, 10), globalvars.PLAYER.creature.get_health_percentage())
 
     # Draw all player interactive messages
     draw_messages()
@@ -134,8 +138,12 @@ def draw_debug():
 
     """
 
-    text.draw_text(globalvars.SURFACE_MAIN, "fps: " + str(int(globalvars.CLOCK.get_fps())),
-                   constants.FONT_BEST, (0, 0), constants.COLOR_WHITE, constants.COLOR_BLACK)
+    fps_text = "fps: " + str(int(globalvars.CLOCK.get_fps()))
+    pos_x = constants.CAMERA_WIDTH - text.helper_text_width(constants.FONT_BEST, fps_text) - 5
+    pos_y = 0
+
+    text.draw_text(globalvars.SURFACE_MAIN, fps_text,
+                   constants.FONT_BEST, (pos_x, pos_y), constants.COLOR_WHITE, constants.COLOR_BLACK)
 
 
 def draw_messages():
@@ -186,14 +194,6 @@ def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):
         display_surface.blit(globalvars.ASSETS.S_TARGET_MARK, (map_x, map_y))
     else:
         display_surface.blit(new_surface, (map_x, map_y))
-
-
-
-
-
-
-
-
 
 
 def fade(width, height, redraw_func, redraw_args):
