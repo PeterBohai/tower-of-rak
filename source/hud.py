@@ -10,8 +10,8 @@ def draw_player_health(surface, tup_coords, percentage):
 
     pos_x, pos_y = tup_coords
 
-    bar_length = 100
-    BAR_HEIGHT = 20
+    BAR_LENGTH = 200
+    BAR_HEIGHT = 24
 
     if percentage > 0.6:
         color = constants.COLOR_HP_GREEN
@@ -20,16 +20,16 @@ def draw_player_health(surface, tup_coords, percentage):
     else:
         color = constants.COLOR_HP_RED
 
-    healthy_width = percentage * bar_length
+    healthy_width = percentage * BAR_LENGTH
     # healthy_rect = pygame.Rect(0, 0, healthy_width, BAR_HEIGHT)
 
     healthy_surface = pygame.Surface((healthy_width, BAR_HEIGHT))
     healthy_surface.fill(color)
 
-    back_surface = pygame.Surface((bar_length, BAR_HEIGHT))
+    back_surface = pygame.Surface((BAR_LENGTH, BAR_HEIGHT))
     back_surface.fill(constants.COLOR_DARK_GREY)
 
-    outline_rect = pygame.Rect(pos_x, pos_y, bar_length, BAR_HEIGHT)
+    outline_rect = pygame.Rect(pos_x, pos_y, BAR_LENGTH, BAR_HEIGHT)
 
 
     back_surface.blit(healthy_surface, (0,0))
@@ -37,7 +37,7 @@ def draw_player_health(surface, tup_coords, percentage):
     surface.blit(back_surface, tup_coords)
     pygame.draw.rect(surface, constants.COLOR_WHITE, outline_rect, 2)
     health_text = "hp:  {}/{}".format(globalvars.PLAYER.creature.current_hp, globalvars.PLAYER.creature.maxHp)
-    text_coords = (pos_x + int(bar_length/2), pos_y + int(BAR_HEIGHT/2))
+    text_coords = (pos_x + int(BAR_LENGTH/2), pos_y + int(BAR_HEIGHT/2))
     text.draw_text(surface, health_text, constants.FONT_BEST, text_coords, constants.COLOR_WHITE, center=True)
 
 

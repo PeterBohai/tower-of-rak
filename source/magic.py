@@ -6,7 +6,7 @@ import pygame
 import tcod
 
 # Local project imports
-from source import constants, map, game
+from source import constants, map, game, globalvars
 from source.menu import tileselect
 from source.components import ai
 
@@ -39,13 +39,16 @@ def cast_lightening(caster, tup_dmg_range):
                                                         wall_penetration=False,
                                                         base_color=constants.COLOR_YELLOW)
 
+    damaged_something = False
+
     # continue with casting of spell only if caster did not "cancel" the spell (by escaping from tileselect.menu_tile_select)
     if selected_tile_address:
-        game.game_message("{} casts lightening".format(caster.creature.name_instance),
-                     constants.COLOR_WHITE)
 
         # convert tile into a list of coords between a and b
         list_of_tiles_affected = map.map_find_line(caster_location, selected_tile_address)
+
+        game.game_message("{} cast lightening".format(caster.creature.name_instance),
+                          constants.COLOR_WHITE)
 
         # cycle through list and damage everything in that list
         for i, (x, y) in enumerate(list_of_tiles_affected):
@@ -53,6 +56,16 @@ def cast_lightening(caster, tup_dmg_range):
 
             if target_creature and i != 0:
                 target_creature.creature.take_damage(damage)
+                damaged_something = True
+
+            if target_creature and len(list_of_tiles_affected) == 1:
+                game.game_message("Aim away from yourself please.".format(caster.creature.name_instance),
+                                  constants.COLOR_WHITE)
+                return "unused"
+
+        if not damaged_something:
+            game.game_message("Nothing was harmed, what a waste.".format(caster.creature.name_instance),
+                              constants.COLOR_WHITE)
 
     else:
         return "unused"

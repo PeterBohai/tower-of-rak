@@ -30,6 +30,7 @@ def gen_item(tup_coords):
     elif choice_num == 5:
         new_item = gen_armour_shield(tup_coords)
 
+    new_item = gen_scroll_lightening(tup_coords)
     globalvars.GAME.current_objects.insert(0, new_item)
 
 
