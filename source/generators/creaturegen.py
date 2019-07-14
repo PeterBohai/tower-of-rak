@@ -35,22 +35,22 @@ def gen_snake_boa(tup_coords):
     x, y = tup_coords
 
     base_attack = tcod.random_get_int(0, 1, 2)
-    max_health = tcod.random_get_int(0, 7, 10)
+    max_health = tcod.random_get_int(0, 12, 14)
     creature_name = tcod.namegen_generate("Fantasy male")
 
     creature_com = creature.ComCreature(creature_name,
-                               base_atk=base_attack,
-                               max_hp=max_health,
-                               death_function=death.death_snake_monster)  # base attack is 2
+                                        base_atk=base_attack,
+                                        max_hp=max_health,
+                                        death_function=death.death_snake_monster)  # base attack is 2
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
 
     snake_boa_obj = actor.ObjActor(x, y, "Giant Boa",
-                             "A_GIANT_BOA",
-                             animation_speed=1,
-                             creature=creature_com,
-                             ai=ai_com,
-                             item=item_com)
+                                   "A_GIANT_BOA",
+                                   animation_speed=1,
+                                   creature=creature_com,
+                                   ai=ai_com,
+                                   item=item_com)
     return snake_boa_obj
 
 
@@ -62,18 +62,18 @@ def gen_snake_cobra(tup_coords):
     creature_name = tcod.namegen_generate("Fantasy female")
 
     creature_com = creature.ComCreature(creature_name,
-                               base_atk=base_attack,
-                               max_hp=max_health,
-                               death_function=death.death_snake_monster)    # default base atk is 2
+                                        base_atk=base_attack,
+                                        max_hp=max_health,
+                                        death_function=death.death_snake_monster)    # default base atk is 2
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
 
     snake_cobra_obj = actor.ObjActor(x, y, "Dark Cobra",
-                               "A_COBRA",
-                               animation_speed=1,
-                               creature=creature_com,
-                               ai=ai_com,
-                               item=item_com)
+                                     "A_COBRA",
+                                     animation_speed=1,
+                                     creature=creature_com,
+                                     ai=ai_com,
+                                     item=item_com)
     return snake_cobra_obj
 
 
@@ -85,17 +85,17 @@ def gen_healer_slime(tup_coords):
     creature_name = tcod.namegen_generate("Fantasy male")
 
     creature_com = creature.ComCreature(creature_name,
-                               base_atk=base_attack,
-                               max_hp=max_health,
-                               death_function=death.death_healer_monster)
+                                        base_atk=base_attack,
+                                        max_hp=max_health,
+                                        death_function=death.death_healer_monster)
 
     item_com = itemcom.ComItem(use_function=magic.cast_heal, value=2)
     ai_com = ai.AiFlee()
 
     healer_zom_obj = actor.ObjActor(x, y, "Healer Slime",
-                              "A_HEALER_SLIME",
-                              animation_speed=1,
-                              creature=creature_com,
-                              ai=ai_com,
-                              item=item_com)
+                                    "A_HEALER_SLIME",
+                                    animation_speed=1,
+                                    creature=creature_com,
+                                    ai=ai_com,
+                                    item=item_com)
     return healer_zom_obj

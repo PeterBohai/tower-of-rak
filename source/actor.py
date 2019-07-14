@@ -146,7 +146,12 @@ class ObjActor:
                 self.sprite_image = 0
 
             globalvars.SURFACE_MAP.blit(self.animation[self.sprite_image],
-                              (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+                                        (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+
+            # draw little health bar ui on top of visible creatures (that have been hit)
+            if self.creature and self.name_object != "PLAYER":
+                self.creature.draw_health()
+
 
     def distance_to(self, other):
         """Calculates the relative distance of this actor object to another.

@@ -10,6 +10,7 @@ from source import constants
 from source import globalvars
 from source import text
 from source import hud
+from source import map
 
 # ================================================================= #
 #                        -----  Draw  -----                         #

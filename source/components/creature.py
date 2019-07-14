@@ -218,3 +218,39 @@ class ComCreature:
                 total_defence += def_bonus
 
         return total_defence
+
+    def draw_health(self):
+        bar_width = 38
+        bar_height = 8
+        surface = globalvars.SURFACE_MAP
+        health_percentage = self.get_health_percentage()
+
+        if health_percentage > 0.6:
+            color = constants.COLOR_GRASS_GREEN
+        elif health_percentage > 0.3:
+            color = constants.COLOR_HP_YELLOW
+        else:
+            color = constants.COLOR_RED
+
+        healthy_width = health_percentage * bar_width
+
+        if self.current_hp < self.maxHp:
+
+            pos_x = self.owner.x * constants.CELL_WIDTH - 4
+            pos_y = self.owner.y * constants.CELL_HEIGHT - (bar_height + 3)
+
+            if globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1:
+                pos_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + 3)
+
+            healthy_surface = pygame.Surface((healthy_width, bar_height))
+            healthy_surface.fill(color)
+
+            back_surface = pygame.Surface((bar_width, bar_height))
+            back_surface.fill(constants.COLOR_DARK_GREY)
+
+            outline_rect = pygame.Rect(pos_x, pos_y, bar_width, bar_height)
+
+            back_surface.blit(healthy_surface, (0, 0))
+            surface.blit(back_surface, (pos_x, pos_y))
+            pygame.draw.rect(surface, constants.COLOR_WHITE, outline_rect, 1)
+
