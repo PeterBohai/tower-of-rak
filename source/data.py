@@ -38,3 +38,7 @@ class StructPreferences:
         # user changes this
         self.keybindings = copy.deepcopy(self.default_keybindings)
 
+        self.default_display_window = "default"
+        self.display_window = self.default_keybindings
+
+

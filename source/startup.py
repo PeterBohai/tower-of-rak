@@ -32,7 +32,16 @@ def game_initialize():
     tcod.namegen_parse("data/namegen/jice_fantasy.cfg")
 
     # displays the pygame window
-    globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    print(globalvars.PREFERENCES.display_window)
+    if globalvars.PREFERENCES.display_window == "default":
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    elif globalvars.PREFERENCES.display_window == "fill":
+        constants.CAMERA_WIDTH = constants.screen_width
+        constants.CAMERA_HEIGHT = constants.screen_height
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    elif globalvars.PREFERENCES.display_window == "fullscreen":
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
+                                                          flags=pygame.FULLSCREEN)
 
     # surface of entire map
     globalvars.SURFACE_MAP = pygame.Surface((constants.MAP_WIDTH * constants.CELL_WIDTH,

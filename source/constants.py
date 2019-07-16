@@ -9,9 +9,15 @@ pygame.init()
 CELL_WIDTH = 32
 CELL_HEIGHT = 32  # because of the size of the sprite character's png
 
-CAMERA_WIDTH = 900
-CAMERA_HEIGHT = 650
+CAMERA_WIDTH_DEFAULT = 900  # 900
+CAMERA_HEIGHT_DEFAULT = 700 # 650
 
+game_info = pygame.display.Info()
+screen_width = game_info.current_w
+screen_height = game_info.current_h
+
+CAMERA_WIDTH = CAMERA_WIDTH_DEFAULT
+CAMERA_HEIGHT = CAMERA_HEIGHT_DEFAULT
 
 # FPS LIMIT
 GAME_FPS = 60
