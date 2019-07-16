@@ -29,10 +29,10 @@ def menu_main_options(ingame_menu_options=False):
     title_y = menu_rect.top + 30
 
     # ================= button variables ================ #
+    button_list = []
 
     button_width = 64
     button_height = 32
-    back_button_width = 96
     button_offset = button_height + 12
     long_button_width = 160
 
@@ -72,28 +72,34 @@ def menu_main_options(ingame_menu_options=False):
         main_menu_button = gui.GuiButton(surface_menu, "Main Menu",
                                          (mm_button_x, mm_button_y),
                                          (button_width, button_height))
+        button_list.append(main_menu_button)
 
     # ====================== button section ===================== #
 
     save_button = gui.GuiButton(surface_menu, save_button_text,
                                 (save_button_x, save_button_y),
                                 (button_width, button_height))
+    button_list.append(save_button)
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
-                                (back_button_width, button_height))
+                                (button_width, button_height))
+    button_list.append(back_button)
 
     audio_button = gui.GuiButton(surface_menu, audio_button_text,
                                  (audio_button_x, audio_button_y),
                                  (long_button_width, button_height))
+    button_list.append(audio_button)
 
     controls_button = gui.GuiButton(surface_menu, controls_button_text,
                                     (controls_button_x, controls_button_y),
                                     (long_button_width, button_height))
+    button_list.append(controls_button)
 
     display_button = gui.GuiButton(surface_menu, display_button_text,
                                    (display_button_x, display_button_y),
                                    (long_button_width, button_height))
+    button_list.append(display_button)
 
     # menu background tile positions
     topL = menu_rect.topleft
@@ -135,6 +141,14 @@ def menu_main_options(ingame_menu_options=False):
                                center=True)
         if display_button.update(player_events):
             menu_options_display()
+
+        # Change cursor when hovering over a button
+        for i, button in enumerate(button_list):
+            if button.mouse_hover:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                break
+            if i == len(button_list) - 1:
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # draw functions
         text.draw_text(surface_menu, "Options", constants.FONT_MENU_TITLE,
@@ -210,6 +224,7 @@ def menu_options_audio():
     title_y = menu_rect.top + 30
 
     # ================= slider/button variables ================ #
+    button_list = []
     slider_width = 170
     slider_height = 8
     slider_text_offset_y = 18
@@ -222,7 +237,6 @@ def menu_options_audio():
     # buttons
     button_width = 64
     button_height = 32
-    back_button_width = 64
 
     save_button_x = center_x - button_width
     save_button_y = menu_rect.bottom - 30
@@ -249,10 +263,12 @@ def menu_options_audio():
     save_button = gui.GuiButton(surface_menu, save_button_text,
                                 (save_button_x, save_button_y),
                                 (button_width, button_height))
+    button_list.append(save_button)
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
-                                (back_button_width, button_height))
+                                (button_width, button_height))
+    button_list.append(back_button)
 
     # menu loop
     menu_close = False
@@ -292,6 +308,14 @@ def menu_options_audio():
 
         if back_button.update(player_events):
             menu_close = True
+
+        # Change cursor when hovering over a button
+        for i, buttons in enumerate(button_list):
+            if buttons.mouse_hover:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                break
+            if i == len(button_list) - 1:
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # draw functions
         text.draw_text(surface_menu, "AUDIO", constants.FONT_MENU_TITLE,
@@ -373,6 +397,8 @@ def menu_options_controls():
     # ================= slider/button variables ================ #
 
     # buttons
+    button_list = []
+
     button_width = 64
     button_height = 32
     small_button_width = 50
@@ -397,13 +423,17 @@ def menu_options_controls():
                                 (save_button_x, save_button_y),
                                 (button_width, button_height))
 
+    button_list.append(save_button)
+
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
                                 (button_width, button_height))
+    button_list.append(back_button)
 
     reset_button = gui.GuiButton(surface_menu, reset_button_text,
                                  (reset_button_x, reset_button_y),
                                  (button_width, button_height))
+    button_list.append(reset_button)
 
     # menu background tile positions
     topL = menu_rect.topleft
@@ -430,27 +460,35 @@ def menu_options_controls():
         left_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["left"][0],
                                     (keys_button_x, keys_button_y[0]),
                                     (small_button_width, small_button_height))
+
         right_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["right"][0],
                                      (keys_button_x, keys_button_y[1]),
                                      (small_button_width, small_button_height))
+
         up_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["up"][0],
                                   (keys_button_x, keys_button_y[2]),
                                   (small_button_width, small_button_height))
+
         down_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["down"][0],
                                     (keys_button_x, keys_button_y[3]),
                                     (small_button_width, small_button_height))
+
         grab_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["grab"][0],
                                     (keys_button_x, keys_button_y[4]),
                                     (small_button_width, small_button_height))
+
         drop_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["drop"][0],
                                     (keys_button_x, keys_button_y[5]),
                                     (small_button_width, small_button_height))
+
         inventory_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["inventory"][0],
                                          (keys_button_x, keys_button_y[6]),
                                          (small_button_width, small_button_height))
+
         next_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["next"][0],
                                     (keys_button_x, keys_button_y[7]),
                                     (small_button_width, small_button_height))
+
         esc_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["back"][0],
                                    (keys_button_x, keys_button_y[8]),
                                    (small_button_width, small_button_height))
@@ -520,6 +558,13 @@ def menu_options_controls():
             menu_change_controls("back")
             saved = False
 
+        # Change cursor when hovering over a button
+        for i, button in enumerate(button_list):
+            if button.mouse_hover:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                break
+            if i == len(button_list) - 1:
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # draw functions
         text.draw_text(surface_menu, "CONTROLS", constants.FONT_MENU_TITLE,
@@ -782,18 +827,14 @@ def menu_options_display():
     title_y = menu_rect.top + 30
 
     # ================= button variables ================ #
+    button_list = []
 
     button_width = 64
     button_height = 32
-    back_button_width = 96
     button_offset = button_height + 12
     long_button_width = 160
 
-    save_button_x = center_x - button_width
-    save_button_y = menu_rect.bottom - 30
-    save_button_text = "SAVE"
-
-    back_button_x = center_x + button_width
+    back_button_x = center_x
     back_button_y = menu_rect.bottom - 30
     back_button_text = "BACK"
 
@@ -811,25 +852,25 @@ def menu_options_display():
 
     # ====================== button section ===================== #
 
-    save_button = gui.GuiButton(surface_menu, save_button_text,
-                                (save_button_x, save_button_y),
-                                (button_width, button_height))
-
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
                                 (button_width, button_height))
+    button_list.append(back_button)
 
     default_button = gui.GuiButton(surface_menu, default_button_text,
-                                 (default_button_x, default_button_y),
-                                 (long_button_width, button_height))
+                                   (default_button_x, default_button_y),
+                                   (long_button_width, button_height))
+    button_list.append(default_button)
 
     fill_button = gui.GuiButton(surface_menu, fill_button_text,
-                                    (fill_button_x, fill_button_y),
-                                    (long_button_width, button_height))
+                                (fill_button_x, fill_button_y),
+                                (long_button_width, button_height))
+    button_list.append(fill_button)
 
     fullscreen_button = gui.GuiButton(surface_menu, fullscreen_button_text,
-                                   (fullscreen_button_x, fullscreen_button_y),
-                                   (long_button_width, button_height))
+                                      (fullscreen_button_x, fullscreen_button_y),
+                                      (long_button_width, button_height))
+    button_list.append(fullscreen_button)
 
     # menu background tile positions
     topL = menu_rect.topleft
@@ -837,11 +878,8 @@ def menu_options_display():
     botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
     botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
 
-    previous_display = globalvars.PREFERENCES.display_window
-
     # ====================== menu LOOP ===================== #
     menu_close = False
-    saved = False
     while not menu_close:
 
         # get player input
@@ -854,51 +892,55 @@ def menu_options_display():
         for event in events_list:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-
-                    # will not save controls if exit without selecting "SAVE"
-                    if not saved:
-                        globalvars.PREFERENCES.display_window = previous_display
+                    game.preferences_save()
                     menu_close = True
 
         # >>> button actions <<<
-        if save_button.update(player_events):
-            saved = True
-            game.preferences_save()
-            print(globalvars.PREFERENCES.display_window)
 
         if back_button.update(player_events):
-            # will not save controls if exit without selecting "SAVE"
-            if not saved:
-                globalvars.PREFERENCES.display_window = previous_display
+            game.preferences_save()
             menu_close = True
 
         if default_button.update(player_events):
             constants.CAMERA_WIDTH = constants.CAMERA_WIDTH_DEFAULT
             constants.CAMERA_HEIGHT = constants.CAMERA_HEIGHT_DEFAULT
+            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
+            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
 
-            pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
             globalvars.PREFERENCES.display_window = "default"
-            saved = False
+            globalvars.DISPLAY_CHANGE = True
 
         if fill_button.update(player_events):
             constants.CAMERA_WIDTH = constants.screen_width
-            constants.CAMERA_HEIGHT = constants.screen_height
+            constants.CAMERA_HEIGHT = constants.screen_height - 45
+            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
+            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
 
-            pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
             globalvars.PREFERENCES.display_window = "fill"
-            saved = False
+            globalvars.DISPLAY_CHANGE = True
 
         if fullscreen_button.update(player_events):
-            pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT), flags=pygame.FULLSCREEN)
+            constants.CAMERA_WIDTH = constants.screen_width
+            constants.CAMERA_HEIGHT = constants.screen_height
+            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
+            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
+
             globalvars.PREFERENCES.display_window = "fullscreen"
-            saved = False
+            globalvars.DISPLAY_CHANGE = True
+
+        # Change cursor when hovering over a button
+        for i, button in enumerate(button_list):
+            if button.mouse_hover:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                break
+            if i == len(button_list) - 1:
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # draw functions
         text.draw_text(surface_menu, "Display Settings", constants.FONT_MENU_TITLE,
                        (title_x, title_y),
                        constants.COLOR_BLACK,
                        center=True)
-        save_button.draw()
         back_button.draw()
         default_button.draw()
         fill_button.draw()

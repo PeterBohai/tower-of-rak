@@ -144,7 +144,7 @@ def draw_debug():
     pos_y = 0
 
     text.draw_text(globalvars.SURFACE_MAIN, fps_text,
-                   constants.FONT_BEST, (pos_x, pos_y), constants.COLOR_WHITE, constants.COLOR_BLACK)
+                   constants.FONT_BEST, (pos_x, pos_y), constants.COLOR_WHITE)
 
 
 def draw_messages():
@@ -165,12 +165,13 @@ def draw_messages():
         # globalvars.GAME.message_history = globalvars.GAME.message_history[-constants.NUM_MESSAGES:]
 
     text_height = text.helper_text_height(constants.FONT_BEST)
-    start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height)
+    text_x = 10
+    start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height) - 16
 
     for i, (message, color) in enumerate(globalvars.GAME.message_history):
 
         text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST,
-                       (0, start_y + (i * text_height)), color, constants.COLOR_BLACK)
+                       (text_x, start_y + (i * text_height)), color, constants.COLOR_BLACK)
 
 
 def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):

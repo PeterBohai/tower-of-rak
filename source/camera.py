@@ -131,3 +131,9 @@ class ObjCamera:
         tup_map_coords = (map_pix_x, map_pix_y)
 
         return tup_map_coords
+
+    def set_width(self, new_width):
+        self.width = new_width
+
+    def set_height(self, new_height):
+        self.height = new_height

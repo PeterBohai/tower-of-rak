@@ -39,6 +39,5 @@ class StructPreferences:
         self.keybindings = copy.deepcopy(self.default_keybindings)
 
         self.default_display_window = "default"
-        self.display_window = self.default_keybindings
-
+        self.display_window = self.default_display_window
 

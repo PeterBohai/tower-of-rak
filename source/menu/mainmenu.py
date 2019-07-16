@@ -19,6 +19,7 @@ def menu_main():
     title_y = constants.CAMERA_HEIGHT / 4
 
     # ======================= button variables ====================== #
+    button_list = []
     # button sizes
     button_width = 160
     button_height = 32
@@ -35,28 +36,35 @@ def menu_main():
     new_game_button = gui.GuiButton(globalvars.SURFACE_MAIN, "New Game",
                                     (center_x, new_game_button_y),
                                     (button_width, button_height))
+    button_list.append(new_game_button)
 
     cont_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Continue",
                                 (center_x, cont_button_y),
                                 (button_width, button_height))
+    button_list.append(cont_button)
 
     options_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Options",
                                    (center_x, options_button_y),
                                    (button_width, button_height))
+    button_list.append(options_button)
 
     credits_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Credits",
                                    (center_x, credits_button_y),
                                    (button_width, button_height))
+    button_list.append(credits_button)
 
     quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "QUIT",
                                 (center_x, quit_button_y),
                                 (button_width, button_height))
+    button_list.append(quit_button)
 
     menu_buttons_tup = (new_game_button, cont_button, options_button, credits_button, quit_button, (center_x, title_y))
 
     # play background music
     pygame.mixer.music.load(globalvars.ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
+
+    display_changed = False
 
     while menu_running:
 
@@ -95,16 +103,40 @@ def menu_main():
 
         # display options menu
         if options_button.update(player_events):
+            previous_display = globalvars.PREFERENCES.display_window
             options.menu_main_options()
+            if previous_display != globalvars.PREFERENCES.display_window:
+                display_changed = True
+                break
+            else:
+                display_changed = False
 
         if credits_button.update(player_events):
             menu_credits()
+
+        # Change cursor when hovering over a button
+        for i, button in enumerate(button_list):
+            if button.mouse_hover:
+                pygame.mouse.set_cursor(*pygame.cursors.diamond)
+                break
+            if i == len(button_list) - 1:
+                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # ================== draw elements ================== #
         # draw menu background and title
         draw_main_menu(menu_buttons_tup)
 
         pygame.display.update()
+
+    if display_changed and globalvars.PREFERENCES.display_window == "fullscreen":
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
+                                                          flags=pygame.FULLSCREEN)
+
+    elif display_changed:
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+        menu_main()
+
+
 
 
 def menu_credits():
@@ -174,6 +206,10 @@ def menu_credits():
         if menu_button.update(player_events):
             menu_close = True
 
+        if menu_button.mouse_hover:
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
+        else:
+            pygame.mouse.set_cursor(*pygame.cursors.tri_left)
         # draw functions
         text.draw_text(surface_credits_menu, "Credits", constants.FONT_MENU_TITLE,
                        (title_x, title_y),

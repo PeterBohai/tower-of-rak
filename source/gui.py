@@ -59,10 +59,12 @@ class GuiButton:
             self.color_text_current = self.color_text_hovered
             self.mouse_hover = True
 
+
         else:
             self.color_button_current = self.color_button_default
             self.color_text_current = self.color_text_default
             self.mouse_hover = False
+
 
         if mouse_hovered and mouse_clicked:
             button_clicked = True

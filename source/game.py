@@ -123,6 +123,8 @@ def game_main_loop():
     pygame.mixer.music.load(globalvars.ASSETS.ingame_music)
     pygame.mixer.music.play(-1)
 
+    pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+
     while not globalvars.GAME_QUIT:
 
         draw.draw_game()
@@ -293,12 +295,27 @@ def game_handle_keys():
             # access in-game options menu or exit from a popup/menu
             if event.key == keys["back"][1]:
                 if len(keys["back"]) == 2:
+                    previous_display = globalvars.PREFERENCES.display_window
+
                     options.menu_main_options(ingame_menu_options=True)
+                    pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+
+                    # Change display after exiting options menu (only if there was a change)
+                    if previous_display != globalvars.PREFERENCES.display_window and \
+                            globalvars.PREFERENCES.display_window == "fullscreen":
+                        globalvars.SURFACE_MAIN = pygame.display.set_mode(
+                            (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
+                            flags=pygame.FULLSCREEN)
+
+                    elif previous_display != globalvars.PREFERENCES.display_window:
+                        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH,
+                                                                           constants.CAMERA_HEIGHT))
 
                 elif len(keys["back"]) == 3 and \
                         (keys["back"][2] == pygame.K_LSHIFT or keys["back"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
                         options.menu_main_options(ingame_menu_options=True)
+                        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
 
     return "no-action"
