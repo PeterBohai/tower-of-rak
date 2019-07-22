@@ -16,6 +16,12 @@ def game_initialize():
 
     """
 
+    # initialize pygame mixer in a way that prevents the sound delays
+    pygame.mixer.pre_init(44100, -16, 2, 1024)
+    pygame.mixer.init()
+    pygame.mixer.quit()
+    pygame.mixer.pre_init(44100, -16, 2, 1024)
+
     # initialize pygame
     pygame.init()
     pygame.key.set_repeat(180, 90)  # (delay, interval) in milliseconds for movement when holding down keys

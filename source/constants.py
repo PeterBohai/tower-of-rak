@@ -2,7 +2,6 @@
 import tcod
 import pygame
 
-
 pygame.init()
 
 # GAME SIZES

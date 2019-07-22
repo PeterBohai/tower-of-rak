@@ -67,7 +67,9 @@ class GuiButton:
 
 
         if mouse_hovered and mouse_clicked:
+            pygame.mixer.Sound.play(globalvars.ASSETS.sfx_click1)
             button_clicked = True
+
 
         return button_clicked
 

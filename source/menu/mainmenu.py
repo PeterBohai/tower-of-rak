@@ -131,6 +131,7 @@ def menu_main():
     if display_changed and globalvars.PREFERENCES.display_window == "fullscreen":
         globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
                                                           flags=pygame.FULLSCREEN)
+        menu_main()
 
     elif display_changed:
         globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))

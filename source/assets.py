@@ -371,6 +371,8 @@ class ObjAssets:
         self.sfx_hit_punch4 = self.sfx_add("data/audio/sfx/hit_punch_4.wav")
         self.sfx_hit_punch5 = self.sfx_add("data/audio/sfx/hit_punch_5.wav")
 
+        self.sfx_click1 = self.sfx_add("data/audio/sfx/click1.wav")
+
         # sfx list for hitting creature
         self.sfx_hit_punch_list = [self.sfx_hit_punch1,
                                    self.sfx_hit_punch2,
