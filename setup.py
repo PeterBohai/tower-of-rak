@@ -12,12 +12,14 @@ DATA_FILES = ["data"]
 OPTIONS = {
     "iconfile": "Rak.icns",
     "argv_emulation": True,
+    "packages": ["pygame", "tcod", "numpy", "cffi"]
 
 }
 
 setup(
     app=APP,
     data_files=DATA_FILES,
+    name="Tower of Rak",
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
 )

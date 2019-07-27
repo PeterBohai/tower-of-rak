@@ -22,6 +22,10 @@ def game_initialize():
     pygame.mixer.quit()
     pygame.mixer.pre_init(44100, -16, 2, 1024)
 
+    # doesn't set dock icon when running
+    icon = pygame.image.load("data/graphics/rak_icon.png")
+    pygame.display.set_icon(icon)
+
     # initialize pygame
     pygame.init()
     pygame.key.set_repeat(180, 90)  # (delay, interval) in milliseconds for movement when holding down keys
