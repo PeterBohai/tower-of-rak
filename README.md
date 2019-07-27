@@ -11,11 +11,11 @@ The game is set in a world of two opposing races, where the adventure begins as 
   - permadeath
   
 ### Screenshots
-<img src="screenshots/screenshot-1" width=450> <img src="screenshots/screenshot-2" width=450>
-<img src="screenshots/screenshot-3" width=450> <img src="screenshots/screenshot-5" width=450>
+<img src="screenshots/screenshot-1.png" width=420> <img src="screenshots/screenshot-2.png" width=420>
+<img src="screenshots/screenshot-3.png" width=420> <img src="screenshots/screenshot-4.png" width=420>
   
 ## Download
-To download an **early demo** of this game for macOS click <a href="dist/Tower-of-Rak.zip" download>here</a>.  
+The zip file in <a href="dist/">here</a> is an **early demo** of this game for macOS.  
 Unzip the file and simply open the application file to start playing.  
 [py2app](https://pypi.org/project/py2app/) was used to bundle everything into this standalone Mac OS X application.
 

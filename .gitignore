@@ -11,6 +11,7 @@ __pycache__/
 # other files
 *.docx
 *.zip
+!dist/Tower-of-Rak.zip
 
 # directories
 dungeon-generation-examples/

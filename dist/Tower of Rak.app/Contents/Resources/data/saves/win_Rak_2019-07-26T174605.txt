@@ -1,9 +1,0 @@
-************* Rak's WIN RECORD ************* 
-
-Merath the Giant Boa attacks Rak for 0 damage!
-Rak's health is 25/25
-Rak attacks Merath the Giant Boa for 3 damage!
-Merath the Giant Boa's health is 0/12
-Merath the Giant Boa is dead!
-Picking up [MAGIC ROCK]
-Deleted any game save files
