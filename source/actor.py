@@ -63,6 +63,10 @@ class ObjActor:
         if creature:
             self.creature.owner = self   # component system implementation
 
+            # coordinates for the disappearing damage taken float number for creatures
+            self.dmg_taken_posx = self.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
+            self.dmg_taken_posy = self.y * constants.CELL_HEIGHT
+
         self.ai = ai
         if self.ai:
             self.ai.owner = self

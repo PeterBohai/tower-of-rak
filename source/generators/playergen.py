@@ -10,7 +10,7 @@ def gen_player(tup_coords):
     x, y = tup_coords
 
     container_com = container.ComContainer()
-    creature_com = creature.ComCreature("Rak", max_hp=25, base_atk=3, base_def=10, death_function=death.death_player)
+    creature_com = creature.ComCreature("Rak", max_hp=25, base_atk=1, base_def=10, death_function=death.death_player)
 
     globalvars.PLAYER = actor.ObjActor(x, y, "PLAYER",
                                        "A_PLAYER",

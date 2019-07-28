@@ -84,6 +84,7 @@ FONT_GAME_TITLE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
 FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
 
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
+FONT_BEST_20 = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
 
 FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
 FONT_MENU_TITLE.set_underline(True)

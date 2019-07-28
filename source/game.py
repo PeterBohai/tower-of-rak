@@ -126,18 +126,23 @@ def game_main_loop():
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
     # for fading creature damage taken text setup
-    font = constants.FONT_BEST
-    orig_surface = font.render('10', True, constants.COLOR_RED)
-    txt_surface = orig_surface.copy()
-    alpha_surface = pygame.Surface(txt_surface.get_size(), pygame.SRCALPHA)
-    alpha = 255
-
     while not globalvars.GAME_QUIT:
 
         draw.draw_game()
 
         # handle player input
         player_action = game_handle_keys()
+
+        for objActor in globalvars.GAME.current_objects:
+            if objActor.is_visible and objActor.creature and objActor.name_object != "PLAYER":
+
+                if objActor.creature.was_hit:
+                    objActor.creature.dmg_alpha = 255
+
+                if objActor.creature.dmg_alpha > 0:
+                    objActor.creature.draw_damage_taken()
+                else:
+                    objActor.creature.dmg_alpha = 0
 
         # display floor number in the middle for a few seconds when floor changes
         if globalvars.FLOOR_CHANGED and player_action == "Just Changed Floors":
@@ -167,6 +172,10 @@ def game_main_loop():
             if obj.ai:
                 if player_action != "no-action":
                     obj.ai.take_turn()
+
+            if obj.is_visible and obj.creature:
+                obj.creature.was_hit = False
+
             if obj.portal:
                 obj.portal.update()
 

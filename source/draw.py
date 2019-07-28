@@ -50,8 +50,18 @@ def draw_game():
     # draw little health bar ui on top of visible creatures (that have been hit)
     for objActor in globalvars.GAME.current_objects:
         if objActor.is_visible and objActor.creature and objActor.name_object != "PLAYER":
+
             objActor.creature.draw_health()
-            objActor.creature.draw_damage_taken()
+
+            if objActor.creature.was_hit:
+                objActor.creature.dmg_alpha = 255
+
+            if objActor.creature.dmg_alpha > 0:
+                objActor.creature.draw_damage_taken()
+            else:
+                objActor.creature.dmg_alpha = 0
+
+
 
     # Display map onto main game screen window
     globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)

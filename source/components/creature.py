@@ -7,7 +7,7 @@ import tcod
 
 
 # Local project imports
-from source import constants, globalvars, game, map, text
+from source import constants, globalvars, game, map
 
 
 class ComCreature:
@@ -38,8 +38,9 @@ class ComCreature:
         self.base_def = base_def
         self.current_hp = max_hp
         self.death_function = death_function
-        self.dmg_received = 0
+        self.dmg_received = None
         self.was_hit = False
+        self.dmg_alpha = 0
 
     def move(self, dx, dy):
         """Moves the creature object on the map.
@@ -102,7 +103,7 @@ class ComCreature:
         else:
             attacker_name = self.owner.display_name
 
-        if damage_dealt > 0 and self.owner is globalvars.PLAYER:
+        if damage_dealt >= 0 and self.owner is globalvars.PLAYER:
             pygame.mixer.Sound.play(random.choice(globalvars.ASSETS.sfx_hit_punch_list))
 
         # attack message
@@ -260,7 +261,7 @@ class ComCreature:
         healthy_width = health_percentage * bar_width
 
         # draw health bar only if taken damage
-        if self.current_hp < self.maxHp:
+        if self.current_hp < self.maxHp or self.dmg_received is not None:
 
             pos_x = self.owner.x * constants.CELL_WIDTH - 4
             pos_y = self.owner.y * constants.CELL_HEIGHT - (bar_height + 3)
@@ -283,17 +284,51 @@ class ComCreature:
             # draw border of health bar
             pygame.draw.rect(surface, constants.COLOR_BLACK, outline_rect, 1)
 
-
     def draw_damage_taken(self):
         surface = globalvars.SURFACE_MAP
+        is_below = globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1
 
-        pos_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH/2)
-        pos_y = self.owner.y * constants.CELL_HEIGHT - int(constants.CELL_WIDTH/2)
+        start_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
+        if is_below:
+            start_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH / 2))
+        else:
+            start_y = self.owner.y * constants.CELL_HEIGHT
 
-        if globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1:
-            pos_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH/2))
+        if self.dmg_alpha > 250:
 
-        if self.current_hp < self.maxHp:
-            text.draw_text(surface, str(self.dmg_received), constants.FONT_BEST,
-                           (pos_x, pos_y), (255, 0, 0, 255), center=True)
+            self.owner.dmg_taken_posx = start_x
+            self.owner.dmg_taken_posy = start_y
+        else:
+            if (start_y - self.owner.dmg_taken_posy) < 32:
+                self.owner.dmg_taken_posy -= 1
+
+        if self.current_hp < self.maxHp or self.dmg_received is not None:
+            font = constants.FONT_BEST_20
+            color = constants.COLOR_RED
+            if self.dmg_received == 0:
+                color = constants.COLOR_BLUE3
+
+            orig_surface = font.render(str(self.dmg_received), True, color)
+            txt_surface = orig_surface.copy()
+            alpha_surface = pygame.Surface(txt_surface.get_size(), pygame.SRCALPHA)
+            if self.dmg_alpha > 160:
+                self.dmg_alpha = max(self.dmg_alpha - 2, 0)
+            elif self.dmg_alpha > 140:
+                self.dmg_alpha = max(self.dmg_alpha - 3, 0)
+            elif self.dmg_alpha > 100:
+                self.dmg_alpha = max(self.dmg_alpha - 5, 0)
+            elif self.dmg_alpha > 60:
+                self.dmg_alpha = max(self.dmg_alpha - 8, 0)
+            else:
+                self.dmg_alpha = max(self.dmg_alpha - 10, 0)
+
+
+            # Fill alpha_surf with this color to set its alpha value.
+            alpha_surface.fill((255, 255, 255, self.dmg_alpha))
+            txt_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            text_rect = txt_surface.get_rect()
+            text_rect.center = (self.owner.dmg_taken_posx, self.owner.dmg_taken_posy)
+
+            surface.blit(txt_surface, text_rect)
+
 

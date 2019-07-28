@@ -178,6 +178,7 @@ def map_place_items_creatures(room_list):
         # generate PLAYER in the center of the first room
         if first_room:
             globalvars.PLAYER.x, globalvars.PLAYER.y = room.center
+            creaturegen.gen_enemy((enemy_x, enemy_y))
 
         # only generate enemies in the rooms that the player doesnt start in
         if not first_room:
