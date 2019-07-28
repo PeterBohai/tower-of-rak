@@ -125,6 +125,13 @@ def game_main_loop():
 
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
+    # for fading creature damage taken text setup
+    font = constants.FONT_BEST
+    orig_surface = font.render('10', True, constants.COLOR_RED)
+    txt_surface = orig_surface.copy()
+    alpha_surface = pygame.Surface(txt_surface.get_size(), pygame.SRCALPHA)
+    alpha = 255
+
     while not globalvars.GAME_QUIT:
 
         draw.draw_game()

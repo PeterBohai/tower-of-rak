@@ -112,6 +112,10 @@ class ObjActor:
                 name_to_display = self.name_object
                 return name_to_display
 
+    @property
+    def is_visible(self):
+        return tcod.map_is_in_fov(globalvars.FOV_MAP, self.x, self.y)
+
     def draw(self):
         """Draws the actor object to the screen.
 
@@ -122,8 +126,7 @@ class ObjActor:
 
         """
 
-        is_visible = tcod.map_is_in_fov(globalvars.FOV_MAP, self.x, self.y)
-        if is_visible:
+        if self.is_visible:
             if len(self.animation) == 1:
                 # pixel address
                 globalvars.SURFACE_MAP.blit(self.animation[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
@@ -147,11 +150,6 @@ class ObjActor:
 
             globalvars.SURFACE_MAP.blit(self.animation[self.sprite_image],
                                         (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
-
-            # draw little health bar ui on top of visible creatures (that have been hit)
-            if self.creature and self.name_object != "PLAYER":
-                self.creature.draw_health()
-
 
     def distance_to(self, other):
         """Calculates the relative distance of this actor object to another.

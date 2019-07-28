@@ -43,9 +43,15 @@ def draw_game():
     # draw the map Surface
     draw_map(globalvars.GAME.current_map)
 
-    # draw the character
+    # draw all objects (player, creatures, items)
     for obj in globalvars.GAME.current_objects:
         obj.draw()
+
+    # draw little health bar ui on top of visible creatures (that have been hit)
+    for objActor in globalvars.GAME.current_objects:
+        if objActor.is_visible and objActor.creature and objActor.name_object != "PLAYER":
+            objActor.creature.draw_health()
+            objActor.creature.draw_damage_taken()
 
     # Display map onto main game screen window
     globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)

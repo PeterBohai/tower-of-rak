@@ -3,10 +3,11 @@ import random
 
 # Third party imports
 import pygame
+import tcod
 
 
 # Local project imports
-from source import constants, globalvars, game, map
+from source import constants, globalvars, game, map, text
 
 
 class ComCreature:
@@ -37,6 +38,8 @@ class ComCreature:
         self.base_def = base_def
         self.current_hp = max_hp
         self.death_function = death_function
+        self.dmg_received = 0
+        self.was_hit = False
 
     def move(self, dx, dy):
         """Moves the creature object on the map.
@@ -46,7 +49,7 @@ class ComCreature:
             dy (int): Distance in tile map coordinates to move object along the y-axis.
 
         """
-
+        self.was_hit = False
         # boolean to check if a tile is a wall
         tile_is_wall = (globalvars.GAME.current_map[self.owner.x + dx][self.owner.y + dy].block_path is True)
 
@@ -64,6 +67,10 @@ class ComCreature:
         if not tile_is_wall and target is None:
             self.owner.x += dx
             self.owner.y += dy
+
+            for objActor in globalvars.GAME.current_objects:
+                if objActor.is_visible and objActor.creature:
+                    objActor.creature.was_hit = False
 
     def attack(self, target):
         """Attacks another "target" ObjActor object.
@@ -116,7 +123,8 @@ class ComCreature:
             damage (int): Amount of damage to be taken away from current_hp of self.
 
         """
-
+        self.was_hit = True
+        self.dmg_received = damage
         self.current_hp -= damage
 
         if self.owner is not globalvars.PLAYER:
@@ -188,8 +196,25 @@ class ComCreature:
             total_power (int): The current total power of the creature (including base and bonuses)
 
         """
-        total_power = self.base_atk
 
+        # some additional random variation of attack power
+        additional_random = 0
+
+        if 1 <= self.base_atk <= 12:
+            additional_random = tcod.random_get_int(0, 0, 1)
+        elif 13 <= self.base_atk <= 24:
+            additional_random = tcod.random_get_int(0, 0, 2)
+        elif 25 <= self.base_atk <= 40:
+            additional_random = tcod.random_get_int(0, 0, 3)
+        elif self.base_atk > 40:
+            additional_random = tcod.random_get_int(0, 0, 5)
+
+        # raw damage will vary per turn
+        raw_damage = self.base_atk + additional_random
+
+        total_power = raw_damage
+
+        # add attack bonus stats from equipment
         if self.owner.container:
             equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_items]
 
@@ -234,11 +259,13 @@ class ComCreature:
 
         healthy_width = health_percentage * bar_width
 
+        # draw health bar only if taken damage
         if self.current_hp < self.maxHp:
 
             pos_x = self.owner.x * constants.CELL_WIDTH - 4
             pos_y = self.owner.y * constants.CELL_HEIGHT - (bar_height + 3)
 
+            # draw health bar underneath creature if player is attacking from the top side
             if globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1:
                 pos_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + 3)
 
@@ -246,11 +273,27 @@ class ComCreature:
             healthy_surface.fill(color)
 
             back_surface = pygame.Surface((bar_width, bar_height))
-            back_surface.fill(constants.COLOR_DARK_GREY)
+            back_surface.fill((0, 0, 0, 100))    # fill background with black but slightly translucent
 
             outline_rect = pygame.Rect(pos_x, pos_y, bar_width, bar_height)
 
             back_surface.blit(healthy_surface, (0, 0))
             surface.blit(back_surface, (pos_x, pos_y))
-            pygame.draw.rect(surface, constants.COLOR_WHITE, outline_rect, 1)
+
+            # draw border of health bar
+            pygame.draw.rect(surface, constants.COLOR_BLACK, outline_rect, 1)
+
+
+    def draw_damage_taken(self):
+        surface = globalvars.SURFACE_MAP
+
+        pos_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH/2)
+        pos_y = self.owner.y * constants.CELL_HEIGHT - int(constants.CELL_WIDTH/2)
+
+        if globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1:
+            pos_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH/2))
+
+        if self.current_hp < self.maxHp:
+            text.draw_text(surface, str(self.dmg_received), constants.FONT_BEST,
+                           (pos_x, pos_y), (255, 0, 0, 255), center=True)
 
