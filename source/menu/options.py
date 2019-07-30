@@ -208,7 +208,7 @@ def menu_options_audio():
     # ============== options menu dimensions ============== #
     # options menu dimensions (in MAIN MENU)
     menu_width = 448
-    menu_height = 224
+    menu_height = 256
 
     # window coordinates
     center_x = constants.CAMERA_WIDTH / 2

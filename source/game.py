@@ -37,6 +37,8 @@ class ObjGame:
         self.maps_next = []
         self.maps_prev = []
         self.current_map, self.current_rooms = map.map_create()
+        self.cur_floor = 1
+        self.max_floor_reached = 1
 
     def map_transition_next(self):
         """Creates a new map if there are no maps in maps_next queue. Otherwise, load the last map in maps_next.
@@ -51,6 +53,11 @@ class ObjGame:
         # save data of current map (before creating new map) on to maps_prev list
         save_data = (globalvars.PLAYER.x, globalvars.PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
         self.maps_prev.append(save_data)
+
+        if self.max_floor_reached == self.cur_floor:
+            self.max_floor_reached += 1
+
+        self.cur_floor += 1
 
         # if the current floor is the top floor so far
         if len(self.maps_next) == 0:
@@ -102,7 +109,7 @@ class ObjGame:
             del self.maps_prev[-1]
 
         game_message("{} moved down a floor!".format(globalvars.PLAYER.creature.name_instance), constants.COLOR_BLUE)
-
+        self.cur_floor -= 1
 
 def game_main_loop():
     """Main game loop.
@@ -134,7 +141,7 @@ def game_main_loop():
         player_action = game_handle_keys()
 
         for objActor in globalvars.GAME.current_objects:
-            if objActor.is_visible and objActor.creature and objActor.name_object != "PLAYER":
+            if objActor.is_visible and objActor.creature:
 
                 if objActor.creature.was_hit:
                     objActor.creature.dmg_alpha = 255
@@ -143,6 +150,8 @@ def game_main_loop():
                     objActor.creature.draw_damage_taken()
                 else:
                     objActor.creature.dmg_alpha = 0
+        # makes sure that damage taken ui gets apllied to player as well (since creature takes turn in next for loop)
+        globalvars.PLAYER.creature.was_hit = False
 
         # display floor number in the middle for a few seconds when floor changes
         if globalvars.FLOOR_CHANGED and player_action == "Just Changed Floors":
@@ -167,13 +176,13 @@ def game_main_loop():
         if player_action == "QUIT":
             game_exit()
 
-            # this is how TURN-BASED is implemented for this game
+        # creatures takes their turn
         for obj in globalvars.GAME.current_objects:
             if obj.ai:
                 if player_action != "no-action":
                     obj.ai.take_turn()
 
-            if obj.is_visible and obj.creature:
+            if obj.is_visible and obj.creature and obj is not globalvars.PLAYER:
                 obj.creature.was_hit = False
 
             if obj.portal:

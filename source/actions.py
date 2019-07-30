@@ -12,7 +12,7 @@ def use_stairs():
         # check if the object contains a stairs component
         if obj.stairs:
             obj.stairs.use()
-            FLOOR_CHANGED = True
+            globalvars.FLOOR_CHANGED = True
             return "Just Changed Floors"
 
         if obj.portal:

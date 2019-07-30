@@ -42,6 +42,65 @@ class ComCreature:
         self.was_hit = False
         self.dmg_alpha = 0
 
+    @property
+    def power(self):
+        """A property that calculates and returns the current total power of the creature.
+
+        Adds base_atk and all attack bonuses currently available to the creature (equipped items, etc.) to its
+        total power.
+
+        Returns:
+            total_power (int): The current total power of the creature (including base and bonuses)
+
+        """
+
+        # some additional random variation of attack power
+        additional_random = 0
+
+        if 1 <= self.base_atk <= 12:
+            additional_random = tcod.random_get_int(0, 0, 1)
+        elif 13 <= self.base_atk <= 24:
+            additional_random = tcod.random_get_int(0, 0, 2)
+        elif 25 <= self.base_atk <= 40:
+            additional_random = tcod.random_get_int(0, 0, 3)
+        elif self.base_atk > 40:
+            additional_random = tcod.random_get_int(0, 0, 5)
+
+        # raw damage will vary per turn
+        raw_damage = self.base_atk + additional_random
+
+        total_power = raw_damage
+
+        # add attack bonus stats from equipment
+        if self.owner.container:
+            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_items]
+
+            for power_bonus in equipment_power_bonuses:
+                total_power += power_bonus
+
+        return total_power
+
+    @property
+    def defence(self):
+        """A property that calculates and returns the current total defence of the creature.
+
+        Adds base_def and all defence bonuses currently available to the creature (equipped items, etc.) to its
+        total defence.
+
+        Returns:
+            total_defence (int): The current total defence of the creature (including base and bonuses)
+
+        """
+        total_defence = self.base_def
+
+        if self.owner.container:
+            equipment_defence_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_items]
+
+            for def_bonus in equipment_defence_bonuses:
+                total_defence += def_bonus
+
+        return total_defence
+
     def move(self, dx, dy):
         """Moves the creature object on the map.
 
@@ -186,65 +245,6 @@ class ComCreature:
             game.game_message(healed_amt_msg, constants.COLOR_GREEN)
             game.game_message(curr_hp_msg, constants.COLOR_WHITE)
 
-    @property
-    def power(self):
-        """A property that calculates and returns the current total power of the creature.
-
-        Adds base_atk and all attack bonuses currently available to the creature (equipped items, etc.) to its
-        total power.
-
-        Returns:
-            total_power (int): The current total power of the creature (including base and bonuses)
-
-        """
-
-        # some additional random variation of attack power
-        additional_random = 0
-
-        if 1 <= self.base_atk <= 12:
-            additional_random = tcod.random_get_int(0, 0, 1)
-        elif 13 <= self.base_atk <= 24:
-            additional_random = tcod.random_get_int(0, 0, 2)
-        elif 25 <= self.base_atk <= 40:
-            additional_random = tcod.random_get_int(0, 0, 3)
-        elif self.base_atk > 40:
-            additional_random = tcod.random_get_int(0, 0, 5)
-
-        # raw damage will vary per turn
-        raw_damage = self.base_atk + additional_random
-
-        total_power = raw_damage
-
-        # add attack bonus stats from equipment
-        if self.owner.container:
-            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_items]
-
-            for power_bonus in equipment_power_bonuses:
-                total_power += power_bonus
-
-        return total_power
-
-    @property
-    def defence(self):
-        """A property that calculates and returns the current total defence of the creature.
-
-        Adds base_def and all defence bonuses currently available to the creature (equipped items, etc.) to its
-        total defence.
-
-        Returns:
-            total_defence (int): The current total defence of the creature (including base and bonuses)
-
-        """
-        total_defence = self.base_def
-
-        if self.owner.container:
-            equipment_defence_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_items]
-
-            for def_bonus in equipment_defence_bonuses:
-                total_defence += def_bonus
-
-        return total_defence
-
     def draw_health(self):
         bar_width = 38
         bar_height = 8
@@ -303,10 +303,14 @@ class ComCreature:
                 self.owner.dmg_taken_posy -= 1
 
         if self.current_hp < self.maxHp or self.dmg_received is not None:
-            font = constants.FONT_BEST_20
-            color = constants.COLOR_RED
+            font = constants.FONT_VIGA
+            color = pygame.Color('red3')
+
+            if self.owner is globalvars.PLAYER:
+                color = pygame.Color('red3')
+
             if self.dmg_received == 0:
-                color = constants.COLOR_BLUE3
+                color = pygame.Color('royalblue3')
 
             orig_surface = font.render(str(self.dmg_received), True, color)
             txt_surface = orig_surface.copy()
@@ -322,10 +326,11 @@ class ComCreature:
             else:
                 self.dmg_alpha = max(self.dmg_alpha - 10, 0)
 
-
             # Fill alpha_surf with this color to set its alpha value.
             alpha_surface.fill((255, 255, 255, self.dmg_alpha))
             txt_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+            # set position to align coordinates as center
             text_rect = txt_surface.get_rect()
             text_rect.center = (self.owner.dmg_taken_posx, self.owner.dmg_taken_posy)
 

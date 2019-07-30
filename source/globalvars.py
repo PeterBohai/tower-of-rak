@@ -17,4 +17,3 @@ def init():
     FLOOR_CHANGED = None
     GAME_QUIT = None
     DISPLAY_CHANGE = None
-    dmg_alpha = 255

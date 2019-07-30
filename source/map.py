@@ -158,8 +158,8 @@ def map_place_items_creatures(room_list):
 
     """
 
-    floor_num = len(globalvars.GAME.maps_prev) + 1
-    top_floor = (floor_num == constants.MAP_MAX_NUM_FLOORS)
+    floor_num = globalvars.GAME.max_floor_reached
+    is_top_floor = (floor_num == constants.MAP_MAX_NUM_FLOORS)
     first_floor = (len(globalvars.GAME.maps_prev) == 0)
 
     for i, room in enumerate(room_list):
@@ -189,11 +189,11 @@ def map_place_items_creatures(room_list):
             specialgen.gen_stairs((globalvars.PLAYER.x, globalvars.PLAYER.y), up=False)
 
         # generate stairs leading up in the last room
-        if last_room and not top_floor:
+        if last_room and not is_top_floor:
             specialgen.gen_stairs(room.center)
 
         # generate magic rock as item to obtain in order to win
-        elif last_room and top_floor:
+        elif last_room and is_top_floor:
             specialgen.gen_magic_rock(room.center)
             specialgen.gen_portal((room.center_x, room.center_y - 1))
 

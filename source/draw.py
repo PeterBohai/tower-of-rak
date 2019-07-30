@@ -49,9 +49,10 @@ def draw_game():
 
     # draw little health bar ui on top of visible creatures (that have been hit)
     for objActor in globalvars.GAME.current_objects:
-        if objActor.is_visible and objActor.creature and objActor.name_object != "PLAYER":
+        if objActor.is_visible and objActor.creature:
 
-            objActor.creature.draw_health()
+            if objActor.name_object != "PLAYER":
+                objActor.creature.draw_health()
 
             if objActor.creature.was_hit:
                 objActor.creature.dmg_alpha = 255
@@ -66,8 +67,18 @@ def draw_game():
     # Display map onto main game screen window
     globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)
 
-    # Draw fps message
-    draw_debug()
+    # Draw fps message and floor number
+    debug_pos_x = draw_debug()
+
+    # Draw floor number
+    floor_font = constants.FONT_BEST_18
+    if globalvars.GAME.cur_floor == constants.MAP_MAX_NUM_FLOORS:
+        floor_text = f"{globalvars.GAME.cur_floor}F [final]"
+    else:
+        floor_text = f"{globalvars.GAME.cur_floor}F"
+    floor_x = debug_pos_x - text.helper_text_width(floor_font, floor_text) - 10
+    text.draw_text(globalvars.SURFACE_MAIN, floor_text,
+                   floor_font, (floor_x, 0), pygame.Color('aquamarine1'))
 
     # HUD draw functions
     hud.draw_player_health(globalvars.SURFACE_MAIN, (10, 10), globalvars.PLAYER.creature.get_health_percentage())
@@ -151,7 +162,7 @@ def draw_debug():
     Displays only the current FPS for now.
 
     Returns:
-        None
+        pos_x (int): x-coordinate of debug message
 
     """
 
@@ -161,6 +172,8 @@ def draw_debug():
 
     text.draw_text(globalvars.SURFACE_MAIN, fps_text,
                    constants.FONT_BEST, (pos_x, pos_y), constants.COLOR_WHITE)
+
+    return pos_x
 
 
 def draw_messages():

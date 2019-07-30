@@ -27,7 +27,7 @@ MAP_WIDTH = 90
 MAP_HEIGHT = 70
 MAP_MAX_NUM_ROOMS = 20
 
-MAP_MAX_NUM_FLOORS = 4
+MAP_MAX_NUM_FLOORS = 3
 
 
 # ROOM LIMITS
@@ -82,9 +82,15 @@ FONT_DEBUG_MESSAGE2 = pygame.font.Font('data/fonts/AppleII.ttf', 16)
 FONT_GAME_TITLE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
 
 FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
+FONT_VIGA = pygame.font.Font('data/fonts/Viga-Regular.ttf', 16)
 
 FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
 FONT_BEST_20 = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
+FONT_BEST_18 = pygame.font.Font('data/fonts/fixedsys300.ttf', 18)
+
+
+FONT_OSRS_BOLD = pygame.font.Font('data/fonts/runescape_chat_bold_2.ttf', 16)
+FONT_OSRS_NPC = pygame.font.Font('data/fonts/runescape_npc_chat_2.ttf', 20)
 
 FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
 FONT_MENU_TITLE.set_underline(True)

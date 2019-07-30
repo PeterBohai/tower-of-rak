@@ -12,7 +12,7 @@ def draw_text(display_surface, text_to_display, font, t_coords, text_color, back
         text_to_display (str):
         font (pygame.font.Font):
         t_coords (tuple):
-        text_color(tuple):
+        text_color(tuple, Color):
         back_color (tuple):
         center (bool):
 
