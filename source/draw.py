@@ -1,5 +1,4 @@
 # Standard library imports
-import math
 
 # Third party imports
 import pygame
@@ -10,7 +9,6 @@ from source import constants
 from source import globalvars
 from source import text
 from source import hud
-from source import map
 
 # ================================================================= #
 #                        -----  Draw  -----                         #
@@ -33,7 +31,7 @@ def draw_game():
         None
 
     """
-
+    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
     # clear the surface (filling it with some color, wipe the color out)
     globalvars.SURFACE_MAIN.fill(constants.COLOR_BLACK)
     globalvars.SURFACE_MAP.fill(constants.COLOR_BLACK)
@@ -54,15 +52,12 @@ def draw_game():
             if objActor.name_object != "PLAYER":
                 objActor.creature.draw_health()
 
-            if objActor.creature.was_hit:
-                objActor.creature.dmg_alpha = 255
-
             if objActor.creature.dmg_alpha > 0:
                 objActor.creature.draw_damage_taken()
-            else:
-                objActor.creature.dmg_alpha = 0
 
-
+    # draw floor number (title) in the middle for a few seconds when floor changes and when game first starts
+    if globalvars.GAME.floor_transition_alpha > 0:
+        draw_floor_num_title(change_alpha=False)
 
     # Display map onto main game screen window
     globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)
@@ -227,10 +222,27 @@ def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):
         display_surface.blit(new_surface, (map_x, map_y))
 
 
-def fade(width, height, redraw_func, redraw_args):
+def draw_floor_num_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20, change_alpha=True):
+    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
+    floor_num = globalvars.GAME.cur_floor
+
+    alpha_val = globalvars.GAME.floor_transition_alpha
+    floor_text = f"Floor - {floor_num}"
+
+    # dont need to change alpha value here since the main game loop does it
+    if change_alpha:
+        globalvars.GAME.floor_transition_alpha = text.draw_fading_text(globalvars.SURFACE_MAIN, floor_text, font,
+                                                                        text_coords, text_color, alpha_val, center=True)
+    else:
+        text.draw_fading_text(globalvars.SURFACE_MAIN, floor_text, font,
+                              text_coords, text_color, alpha_val, speed=1, center=True)
+
+
+
+def fade_to_solid(width, height, redraw_func, redraw_args, color=pygame.Color('black')):
 
     fade_surface = pygame.Surface((width, height))
-    fade_surface.fill((0, 0, 0))
+    fade_surface.fill(color)
     for alpha in range(0, 303, 3):
         fade_surface.set_alpha(alpha)
 

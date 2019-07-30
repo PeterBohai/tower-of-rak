@@ -83,7 +83,7 @@ def menu_main():
         # start new game if clicked
         if new_game_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
-            draw.fade(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
+            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
             game.game_new()
             game.game_main_loop()
             menu_main()
@@ -91,7 +91,7 @@ def menu_main():
         # load previous game if clicked
         if cont_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
-            draw.fade(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
+            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup, color=pygame.Color('white'))
             game.game_start()
             menu_main()
 

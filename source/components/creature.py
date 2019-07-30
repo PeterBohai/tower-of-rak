@@ -5,6 +5,8 @@ import random
 import pygame
 import tcod
 
+from source import text
+
 
 # Local project imports
 from source import constants, globalvars, game, map
@@ -285,7 +287,6 @@ class ComCreature:
             pygame.draw.rect(surface, constants.COLOR_BLACK, outline_rect, 1)
 
     def draw_damage_taken(self):
-        surface = globalvars.SURFACE_MAP
         is_below = globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1
 
         start_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
@@ -293,6 +294,8 @@ class ComCreature:
             start_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH / 2))
         else:
             start_y = self.owner.y * constants.CELL_HEIGHT
+
+        display_coords = (self.owner.dmg_taken_posx, self.owner.dmg_taken_posy)
 
         if self.dmg_alpha > 250:
 
@@ -304,36 +307,15 @@ class ComCreature:
 
         if self.current_hp < self.maxHp or self.dmg_received is not None:
             font = constants.FONT_VIGA
-            color = pygame.Color('red3')
+            text_color = pygame.Color('red3')
+            dmg_text = str(self.dmg_received)
 
             if self.owner is globalvars.PLAYER:
-                color = pygame.Color('red3')
+                text_color = pygame.Color('red3')
 
             if self.dmg_received == 0:
-                color = pygame.Color('royalblue3')
+                text_color = pygame.Color('royalblue3')
 
-            orig_surface = font.render(str(self.dmg_received), True, color)
-            txt_surface = orig_surface.copy()
-            alpha_surface = pygame.Surface(txt_surface.get_size(), pygame.SRCALPHA)
-            if self.dmg_alpha > 160:
-                self.dmg_alpha = max(self.dmg_alpha - 2, 0)
-            elif self.dmg_alpha > 140:
-                self.dmg_alpha = max(self.dmg_alpha - 3, 0)
-            elif self.dmg_alpha > 100:
-                self.dmg_alpha = max(self.dmg_alpha - 5, 0)
-            elif self.dmg_alpha > 60:
-                self.dmg_alpha = max(self.dmg_alpha - 8, 0)
-            else:
-                self.dmg_alpha = max(self.dmg_alpha - 10, 0)
-
-            # Fill alpha_surf with this color to set its alpha value.
-            alpha_surface.fill((255, 255, 255, self.dmg_alpha))
-            txt_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-
-            # set position to align coordinates as center
-            text_rect = txt_surface.get_rect()
-            text_rect.center = (self.owner.dmg_taken_posx, self.owner.dmg_taken_posy)
-
-            surface.blit(txt_surface, text_rect)
-
+            self.dmg_alpha = text.draw_fading_text(globalvars.SURFACE_MAP, dmg_text, font, display_coords,
+                                  text_color, self.dmg_alpha, center=True)
 

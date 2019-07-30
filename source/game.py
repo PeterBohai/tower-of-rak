@@ -39,6 +39,9 @@ class ObjGame:
         self.current_map, self.current_rooms = map.map_create()
         self.cur_floor = 1
         self.max_floor_reached = 1
+        self.floor_transition_alpha = 0
+        self.from_main_menu = True      # to make sure that the floor number
+                                        # (title-style not the corner one) displays when game starts
 
     def map_transition_next(self):
         """Creates a new map if there are no maps in maps_next queue. Otherwise, load the last map in maps_next.
@@ -123,8 +126,7 @@ def game_main_loop():
 
     # player action definition
     player_action = "no-action"
-    display_time = 0
-    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - 40)
+    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
 
     # play in-game music
     pygame.mixer.music.load(globalvars.ASSETS.ingame_music)
@@ -148,27 +150,18 @@ def game_main_loop():
 
                 if objActor.creature.dmg_alpha > 0:
                     objActor.creature.draw_damage_taken()
-                else:
-                    objActor.creature.dmg_alpha = 0
-        # makes sure that damage taken ui gets apllied to player as well (since creature takes turn in next for loop)
+
+        # makes sure that damage taken ui gets applied to player as well (since creature takes turn in next for loop)
         globalvars.PLAYER.creature.was_hit = False
 
-        # display floor number in the middle for a few seconds when floor changes
-        if globalvars.FLOOR_CHANGED and player_action == "Just Changed Floors":
-            display_time = 180
+        # display floor number (title) in the middle for a few seconds when floor changes and when game first starts
+        if (globalvars.FLOOR_CHANGED and player_action == "Just Changed Floors") or globalvars.GAME.from_main_menu:
+            globalvars.GAME.floor_transition_alpha = 255
+            if globalvars.GAME.from_main_menu:
+                globalvars.FLOOR_CHANGED = False
 
-        elif globalvars.FLOOR_CHANGED:
-            floor_num = len(globalvars.GAME.maps_prev) + 1
-            text.draw_text(globalvars.SURFACE_MAIN, "Floor - {}".format(floor_num),
-                           constants.FONT_BEST,
-                           text_coords,
-                           constants.COLOR_WHITE,
-                           center=True)
-
-        if display_time > 0:
-            display_time -= 1
-        elif display_time <= 0 and globalvars.FLOOR_CHANGED is True:
-            globalvars.FLOOR_CHANGED = False
+        if globalvars.GAME.floor_transition_alpha > 0:
+            draw.draw_floor_num_title()
 
         map.map_calculate_fov()
 
@@ -191,6 +184,7 @@ def game_main_loop():
         if globalvars.PLAYER.status == "STATUS_DEAD" or globalvars.PLAYER.status == "STATUS_WIN":
             globalvars.GAME_QUIT = True
 
+        globalvars.GAME.from_main_menu = False
         # update the display
         pygame.display.flip()
 
@@ -309,13 +303,16 @@ def game_handle_keys():
 
             # '>' key: use stairs or portal
             if event.key == keys["next"][1]:
+                # for when user sets use stairs to only one key
                 if len(keys["next"]) == 2:
                     actions.use_stairs()
 
+                # default is ">" which is a shift and a period (2 keys)
                 elif len(keys["next"]) == 3 and \
                         (keys["next"][2] == pygame.K_LSHIFT or keys["next"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
                         actions.use_stairs()
+                return "Just Changed Floors"
 
             # access in-game options menu or exit from a popup/menu
             if event.key == keys["back"][1]:
@@ -397,6 +394,7 @@ def game_load():
         obj.animation_init()
 
     # create FOV_MAP
+    globalvars.GAME.from_main_menu = True
     map.map_make_fov(globalvars.GAME.current_map)
     globalvars.FOV_CALCULATE = True
 
