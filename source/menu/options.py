@@ -453,45 +453,56 @@ def menu_options_controls():
 
     previous_key_bindings = copy.deepcopy(globalvars.PREFERENCES.keybindings)
 
+    left_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["left"][0],
+                                (keys_button_x, keys_button_y[0]),
+                                (small_button_width, small_button_height))
+
+    right_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["right"][0],
+                                 (keys_button_x, keys_button_y[1]),
+                                 (small_button_width, small_button_height))
+
+    up_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["up"][0],
+                              (keys_button_x, keys_button_y[2]),
+                              (small_button_width, small_button_height))
+
+    down_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["down"][0],
+                                (keys_button_x, keys_button_y[3]),
+                                (small_button_width, small_button_height))
+
+    grab_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["grab"][0],
+                                (keys_button_x, keys_button_y[4]),
+                                (small_button_width, small_button_height))
+
+    drop_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["drop"][0],
+                                (keys_button_x, keys_button_y[5]),
+                                (small_button_width, small_button_height))
+
+    inventory_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["inventory"][0],
+                                     (keys_button_x, keys_button_y[6]),
+                                     (small_button_width, small_button_height))
+
+    next_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["next"][0],
+                                (keys_button_x, keys_button_y[7]),
+                                (small_button_width, small_button_height))
+
+    esc_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["back"][0],
+                               (keys_button_x, keys_button_y[8]),
+                               (small_button_width, small_button_height))
+
     # ====================== Menu LOOP ===================== #
     menu_close = False
     saved = False
     while not menu_close:
-        left_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["left"][0],
-                                    (keys_button_x, keys_button_y[0]),
-                                    (small_button_width, small_button_height))
 
-        right_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["right"][0],
-                                     (keys_button_x, keys_button_y[1]),
-                                     (small_button_width, small_button_height))
-
-        up_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["up"][0],
-                                  (keys_button_x, keys_button_y[2]),
-                                  (small_button_width, small_button_height))
-
-        down_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["down"][0],
-                                    (keys_button_x, keys_button_y[3]),
-                                    (small_button_width, small_button_height))
-
-        grab_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["grab"][0],
-                                    (keys_button_x, keys_button_y[4]),
-                                    (small_button_width, small_button_height))
-
-        drop_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["drop"][0],
-                                    (keys_button_x, keys_button_y[5]),
-                                    (small_button_width, small_button_height))
-
-        inventory_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["inventory"][0],
-                                         (keys_button_x, keys_button_y[6]),
-                                         (small_button_width, small_button_height))
-
-        next_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["next"][0],
-                                    (keys_button_x, keys_button_y[7]),
-                                    (small_button_width, small_button_height))
-
-        esc_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["back"][0],
-                                   (keys_button_x, keys_button_y[8]),
-                                   (small_button_width, small_button_height))
+        left_button.text = globalvars.PREFERENCES.keybindings["left"][0]
+        right_button.text = globalvars.PREFERENCES.keybindings["right"][0]
+        up_button.text = globalvars.PREFERENCES.keybindings["up"][0]
+        down_button.text = globalvars.PREFERENCES.keybindings["down"][0]
+        grab_button.text = globalvars.PREFERENCES.keybindings["grab"][0]
+        drop_button.text = globalvars.PREFERENCES.keybindings["drop"][0]
+        inventory_button.text = globalvars.PREFERENCES.keybindings["inventory"][0]
+        next_button.text = globalvars.PREFERENCES.keybindings["next"][0]
+        esc_button.text = globalvars.PREFERENCES.keybindings["back"][0]
 
         # get player input
         mouse_pos = pygame.mouse.get_pos()

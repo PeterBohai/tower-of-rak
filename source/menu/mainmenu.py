@@ -76,6 +76,7 @@ def menu_main():
 
         for event in events_list:
             if event.type == pygame.QUIT:
+                pygame.mixer.fadeout(10)
                 pygame.quit()
                 sys.exit()
 

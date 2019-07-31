@@ -238,7 +238,6 @@ def draw_floor_num_title(text_color=pygame.Color('aquamarine1'), font=constants.
                               text_coords, text_color, alpha_val, speed=1, center=True)
 
 
-
 def fade_to_solid(width, height, redraw_func, redraw_args, color=pygame.Color('black')):
 
     fade_surface = pygame.Surface((width, height))

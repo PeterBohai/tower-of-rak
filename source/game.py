@@ -126,7 +126,6 @@ def game_main_loop():
 
     # player action definition
     player_action = "no-action"
-    text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
 
     # play in-game music
     pygame.mixer.music.load(globalvars.ASSETS.ingame_music)
@@ -167,6 +166,7 @@ def game_main_loop():
 
         # quit the game
         if player_action == "QUIT":
+            pygame.mixer.fadeout(10)
             game_exit()
 
         # creatures takes their turn

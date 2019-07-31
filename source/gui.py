@@ -37,6 +37,7 @@ class GuiButton:
         self.button_rect = pygame.Rect((0, 0), self.size)
         self.button_rect.center = self.coords_center
         self.mouse_hover = False
+        self.num_played_rollover = 0
 
     def update(self, player_input):
 
@@ -58,18 +59,22 @@ class GuiButton:
             self.color_button_current = self.color_button_hovered
             self.color_text_current = self.color_text_hovered
             self.mouse_hover = True
-
+            if self.num_played_rollover == 0:
+                globalvars.ASSETS.sfx_rollover.play()
+                self.num_played_rollover = 1
 
         else:
             self.color_button_current = self.color_button_default
             self.color_text_current = self.color_text_default
             self.mouse_hover = False
+            self.num_played_rollover = 0
+            # fadeout to try and prevent "crackling" at end of audio (if abruptly ended)
+            globalvars.ASSETS.sfx_rollover.fadeout(60)
 
 
         if mouse_hovered and mouse_clicked:
-            pygame.mixer.Sound.play(globalvars.ASSETS.sfx_click1)
+            globalvars.ASSETS.sfx_click1.play()
             button_clicked = True
-
 
         return button_clicked
 
@@ -94,8 +99,6 @@ class GuiButton:
                 surface_button.blit(globalvars.ASSETS.S_MID_BUTTON_BLUE_HOVER, tuple(numpy.add(topL, (32 * w, 0))))
 
         self.surface.blit(surface_button, self.button_rect.topleft)
-
-
 
         # pygame.draw.rect(self.surface, self.color_button_current, self.button_rect)
 
