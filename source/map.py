@@ -406,7 +406,7 @@ def map_find_radius(coords, radius):
 def map_check_for_wall(incoming_map, coords_x, coords_y):
 
     if coords_x < 0 or coords_y < 0 or coords_x >= constants.MAP_WIDTH or coords_y >= constants.MAP_HEIGHT:
-        return False
+        return True
 
     else:
         return incoming_map[coords_x][coords_y].block_path

@@ -174,50 +174,6 @@ class ObjActor:
 
         return shortest_distance_to_other
 
-    def move_towards(self, other):
-        """Moves this actor object closer towards another object.
-
-            Used in the AiChase to chase after a specified actor object.
-            Uses the move() method in the ComCreature component class.
-
-        Args:
-            other (ObjActor): Target actor object to move towards
-
-        """
-
-        dx = other.x - self.x
-        dy = other.y - self.y
-
-        # shortest distance to another actor object in tile number measurements
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-
-        dx = round(dx / distance)
-        dy = round(dy / distance)
-
-        self.creature.move(dx, dy)
-
-    def move_away(self, other):
-        """Moves this actor object away from another object.
-
-            Used in the AiFlee to get away from a specified actor object.
-            Uses the move() method in the ComCreature component class.
-
-        Args:
-            other (ObjActor): Target actor object to move towards
-
-        """
-
-        dx = self.x - other.x
-        dy = self.y - other.y
-
-        # shortest distance to another actor object in tile number measurements
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-
-        dx = round(dx / distance)
-        dy = round(dy / distance)
-
-        self.creature.move(dx, dy)
-
     def animation_del(self):
         """ Get rid of any animation assets.
 

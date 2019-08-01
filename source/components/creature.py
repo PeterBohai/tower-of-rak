@@ -1,15 +1,13 @@
 # Standard library imports
 import random
+import math
 
 # Third party imports
 import pygame
 import tcod
 
-from source import text
-
-
 # Local project imports
-from source import constants, globalvars, game, map
+from source import constants, globalvars, game, map, text
 
 
 class ComCreature:
@@ -133,6 +131,113 @@ class ComCreature:
             for objActor in globalvars.GAME.current_objects:
                 if objActor.is_visible and objActor.creature:
                     objActor.creature.was_hit = False
+
+    def move_towards(self, target):
+        """Moves this actor object closer towards another object.
+
+            Used in the AiChase to chase after a specified actor object.
+            Uses the move() method in the ComCreature component class.
+
+        Args:
+            target (ObjActor): Target actor object to move towards
+
+        """
+
+        dx = target.x - self.owner.x
+        dy = target.y - self.owner.y
+
+        # shortest distance to another actor object in tile number measurements
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        dx = round(dx / distance)
+        dy = round(dy / distance)
+
+        # check for wall in the direction it was supposed to move
+        if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
+            # move towards target in the x-direction if blocked in the y-direction
+            if dx == 0:
+                if target.x > self.owner.x:
+                    dx = 1
+                else:
+                    dx = -1
+                dy = 0
+
+            #  move towards target in the y-direction if blocked in the x-direction
+            elif dy == 0:
+                if target.y > self.owner.y:
+                    dy = 1
+                else:
+                    dy = -1
+                dx = 0
+
+        self.move(dx, dy)
+
+    def move_away(self, away_from_target):
+        """Moves this actor object away from another object.
+
+            Used in the AiFlee to get away from a specified actor object.
+            Uses the move() method in the ComCreature component class.
+
+        Args:
+            away_from_target (ObjActor): Target actor object to move towards
+
+        """
+
+        dx = self.owner.x - away_from_target.x
+        dy = self.owner.y - away_from_target.y
+
+        # shortest distance to another actor object in tile number measurements
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        dx = round(dx / distance)
+        dy = round(dy / distance)
+
+        rand_int = random.randint(0, 100)
+        percent_chance = 9
+        # have a small chance of not always moving strictly away in the opposite direction of Player
+        print(rand_int)
+        if rand_int < percent_chance:
+            # move towards direction that is not blocked by walls 2 tiles or closer away
+
+            if dx == 0:
+                if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + 1, self.owner.y) or \
+                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + 2, self.owner.y):
+                    dx = -1
+                elif map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x - 1, self.owner.y) or \
+                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x - 2, self.owner.y):
+                    dx = 1
+                else:
+                    dx = random.choice((-1, 1))
+
+                dy = 0
+
+            elif dy == 0:
+                if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y + 1) or \
+                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y + 2):
+                    dy = -1
+                elif map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y - 1) or \
+                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y - 2):
+                    dy = 1
+                else:
+                    dy = random.choice((-1, 1))
+
+                dx = 0
+
+
+        # check for wall in the direction it was supposed to move
+        if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
+
+            # move randomly to either left or right if blocked in the y-direction
+            if dx == 0:
+                dx = random.choice((-1, 1))
+                dy = 0
+
+            # move randomly to either up or down if blocked in the x-direction
+            elif dy == 0:
+                dy = random.choice((-1, 1))
+                dx = 0
+
+        self.move(dx, dy)
 
     def attack(self, target):
         """Attacks another "target" ObjActor object.

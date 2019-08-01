@@ -12,8 +12,8 @@ The game is set in a world of two opposing races, where the adventure begins as 
   - permadeath
   
 ### Screenshots
-<img src="screenshots/screenshot-1.png" width=420> <img src="screenshots/screenshot-2.png" width=425>
-<img src="screenshots/screenshot-3.png" width=420> <img src="screenshots/screenshot-4.png" width=425>
+<img src="screenshots/screenshot-1.png" width=430> <img src="screenshots/screenshot-2.png" width=430>
+<img src="screenshots/screenshot-3.png" width=430> <img src="screenshots/screenshot-4.png" width=430>
   
 ## Download
 The zip file in <a href="dist/">here</a> is an **early demo** of this game for macOS.  

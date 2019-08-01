@@ -71,12 +71,14 @@ class AiChase:
 
         monster = self.owner
 
-        # when the monster creature is in the field of vision of the player
-        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y):
+        distance = monster.distance_to(globalvars.PLAYER)
+
+        # when the monster creature is in the field of vision of the player or is 7 radius within the player
+        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y) or distance <= 7:
 
             # move towards player
-            if monster.distance_to(globalvars.PLAYER) >= 2:
-                monster.move_towards(globalvars.PLAYER)
+            if distance >= 2:
+                monster.creature.move_towards(globalvars.PLAYER)
 
             else:
                 monster.creature.attack(globalvars.PLAYER)
@@ -102,8 +104,10 @@ class AiFlee:
 
         monster = self.owner
 
+        distance = monster.distance_to(globalvars.PLAYER)
+
         # when the monster creature is in the field of vision of the player
-        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y):
+        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y) and distance <= 3:
 
             # move away from player
-            monster.move_away(globalvars.PLAYER)
+            monster.creature.move_away(globalvars.PLAYER)
