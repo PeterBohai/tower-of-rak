@@ -195,7 +195,7 @@ class ComCreature:
         rand_int = random.randint(0, 100)
         percent_chance = 9
         # have a small chance of not always moving strictly away in the opposite direction of Player
-        print(rand_int)
+
         if rand_int < percent_chance:
             # move towards direction that is not blocked by walls 2 tiles or closer away
 

@@ -30,7 +30,7 @@ def menu_pause():
         event_list = pygame.event.get()
 
         text.draw_text(globalvars.SURFACE_MAIN, pause_menu_text, pause_menu_font, (pause_menu_x, pause_menu_y),
-                  constants.COLOR_WHITE, constants.COLOR_BLACK)
+                  constants.COLOR_WHITE, constants.COLOR_GAME_BG)
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:

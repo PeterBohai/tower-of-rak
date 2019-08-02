@@ -33,8 +33,8 @@ def draw_game():
     """
     text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
     # clear the surface (filling it with some color, wipe the color out)
-    globalvars.SURFACE_MAIN.fill(constants.COLOR_BLACK)
-    globalvars.SURFACE_MAP.fill(constants.COLOR_BLACK)
+    globalvars.SURFACE_MAIN.fill(constants.COLOR_GAME_BG)
+    globalvars.SURFACE_MAP.fill(constants.COLOR_GAME_BG)
 
     globalvars.CAMERA.update_pos()
 
@@ -119,7 +119,8 @@ def draw_map(map_to_draw):
     for x in range(render_min_x, render_max_x):
         for y in range(render_min_y, render_max_y):
 
-            tile_assign_num = map_to_draw[x][y].assignment
+            wall_num = map_to_draw[x][y].wall_assignment
+            floor_num = map_to_draw[x][y].floor_assignment
 
             is_visible = tcod.map_is_in_fov(globalvars.FOV_MAP, x, y)      # to check whether or not a tile is visible
 
@@ -128,22 +129,22 @@ def draw_map(map_to_draw):
                 map_to_draw[x][y].explored = True
 
                 if map_to_draw[x][y].block_path is True:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_dict[tile_assign_num],
+                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_dict[wall_num],
                                                 (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                 else:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR,
+                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num],
                                                 (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             else:
                 if map_to_draw[x][y].explored:
 
                     if map_to_draw[x][y].block_path is True:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_explored_dict[tile_assign_num],
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_explored_dict[wall_num],
                                                     (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                     else:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.S_FLOOR_EXPLORED,
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num],
                                                     (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             # else if not visible:
@@ -195,7 +196,7 @@ def draw_messages():
     for i, (message, color) in enumerate(globalvars.GAME.message_history):
 
         text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST,
-                       (text_x, start_y + (i * text_height)), color, constants.COLOR_BLACK)
+                       (text_x, start_y + (i * text_height)), color, constants.COLOR_GAME_BG)
 
 
 def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):

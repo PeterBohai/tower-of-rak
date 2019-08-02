@@ -1,5 +1,5 @@
 # Standard library imports
-import math
+import random
 
 # Third party imports
 import tcod
@@ -117,7 +117,6 @@ def map_create():
             # place the room onto the map
             map_create_room(new_map, new_room)
 
-            # place the globalvars.PLAYER inside the center of the very first of room of this map
             if len(list_of_rooms) != 0:
                 previous_room = list_of_rooms[-1]
 
@@ -145,9 +144,57 @@ def map_create_room(map_array, new_room):
 
     """
 
+    def add_to_x_y(x, y):
+        rand_add_x = random.choice((-1, 0, 1))
+
+        x += rand_add_x
+
+        if rand_add_x == 0:
+            rand_add_y = random.choice((-1, 1))
+        else:
+            rand_add_y = random.choice((-1, 0, 1))
+        y += rand_add_y
+
+        return x, y
+
     for x in range(new_room.x1, new_room.x2 + 1):
         for y in range(new_room.y1, new_room.y2 + 1):
             map_array[x][y].block_path = False
+
+    pillar_x1, pillar_y1 = None, None
+    # spawn a few "pillar" walls (80% chance) around the room if the room is bigger than a certain width/height
+    if new_room.width * new_room.height > 64 and random.randint(0, 100) < 80:
+
+        # spawn at least 2 tiles from walls and not the middle tile
+        pillar_x1 = random.randint(new_room.x1 + 2, new_room.x2 - 2)
+        pillar_y1 = random.randint(new_room.y1 + 2, new_room.y2 - 2)
+
+        if (pillar_x1, pillar_y1) == (new_room.center_x, new_room.center_y):
+            pillar_x1, pillar_y1 = add_to_x_y(pillar_x1, pillar_y1)
+
+        map_array[pillar_x1][pillar_y1].block_path = True
+
+    # have a chance to spawn more pillars (at least one now)
+    if new_room.width * new_room.height > 100:
+
+        pillar_x2 = random.randint(new_room.x1 + 3, new_room.x2 - 3)
+        pillar_y2 = random.randint(new_room.y1 + 3, new_room.y2 - 3)
+
+        while (pillar_x2, pillar_y2) == (new_room.center_x, new_room.center_y) or \
+                (pillar_x2, pillar_y2) == (pillar_x1, pillar_y1):
+
+            pillar_x2, pillar_y2 = add_to_x_y(pillar_x2, pillar_y2)
+
+        adj_possible_list = [(pillar_x2, pillar_y2 - 1), (pillar_x2 + 1, pillar_y2),
+                             (pillar_x2, pillar_y2 + 1), (pillar_x2 - 1, pillar_y2)]
+
+
+        pillar_x2_adj, pillar_y2_adj = random.choice([(x, y) for (x, y) in adj_possible_list
+                                                      if (x, y) != (new_room.center_x, new_room.center_y)
+                                                      or (x, y) != (pillar_x1, pillar_y1)])
+
+        map_array[pillar_x2][pillar_y2].block_path = True
+        map_array[pillar_x2_adj][pillar_y2_adj].block_path = True
 
 
 def map_place_items_creatures(room_list):
@@ -201,9 +248,10 @@ def map_place_items_creatures(room_list):
         item_y = globalvars.PLAYER.y
 
         # items are not allowed to span on top of player's spawn point
-        while (item_x, item_y) == (globalvars.PLAYER.x, globalvars.PLAYER.y):
-            item_x = tcod.random_get_int(0, min_x, max_x)
-            item_y = tcod.random_get_int(0, min_y, max_y)
+        while (item_x, item_y) == (globalvars.PLAYER.x, globalvars.PLAYER.y) \
+                or map_check_for_wall(globalvars.GAME.current_map, item_x, item_y):
+            item_x = random.randint(min_x, max_x)
+            item_y = random.randint(min_y, max_y)
 
         itemgen.gen_item((item_x, item_y))
 
@@ -429,25 +477,38 @@ def assign_tiles(incoming_map):
             tile_is_wall = map_check_for_wall(incoming_map, x, y)
 
             if tile_is_wall:
-                assign_num = 0
+                wall_assign_num = 0
 
                 # check surrounding walls
                 if map_check_for_wall(incoming_map, x, y-1):
-                    assign_num += 1
+                    wall_assign_num += 1
                 if map_check_for_wall(incoming_map, x+1, y):
-                    assign_num += 2
+                    wall_assign_num += 2
                 if map_check_for_wall(incoming_map, x, y+1):
-                    assign_num += 4
+                    wall_assign_num += 4
                 if map_check_for_wall(incoming_map, x-1, y):
-                    assign_num += 8
+                    wall_assign_num += 8
 
-                if assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y-1):
-                    assign_num = 22
-                elif assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y-1):
-                    assign_num = 33
-                elif assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y+1):
-                    assign_num = 44
-                elif assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y+1):
-                    assign_num = 55
+                if wall_assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y-1):
+                    wall_assign_num = 22
+                elif wall_assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y-1):
+                    wall_assign_num = 33
+                elif wall_assign_num == 15 and not map_check_for_wall(incoming_map, x-1, y+1):
+                    wall_assign_num = 44
+                elif wall_assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y+1):
+                    wall_assign_num = 55
 
-                incoming_map[x][y].assignment = assign_num
+                incoming_map[x][y].wall_assignment = wall_assign_num
+            else:
+                floor_assign_num = 0
+
+                if map_check_for_wall(incoming_map, x, y-1):
+                    floor_assign_num += 1
+                if map_check_for_wall(incoming_map, x+1, y):
+                    floor_assign_num += 2
+                if map_check_for_wall(incoming_map, x, y+1):
+                    floor_assign_num += 4
+                if map_check_for_wall(incoming_map, x-1, y):
+                    floor_assign_num += 8
+
+                incoming_map[x][y].floor_assignment = floor_assign_num

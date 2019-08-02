@@ -78,7 +78,7 @@ def death_player(player):
         if quit_button.update(player_events):
             death_popup = False
 
-        globalvars.SURFACE_MAIN.fill(constants.COLOR_BLACK)
+        globalvars.SURFACE_MAIN.fill(constants.COLOR_GAME_BG)
         text.draw_text(globalvars.SURFACE_MAIN, "You Died!", constants.FONT_PLAYER_DEATH,
                        center_coords,
                        constants.COLOR_RED,

@@ -170,52 +170,85 @@ class ObjAssets:
         self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
         self.S_WALL_EXPLORED = self.wall.get_image('d', 13, 16, 16, (32, 32))[0]
 
-        self.S_WALL_0 = self.wall.get_image('k', 43, 16, 16, (32, 32))[0]
-        self.S_WALL_1 = self.wall.get_image('i', 44, 16, 16, (32, 32))[0]
-        self.S_WALL_2 = self.wall.get_image('k', 45, 16, 16, (32, 32))[0]       # need wall piece
-        self.S_WALL_3 = self.wall.get_image('h', 45, 16, 16, (32, 32))[0]       # corner bot-left
-        self.S_WALL_4 = self.wall.get_image('i', 45, 16, 16, (32, 32))[0]       # need wall piece
-        self.S_WALL_5 = self.wall.get_image('h', 44, 16, 16, (32, 32))[0]
-        self.S_WALL_6 = self.wall.get_image('h', 43, 16, 16, (32, 32))[0]       # corner top-left
-        self.S_WALL_7 = self.wall.get_image('h', 44, 16, 16, (32, 32))[0]       # right (and left) side
-        self.S_WALL_8 = self.wall.get_image('m', 45, 16, 16, (32, 32))[0]       # need wall piece
-        self.S_WALL_9 = self.wall.get_image('j', 45, 16, 16, (32, 32))[0]       # corner bot-right
-        self.S_WALL_10 = self.wall.get_image('i', 43, 16, 16, (32, 32))[0]       # need wall piece
-        self.S_WALL_11 = self.wall.get_image('i', 43, 16, 16, (32, 32))[0]      # top side
-        self.S_WALL_12 = self.wall.get_image('j', 43, 16, 16, (32, 32))[0]      # corner top-right
-        self.S_WALL_13 = self.wall.get_image('h', 44, 16, 16, (32, 32))[0]      # left side
-        self.S_WALL_14 = self.wall.get_image('l', 45, 16, 16, (32, 32))[0]      # bot side
-        self.S_WALL_15 = self.wall.get_image('h', 43, 16, 16, (32, 32))[0]      # room corner
-        self.S_WALL_22 = self.wall.get_image('j', 45, 16, 16, (32, 32))[0]      # room corner
-        self.S_WALL_33 = self.wall.get_image('h', 45, 16, 16, (32, 32))[0]      # room corner
-        self.S_WALL_44 = self.wall.get_image('j', 43, 16, 16, (32, 32))[0]      # room corner
-        self.S_WALL_55 = self.wall.get_image('h', 43, 16, 16, (32, 32))[0]      # room corner
+        self.S_WALL_0 = self.wall.get_image('b', 5, 16, 16, (32, 32))[0]
+        self.S_WALL_1 = self.wall.get_image('c', 5, 16, 16, (32, 32))[0]
+        self.S_WALL_2 = self.wall.get_image('d', 6, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_3 = self.wall.get_image('a', 6, 16, 16, (32, 32))[0]  # corner bot-left
+        self.S_WALL_4 = self.wall.get_image('b', 6, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_5 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]
+        self.S_WALL_6 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # corner top-left
+        self.S_WALL_7 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]  # right (and left) side
+        self.S_WALL_8 = self.wall.get_image('f', 6, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_9 = self.wall.get_image('c', 6, 16, 16, (32, 32))[0]  # corner bot-right
+        self.S_WALL_10 = self.wall.get_image('b', 4, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_11 = self.wall.get_image('b', 4, 16, 16, (32, 32))[0]  # top side
+        self.S_WALL_12 = self.wall.get_image('c', 4, 16, 16, (32, 32))[0]  # corner top-right
+        self.S_WALL_13 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]  # left side
+        self.S_WALL_14 = self.wall.get_image('e', 6, 16, 16, (32, 32))[0]  # bot side
+        self.S_WALL_15 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_22 = self.wall.get_image('c', 6, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_33 = self.wall.get_image('a', 6, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_44 = self.wall.get_image('c', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_55 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # room corner
 
-
-        self.S_WALL_EXPLORED_0 = self.wall.get_image('k', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_1 = self.wall.get_image('i', (44 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_2 = self.wall.get_image('k', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_3 = self.wall.get_image('h', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_4 = self.wall.get_image('i', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_5 = self.wall.get_image('h', (44 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_6 = self.wall.get_image('h', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_7 = self.wall.get_image('h', (44 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_8 = self.wall.get_image('m', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_9 = self.wall.get_image('j', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_10 = self.wall.get_image('i', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_11 = self.wall.get_image('i', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_12 = self.wall.get_image('j', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_13 = self.wall.get_image('h', (44 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_14 = self.wall.get_image('l', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_15 = self.wall.get_image('h', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_22 = self.wall.get_image('j', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_33 = self.wall.get_image('h', (45 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_44 = self.wall.get_image('j', (43 + 3), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_55 = self.wall.get_image('h', (43 + 3), 16, 16, (32, 32))[0]
-
+        self.S_WALL_EXPLORED_0 = self.wall.get_image('b', (5 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_1 = self.wall.get_image('c', (5 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_2 = self.wall.get_image('d', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_3 = self.wall.get_image('a', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_4 = self.wall.get_image('b', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_5 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_6 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_7 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_8 = self.wall.get_image('f', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_9 = self.wall.get_image('c', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_10 = self.wall.get_image('b', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_11 = self.wall.get_image('b', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_12 = self.wall.get_image('c', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_13 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_14 = self.wall.get_image('e', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_15 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_22 = self.wall.get_image('c', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_33 = self.wall.get_image('a', (6 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_44 = self.wall.get_image('c', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_55 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
 
         self.S_FLOOR = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
         self.S_FLOOR_EXPLORED = self.floor.get_image('b', 14, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_0 = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_1 = self.floor.get_image('b', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_2 = self.floor.get_image('c', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_3 = self.floor.get_image('c', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_4 = self.floor.get_image('b', 9, 16, 16, (32, 32))[0]
+        self.S_FLOOR_5 = self.floor.get_image('f', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_6 = self.floor.get_image('c', 9, 16, 16, (32, 32))[0]
+        self.S_FLOOR_7 = self.floor.get_image('g', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_8 = self.floor.get_image('a', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_9 = self.floor.get_image('a', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_10 = self.floor.get_image('d', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_11 = self.floor.get_image('d', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_12 = self.floor.get_image('a', 9, 16, 16, (32, 32))[0]
+        self.S_FLOOR_13 = self.floor.get_image('e', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_14 = self.floor.get_image('d', 9, 16, 16, (32, 32))[0]
+        self.S_FLOOR_15 = self.floor.get_image('f', 7, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_EXPLORED_0 = self.floor.get_image('b', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_1 = self.floor.get_image('b', (7 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_2 = self.floor.get_image('c', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_3 = self.floor.get_image('c', (7 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_4 = self.floor.get_image('b', (9 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_5 = self.floor.get_image('f', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_6 = self.floor.get_image('c', (9 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_7 = self.floor.get_image('g', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_8 = self.floor.get_image('a', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_9 = self.floor.get_image('a', (7 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_10 = self.floor.get_image('d', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_11 = self.floor.get_image('d', (7 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_12 = self.floor.get_image('a', (9 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_13 = self.floor.get_image('e', (8 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_14 = self.floor.get_image('d', (9 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_15 = self.floor.get_image('f', (7 + 6), 16, 16, (32, 32))[0]
+
 
         # ---> Items
         self.S_TOMATO = self.food.get_image('g', 3, 16, 16, (32, 32))
@@ -349,6 +382,44 @@ class ObjAssets:
             44: self.S_WALL_EXPLORED_44,
             55: self.S_WALL_EXPLORED_55
 
+        }
+
+        self.floor_dict = {
+            0: self.S_FLOOR_0,
+            1: self.S_FLOOR_1,
+            2: self.S_FLOOR_2,
+            3: self.S_FLOOR_3,
+            4: self.S_FLOOR_4,
+            5: self.S_FLOOR_5,
+            6: self.S_FLOOR_6,
+            7: self.S_FLOOR_7,
+            8: self.S_FLOOR_8,
+            9: self.S_FLOOR_9,
+            10: self.S_FLOOR_10,
+            11: self.S_FLOOR_11,
+            12: self.S_FLOOR_12,
+            13: self.S_FLOOR_13,
+            14: self.S_FLOOR_14,
+            15: self.S_FLOOR_15,
+        }
+
+        self.floor_explored_dict = {
+            0: self.S_FLOOR_EXPLORED_0,
+            1: self.S_FLOOR_EXPLORED_1,
+            2: self.S_FLOOR_EXPLORED_2,
+            3: self.S_FLOOR_EXPLORED_3,
+            4: self.S_FLOOR_EXPLORED_4,
+            5: self.S_FLOOR_EXPLORED_5,
+            6: self.S_FLOOR_EXPLORED_6,
+            7: self.S_FLOOR_EXPLORED_7,
+            8: self.S_FLOOR_EXPLORED_8,
+            9: self.S_FLOOR_EXPLORED_9,
+            10: self.S_FLOOR_EXPLORED_10,
+            11: self.S_FLOOR_EXPLORED_11,
+            12: self.S_FLOOR_EXPLORED_12,
+            13: self.S_FLOOR_EXPLORED_13,
+            14: self.S_FLOOR_EXPLORED_14,
+            15: self.S_FLOOR_EXPLORED_15,
         }
 
 

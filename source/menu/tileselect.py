@@ -89,8 +89,8 @@ def menu_tile_select(coords_origin=None,
 
         # Draw game
         # clear the surface (filling it with some color, wipe the color out)
-        globalvars.SURFACE_MAIN.fill(constants.COLOR_BLACK)
-        globalvars.SURFACE_MAP.fill(constants.COLOR_BLACK)
+        globalvars.SURFACE_MAIN.fill(constants.COLOR_GAME_BG)
+        globalvars.SURFACE_MAP.fill(constants.COLOR_GAME_BG)
 
         globalvars.CAMERA.update_pos()
 
