@@ -28,6 +28,7 @@ class StructPreferences:
                                     "right": ("→", pygame.K_RIGHT),
                                     "up": ("↑", pygame.K_UP),
                                     "down": ("↓", pygame.K_DOWN),
+                                    "stay": ("Spc", pygame.K_SPACE),
                                     "grab": ("G", pygame.K_g),
                                     "drop": ("D", pygame.K_d),
                                     "inventory": ("I", pygame.K_i),

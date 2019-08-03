@@ -59,7 +59,6 @@ def menu_main_options(ingame_menu_options=False):
     # ================== Options menu is in-game =================== #
     if ingame_menu_options:
         button_width = 96
-        back_button_width = 64
 
         save_button_text = "Save game"
 
@@ -379,7 +378,12 @@ def menu_options_controls():
     # ============== options menu dimensions ============== #
     # options menu dimensions (in MAIN MENU)
     menu_width = 448
-    menu_height = 480
+    menu_height = 416
+
+    scroll_window_width = menu_width - (2 * constants.CELL_WIDTH)
+    scroll_window_height = menu_height - 70 - 64
+
+    controls_height = 448
 
     # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
@@ -390,11 +394,19 @@ def menu_options_controls():
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
+    surface_scroll_window = pygame.Surface((scroll_window_width, scroll_window_height))
+    menu_x, menu_y = menu_rect.topleft
+    scroll_window_pos = (menu_x + 32, menu_y + 70)
+
+    surface_controls = pygame.Surface((scroll_window_width, controls_height))
+    surface_controls.fill((184, 163, 143))
+    scroll_y = 0
+
     # title
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= slider/button variables ================ #
+    # ================= button variables ================ #
 
     # buttons
     button_list = []
@@ -442,51 +454,55 @@ def menu_options_controls():
     botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
 
     # text positions
-    text_x = menu_rect.left + 32
+    text_x = 0
     text_y_offset = text.helper_text_height(constants.FONT_BEST) + 24
-    line_y = [title_y + 40]
+    line_y = [8]      # [title_y + 40]
     for line in range(1, 20):
         line_y.append(line_y[0] + line * text_y_offset)
 
-    keys_button_x = center_x
+    keys_button_x = scroll_window_width/2
     keys_button_y = list(map(lambda x: x + int(small_button_height/2) - 8, line_y[::]))
 
     previous_key_bindings = copy.deepcopy(globalvars.PREFERENCES.keybindings)
 
-    left_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["left"][0],
+    left_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["left"][0],
                                 (keys_button_x, keys_button_y[0]),
                                 (small_button_width, small_button_height))
 
-    right_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["right"][0],
+    right_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["right"][0],
                                  (keys_button_x, keys_button_y[1]),
                                  (small_button_width, small_button_height))
 
-    up_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["up"][0],
+    up_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["up"][0],
                               (keys_button_x, keys_button_y[2]),
                               (small_button_width, small_button_height))
 
-    down_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["down"][0],
+    down_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["down"][0],
                                 (keys_button_x, keys_button_y[3]),
                                 (small_button_width, small_button_height))
 
-    grab_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["grab"][0],
+    stay_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["stay"][0],
                                 (keys_button_x, keys_button_y[4]),
                                 (small_button_width, small_button_height))
 
-    drop_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["drop"][0],
+    grab_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["grab"][0],
                                 (keys_button_x, keys_button_y[5]),
                                 (small_button_width, small_button_height))
 
-    inventory_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["inventory"][0],
-                                     (keys_button_x, keys_button_y[6]),
-                                     (small_button_width, small_button_height))
-
-    next_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["next"][0],
-                                (keys_button_x, keys_button_y[7]),
+    drop_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["drop"][0],
+                                (keys_button_x, keys_button_y[6]),
                                 (small_button_width, small_button_height))
 
-    esc_button = gui.GuiButton(surface_menu, globalvars.PREFERENCES.keybindings["back"][0],
-                               (keys_button_x, keys_button_y[8]),
+    inventory_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["inventory"][0],
+                                     (keys_button_x, keys_button_y[7]),
+                                     (small_button_width, small_button_height))
+
+    next_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["next"][0],
+                                (keys_button_x, keys_button_y[8]),
+                                (small_button_width, small_button_height))
+
+    esc_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["back"][0],
+                               (keys_button_x, keys_button_y[9]),
                                (small_button_width, small_button_height))
 
     # ====================== Menu LOOP ===================== #
@@ -498,6 +514,7 @@ def menu_options_controls():
         right_button.text = globalvars.PREFERENCES.keybindings["right"][0]
         up_button.text = globalvars.PREFERENCES.keybindings["up"][0]
         down_button.text = globalvars.PREFERENCES.keybindings["down"][0]
+        stay_button.text = globalvars.PREFERENCES.keybindings["stay"][0]
         grab_button.text = globalvars.PREFERENCES.keybindings["grab"][0]
         drop_button.text = globalvars.PREFERENCES.keybindings["drop"][0]
         inventory_button.text = globalvars.PREFERENCES.keybindings["inventory"][0]
@@ -508,17 +525,33 @@ def menu_options_controls():
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
 
+        # update relative mouse position
+        mouse_x, mouse_y = mouse_pos
+        mouse_rel_x = mouse_x -scroll_window_pos[0]
+        mouse_rel_y = mouse_y - (scroll_window_pos[1] + scroll_y)
+        mouse_rel_pos = (mouse_rel_x, mouse_rel_y)
+        if mouse_y > (scroll_window_pos[1] + scroll_window_height):
+            mouse_rel_pos = (0, 0)
+
         player_events = (events_list, mouse_pos)
+        player_events_rel = (events_list, mouse_rel_pos)
 
         # process player input
         for event in events_list:
             if event.type == pygame.KEYDOWN:
+
                 if event.key == pygame.K_ESCAPE:
 
                     # will not save controls if exit without selecting "SAVE"
                     if not saved:
                         globalvars.PREFERENCES.keybindings = previous_key_bindings
                     menu_close = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:
+                    scroll_y = min(scroll_y + 15, 0)
+                if event.button == 5:
+                    scroll_y = max(scroll_y - 15, -(controls_height- scroll_window_height))
 
         if save_button.update(player_events):
             saved = True
@@ -533,39 +566,44 @@ def menu_options_controls():
         if reset_button.update(player_events):
             globalvars.PREFERENCES.keybindings = copy.deepcopy(globalvars.PREFERENCES.default_keybindings)
 
-        if left_button.update(player_events):
+        # update control buttons
+        if left_button.update(player_events_rel):
             menu_change_controls("left")
             saved = False
 
-        if right_button.update(player_events):
+        if right_button.update(player_events_rel):
             menu_change_controls("right")
             saved = False
 
-        if up_button.update(player_events):
+        if up_button.update(player_events_rel):
             menu_change_controls("up")
             saved = False
 
-        if down_button.update(player_events):
+        if down_button.update(player_events_rel):
             menu_change_controls("down")
             saved = False
 
-        if grab_button.update(player_events):
+        if stay_button.update(player_events_rel):
+            menu_change_controls("stay")
+            saved = False
+
+        if grab_button.update(player_events_rel):
             menu_change_controls("grab")
             saved = False
 
-        if drop_button.update(player_events):
+        if drop_button.update(player_events_rel):
             menu_change_controls("drop")
             saved = False
 
-        if inventory_button.update(player_events):
+        if inventory_button.update(player_events_rel):
             menu_change_controls("inventory")
             saved = False
 
-        if next_button.update(player_events):
+        if next_button.update(player_events_rel):
             menu_change_controls("next")
             saved = False
 
-        if esc_button.update(player_events):
+        if esc_button.update(player_events_rel):
             menu_change_controls("back")
             saved = False
 
@@ -578,43 +616,43 @@ def menu_options_controls():
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # draw functions
-        text.draw_text(surface_menu, "CONTROLS", constants.FONT_MENU_TITLE,
-                       (title_x, title_y), constants.COLOR_BLACK, center=True)
 
-        text.draw_text(surface_menu, "Move Left",
+        text.draw_text(surface_controls, "Move Left",
                        constants.FONT_BEST, (text_x, line_y[0]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Move Right",
+        text.draw_text(surface_controls, "Move Right",
                        constants.FONT_BEST, (text_x, line_y[1]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Move Up",
+        text.draw_text(surface_controls, "Move Up",
                        constants.FONT_BEST, (text_x, line_y[2]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Move Down",
+        text.draw_text(surface_controls, "Move Down",
                        constants.FONT_BEST, (text_x, line_y[3]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Grab Item",
+        text.draw_text(surface_controls, "Stay",
                        constants.FONT_BEST, (text_x, line_y[4]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Drop Item",
+        text.draw_text(surface_controls, "Grab Item",
                        constants.FONT_BEST, (text_x, line_y[5]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Inventory",
+        text.draw_text(surface_controls, "Drop Item",
                        constants.FONT_BEST, (text_x, line_y[6]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Next Floor",
+        text.draw_text(surface_controls, "Inventory",
                        constants.FONT_BEST, (text_x, line_y[7]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_menu, "Back/Exit",
+        text.draw_text(surface_controls, "Next Floor",
                        constants.FONT_BEST, (text_x, line_y[8]), constants.COLOR_BLACK)
 
-        save_button.draw()
-        back_button.draw()
-        reset_button.draw()
+        text.draw_text(surface_controls, "Back/Exit",
+                       constants.FONT_BEST, (text_x, line_y[9]), constants.COLOR_BLACK)
+
+
         left_button.draw()
         right_button.draw()
         up_button.draw()
         down_button.draw()
+        stay_button.draw()
         grab_button.draw()
         drop_button.draw()
         inventory_button.draw()
@@ -622,7 +660,7 @@ def menu_options_controls():
         esc_button.draw()
 
         # >>>>> update display <<<<<
-        globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
+        surface_scroll_window.blit(surface_controls, (0, scroll_y))
 
         # blit the corners
         surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
@@ -647,6 +685,16 @@ def menu_options_controls():
         for r in range(1, num_tiles_height + 1):
             for c in range(1, num_tiles_width + 1):
                 surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
+
+        # display scroll window
+        surface_menu.blit(surface_scroll_window, scroll_window_pos)
+
+        text.draw_text(surface_menu, "CONTROLS", constants.FONT_MENU_TITLE,
+                       (title_x, title_y), constants.COLOR_BLACK, center=True)
+        save_button.draw()
+        back_button.draw()
+        reset_button.draw()
+        globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
 
         pygame.display.update()
 
@@ -696,7 +744,8 @@ def menu_change_controls(action):
         arrow_keys = {"up": "↑",
                       "down": "↓",
                       "left": "←",
-                      "right": "→"}
+                      "right": "→",
+                      "space": "Spc"}
 
         shift_chars = {pygame.K_PERIOD: ">",
                        pygame.K_COMMA: "<",
@@ -985,9 +1034,3 @@ def menu_options_display():
                 surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
 
         pygame.display.update()
-
-
-
-
-
-

@@ -268,11 +268,8 @@ class ObjAssets:
         self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
         self.S_STAIRS_DOWN = self.tile.get_image('b', 2, 16, 16, (32, 32))
 
-        self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png")
+        self.S_MAIN_MENU = pygame.image.load("data/graphics/landscape.png").convert()
         self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
-
-        self.S_CREDITS_MENU = pygame.image.load("data/graphics/menu/brown_bg.jpg")
-        self.S_CREDITS_MENU = pygame.transform.scale(self.S_CREDITS_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
 
         self.S_TOP_L_MENU_LIGHT = self.menugui.get_image('b1', 8, 16, 16, (32, 32))[0]
         self.S_TOP_R_MENU_LIGHT = self.menugui.get_image('e1', 8, 16, 16, (32, 32))[0]
@@ -311,7 +308,7 @@ class ObjAssets:
 
         # ---> GUI
         self.slider_button_size = (26, 20)
-        self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png")
+        self.S_SLIDER_BUTTON = pygame.image.load("data/graphics/GUI/buttons/BTN_SLIDER_SM_(1).png").convert()
         self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
 
         # animation dictionary to reference when generating objects (a way to avoid saving error)

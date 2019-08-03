@@ -261,6 +261,16 @@ def game_handle_keys():
                         actions.move_one_tile("right")
                         return "player moved"
 
+            # 'space bar' key: stay in place but advance turn by 1
+            if event.key == keys["stay"][1]:
+                if len(keys["stay"]) == 2:
+                    return "player moved"
+
+                elif len(keys["stay"]) == 3 and \
+                        (keys["stay"][2] == pygame.K_LSHIFT or keys["stay"][2] == pygame.K_RSHIFT):
+                    if shift_pressed:
+                        return "player moved"
+
             # 'g' key: pickup item at the player's current position
             if event.key == keys["grab"][1]:
                 if len(keys["grab"]) == 2:
