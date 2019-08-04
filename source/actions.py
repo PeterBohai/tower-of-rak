@@ -17,6 +17,7 @@ def use_stairs():
 
         if obj.portal:
             obj.portal.use()
+    globalvars.FLOOR_CHANGED = False
 
 
 def move_one_tile(direction):

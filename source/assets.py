@@ -128,9 +128,7 @@ class ObjAssets:
 
         # ---> Character folder
         self.reptile = ObjSpriteSheet("data/graphics/Characters/Reptile.png")
-        #self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
         self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
-        #self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
         self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
 
         # ---> Items folder
@@ -163,6 +161,13 @@ class ObjAssets:
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
         self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
+        self.A_DUNGO = self.slime.get_animation('A', 1, 2)
+        self.A_DARKSOOT = self.slime.get_animation('A', 2, 2)
+        self.A_BLAZEO = self.slime.get_animation('e', 0, 2)
+        self.A_KELPCLOPSE = self.slime.get_animation('e', 1, 2)
+        self.A_SHELK = self.slime.get_animation('e', 2, 2)
+
+        # friendly mobs
         self.A_HEALER_SLIME = self.slime.get_animation('A', 0, 2)
 
         #                        ||| Still Sprites |||
@@ -318,6 +323,11 @@ class ObjAssets:
             "A_PLAYER_RIGHT": self.A_PLAYER_RIGHT,
             "A_COBRA": self.A_COBRA,
             "A_GIANT_BOA": self.A_GIANT_BOA,
+            "A_DUNGO": self.A_DUNGO,
+            "A_DARKSOOT": self.A_DARKSOOT,
+            "A_BLAZEO": self.A_BLAZEO,
+            "A_KELPCLOPSE": self.A_KELPCLOPSE,
+            "A_SHELK": self.A_SHELK,
             "A_HEALER_SLIME": self.A_HEALER_SLIME,
             "S_TOMATO": self.S_TOMATO,
             "S_RADISH": self.S_RADISH,

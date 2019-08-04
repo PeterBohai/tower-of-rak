@@ -9,7 +9,6 @@ from source import constants, globalvars, data
 from source.generators import itemgen, creaturegen, playergen, specialgen
 
 
-
 # ================================================================= #
 #                         -----  Map  -----                         #
 #                          --- SECTION ---                          #
@@ -163,22 +162,22 @@ def map_create_room(map_array, new_room):
 
     pillar_x1, pillar_y1 = None, None
     # spawn a few "pillar" walls (80% chance) around the room if the room is bigger than a certain width/height
-    if new_room.width * new_room.height > 64 and random.randint(0, 100) < 80:
+    if new_room.width * new_room.height > 64 and tcod.random_get_int(0, 1, 100) < 80:
 
         # spawn at least 2 tiles from walls and not the middle tile
-        pillar_x1 = random.randint(new_room.x1 + 2, new_room.x2 - 2)
-        pillar_y1 = random.randint(new_room.y1 + 2, new_room.y2 - 2)
+        pillar_x1 = tcod.random_get_int(0, new_room.x1 + 2, new_room.x2 - 2)
+        pillar_y1 = tcod.random_get_int(0, new_room.y1 + 2, new_room.y2 - 2)
 
         if (pillar_x1, pillar_y1) == (new_room.center_x, new_room.center_y):
             pillar_x1, pillar_y1 = add_to_x_y(pillar_x1, pillar_y1)
 
         map_array[pillar_x1][pillar_y1].block_path = True
 
-    # have a chance to spawn more pillars (at least one now)
+    # spawn a double pillar
     if new_room.width * new_room.height > 100:
 
-        pillar_x2 = random.randint(new_room.x1 + 3, new_room.x2 - 3)
-        pillar_y2 = random.randint(new_room.y1 + 3, new_room.y2 - 3)
+        pillar_x2 = tcod.random_get_int(0, new_room.x1 + 3, new_room.x2 - 3)
+        pillar_y2 = tcod.random_get_int(0, new_room.y1 + 3, new_room.y2 - 3)
 
         while (pillar_x2, pillar_y2) == (new_room.center_x, new_room.center_y) or \
                 (pillar_x2, pillar_y2) == (pillar_x1, pillar_y1):
@@ -256,8 +255,8 @@ def map_place_items_creatures(room_list):
         # items are not allowed to span on top of player's spawn point
         while (item_x, item_y) == (globalvars.PLAYER.x, globalvars.PLAYER.y) \
                 or map_check_for_wall(globalvars.GAME.current_map, item_x, item_y):
-            item_x = random.randint(min_x, max_x)
-            item_y = random.randint(min_y, max_y)
+            item_x = tcod.random_get_int(0, min_x, max_x)
+            item_y = tcod.random_get_int(0, min_y, max_y)
 
         itemgen.gen_item((item_x, item_y))
 
