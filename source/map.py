@@ -206,6 +206,7 @@ def map_place_items_creatures(room_list):
     """
 
     floor_num = globalvars.GAME.max_floor_reached
+    cur_floor = globalvars.GAME.cur_floor
     is_top_floor = (floor_num == constants.MAP_MAX_NUM_FLOORS)
     first_floor = (len(globalvars.GAME.maps_prev) == 0)
 
@@ -219,17 +220,22 @@ def map_place_items_creatures(room_list):
         min_y = room.y1
         max_y = room.y2
 
-        enemy_x = tcod.random_get_int(0, min_x, max_x)
-        enemy_y = tcod.random_get_int(0, min_y, max_y)
-
-        # generate PLAYER in the center of the first room
+        # generate PLAYER in the center of the first room (no monsters unless for testing)
         if first_room:
             globalvars.PLAYER.x, globalvars.PLAYER.y = room.center
-            creaturegen.gen_enemy((enemy_x, enemy_y))
+            creaturegen.gen_enemy((min_x, max_x), (min_y, max_y), cur_floor)
+            creaturegen.gen_friendly_mob((min_x, max_x), (min_y, max_y), cur_floor)
 
         # only generate enemies in the rooms that the player doesnt start in
         if not first_room:
-            creaturegen.gen_enemy((enemy_x, enemy_y))
+            creaturegen.gen_enemy((min_x, max_x), (min_y, max_y), cur_floor)
+            creaturegen.gen_friendly_mob((min_x, max_x), (min_y, max_y), cur_floor)
+
+            if room.width * room.height > 81:
+                creaturegen.gen_enemy((min_x, max_x), (min_y, max_y), cur_floor)
+
+            if room.width * room.height > 144:
+                creaturegen.gen_enemy((min_x, max_x), (min_y, max_y), cur_floor)
 
         # only generate stairs leading down in the first room if the map is not the top level
         if first_room and not first_floor:

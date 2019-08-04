@@ -60,7 +60,7 @@ class ObjSpriteSheet:
 
         image.blit(self.sprite_sheet, (0, 0), (self.tileDict[column] * width, row * height, width, height))
 
-        image.set_colorkey(constants.COLOR_BLACK)
+        #image.set_colorkey(constants.COLOR_BLACK)
 
         if scale:
             (new_w, new_h) = scale
@@ -103,7 +103,7 @@ class ObjSpriteSheet:
             image.blit(self.sprite_sheet, (0, 0), (self.tileDict[column] * width + (width * i), row * height, width, height))
 
             # set transparency key to black
-            image.set_colorkey(constants.COLOR_BLACK)
+            #image.set_colorkey(constants.COLOR_BLACK)
 
             if scale:
                 (new_w, new_h) = scale
@@ -128,9 +128,9 @@ class ObjAssets:
 
         # ---> Character folder
         self.reptile = ObjSpriteSheet("data/graphics/Characters/Reptile.png")
-        self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
+        #self.aquatic = ObjSpriteSheet("data/graphics/Characters/Aquatic.png")
         self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
-        self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
+        #self.avian = ObjSpriteSheet("data/graphics/Characters/Avian.png")
         self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
 
         # ---> Items folder
@@ -157,12 +157,13 @@ class ObjAssets:
         #                        ||| Animations |||
 
         # ---> Player
-        self.A_PLAYER = self.player.get_animation('a', 15, 2, 16, 16, (32, 32))
+        self.A_PLAYER_LEFT = self.player.get_animation('A', 0, 2)
+        self.A_PLAYER_RIGHT = self.player.get_animation('A', 1, 2)
 
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
         self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
-        self.A_HEALER_SLIME = self.slime.get_animation('a', 4, 2, 16, 16, (32, 32))
+        self.A_HEALER_SLIME = self.slime.get_animation('A', 0, 2)
 
         #                        ||| Still Sprites |||
 
@@ -313,7 +314,8 @@ class ObjAssets:
 
         # animation dictionary to reference when generating objects (a way to avoid saving error)
         self.animation_dict = {
-            "A_PLAYER": self.A_PLAYER,
+            "A_PLAYER_LEFT": self.A_PLAYER_LEFT,
+            "A_PLAYER_RIGHT": self.A_PLAYER_RIGHT,
             "A_COBRA": self.A_COBRA,
             "A_GIANT_BOA": self.A_GIANT_BOA,
             "A_HEALER_SLIME": self.A_HEALER_SLIME,

@@ -240,24 +240,28 @@ def game_handle_keys():
             # 'left arrow' key: move player one tile to the left, hold down to continuing moving automatically
             if event.key == keys["left"][1]:
                 if len(keys["left"]) == 2:
+                    globalvars.PLAYER.set_animation_key("A_PLAYER_LEFT")
                     actions.move_one_tile("left")
                     return "player moved"
 
                 elif len(keys["left"]) == 3 and \
                         (keys["left"][2] == pygame.K_LSHIFT or keys["left"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
+                        globalvars.PLAYER.set_animation_key("A_PLAYER_LEFT")
                         actions.move_one_tile("left")
                         return "player moved"
 
             # 'right arrow' key: move player one tile to the right, hold down to continuing moving automatically
             if event.key == keys["right"][1]:
                 if len(keys["right"]) == 2:
+                    globalvars.PLAYER.set_animation_key("A_PLAYER_RIGHT")
                     actions.move_one_tile("right")
                     return "player moved"
 
                 elif len(keys["right"]) == 3 and \
                         (keys["right"][2] == pygame.K_LSHIFT or keys["right"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
+                        globalvars.PLAYER.set_animation_key("A_PLAYER_RIGHT")
                         actions.move_one_tile("right")
                         return "player moved"
 

@@ -193,9 +193,8 @@ class ComCreature:
         dy = round(dy / distance)
 
         rand_int = random.randint(0, 100)
-        percent_chance = 9
+        percent_chance = 6
         # have a small chance of not always moving strictly away in the opposite direction of Player
-
         if rand_int < percent_chance:
             # move towards direction that is not blocked by walls 2 tiles or closer away
 
@@ -236,6 +235,11 @@ class ComCreature:
             elif dy == 0:
                 dy = random.choice((-1, 1))
                 dx = 0
+
+        # has a small chance to stay still for a turn
+        rand_stay_chance = random.randint(0, 100)
+        if rand_stay_chance < 6:
+            dx, dy = (0, 0)
 
         self.move(dx, dy)
 

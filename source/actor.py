@@ -194,3 +194,7 @@ class ObjActor:
         """
 
         self.animation = globalvars.ASSETS.animation_dict[self.animation_key]
+
+    def set_animation_key(self, new_key):
+        self.animation_key = new_key
+        self.animation_init()

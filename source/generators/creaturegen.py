@@ -1,12 +1,13 @@
 # Third party imports
-import tcod
+import tcod, random, numpy
 
 # Local project imports
 from source import globalvars, actor, death, magic
 from source.components import creature, ai, itemcom
 
-def gen_enemy(tup_coords):
-    """Generates a random enemy at the given coordinates specified by tup_coords.
+
+def gen_enemy(room_range_x, room_range_y, floor_num):
+    """Generates random enemies in random positions in a room.
 
     Args:
         tup_coords (tuple): The map tile coordinates to place the generated enemy creature.
@@ -16,23 +17,38 @@ def gen_enemy(tup_coords):
 
     """
 
-    choice_num = tcod.random_get_int(0, 1, 100)
+    mob_dict = {
+        #  chance between species  |    the species  | max num of enemies per room
+        1: ((0.1, 0.9),
+            (gen_snake_cobra(room_range_x, room_range_y), gen_snake_boa(room_range_x, room_range_y)),
+            4),
 
-    if choice_num <= 15:
-        new_enemy = gen_snake_cobra(tup_coords)
+        2: ((1, 9),
+            (gen_snake_cobra(room_range_x, room_range_y), gen_snake_boa(room_range_x, room_range_y)),
+            1),
 
-    else:
-        new_enemy = gen_snake_boa(tup_coords)
+        3: ((1, 9),
+            (gen_snake_cobra(room_range_x, room_range_y), gen_snake_boa(room_range_x, room_range_y)),
+            1),
 
-    if choice_num <= 100:
-        new_healer = gen_healer_slime(tup_coords)
-        globalvars.GAME.current_objects.insert(-1, new_healer)
+    }
+
+    new_enemy = numpy.random.choice(mob_dict[floor_num][1], p=mob_dict[floor_num][0])
 
     globalvars.GAME.current_objects.insert(-1, new_enemy)
 
 
-def gen_snake_boa(tup_coords):
-    x, y = tup_coords
+def gen_friendly_mob(room_range_x, room_range_y, floor_num):
+
+    choice_num = random.randint(1, 100)
+
+    if choice_num <= 80:
+        new_healer = gen_healer_slime(room_range_x, room_range_y)
+        globalvars.GAME.current_objects.insert(-1, new_healer)
+
+
+def gen_snake_boa(room_range_x, room_range_y):
+    x, y = (random.randint(*room_range_x), random.randint(*room_range_y))
 
     base_attack = tcod.random_get_int(0, 1, 2)
     max_health = tcod.random_get_int(0, 12, 14)
@@ -54,8 +70,8 @@ def gen_snake_boa(tup_coords):
     return snake_boa_obj
 
 
-def gen_snake_cobra(tup_coords):
-    x, y = tup_coords
+def gen_snake_cobra(room_range_x, room_range_y):
+    x, y = (random.randint(*room_range_x), random.randint(*room_range_y))
 
     base_attack = tcod.random_get_int(0, 2, 3)
     max_health = tcod.random_get_int(0, 15, 18)
@@ -77,8 +93,8 @@ def gen_snake_cobra(tup_coords):
     return snake_cobra_obj
 
 
-def gen_healer_slime(tup_coords):
-    x, y = tup_coords
+def gen_healer_slime(room_range_x, room_range_y):
+    x, y = (random.randint(*room_range_x), random.randint(*room_range_y))
 
     base_attack = 0
     max_health = 5
