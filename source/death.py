@@ -12,6 +12,10 @@ from source import gui
 from source import globalvars
 from source import text
 from source import game
+from source import magic
+from source.generators import itemgen
+from source.components import itemcom
+
 
 
 # ================================================================= #
@@ -129,3 +133,19 @@ def death_healer_monster(monster):
 
     monster.creature = None
     monster.ai = None
+
+
+def death_enemy(mob):
+
+    death_msg = f"{mob.display_name} is dead and dropped a healing element!"
+    game.game_message(death_msg, constants.COLOR_GREEN)
+
+    mob.set_animation_key("S_WATER_CUP")
+    mob.name_object = "Red Soul"
+
+    coin_drop = itemgen.gen_coins((mob.x, mob.y), 10)
+    globalvars.GAME.current_objects.insert(0, coin_drop)
+
+    mob.creature = None
+    mob.ai = None
+

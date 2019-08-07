@@ -17,12 +17,14 @@ class ComItem:
 
     def __init__(self, weight=0.0,
                  volume=0.0,
+                 type_item=None,                         # consumable, magic, gold, equipment
                  use_function=None,
                  value=None):
 
         self.weight = weight
         self.volume = volume
         self.value = value
+        self.type_item = type_item
         self.use_function = use_function
         self.container = None
         # self.owner = self.owner
@@ -39,6 +41,13 @@ class ComItem:
                               that the item will append itself).
 
         """
+        if self.type_item == "gold":
+            actor.gold += self.value
+            self.owner.animation_del()
+            globalvars.GAME.current_objects.remove(self.owner)
+            game.game_message(f"Gained {self.value} gold.", constants.COLOR_YELLOW)
+            game.game_message(f"Player now has {actor.gold} gold total.", constants.COLOR_WHITE)
+            return
 
         if actor.container:
             if actor.container.volume + self.volume > actor.container.max_volume:
@@ -50,8 +59,10 @@ class ComItem:
 
                 self.owner.animation_del()
 
-                globalvars.GAME.current_objects.remove(self.owner)      # remove from global map and list of objects in the game
+                # remove from global map and list of objects in the game
+                globalvars.GAME.current_objects.remove(self.owner)
                 self.container = actor.container
+
 
     def drop(self, new_x, new_y):
         """Drops the item object onto the ground specified by the coordinate arguments.

@@ -138,7 +138,7 @@ class ObjAssets:
         self.shield = ObjSpriteSheet("data/graphics/Items/Shield.png")
         self.scroll = ObjSpriteSheet("data/graphics/Items/Scroll.png")
         self.rock = ObjSpriteSheet("data/graphics/Items/Rock.png")
-
+        self.money = ObjSpriteSheet("data/graphics/Items/Money.png")
 
         # ---> Objects folder
         self.wall = ObjSpriteSheet("data/graphics/Objects/Wall.png")
@@ -265,6 +265,8 @@ class ObjAssets:
         self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
         self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
         self.S_FLESH_SNAKE = self.flesh.get_image('b', 4, 16, 16, (32, 32))
+        self.S_GOLD = self.money.get_image('a', 2, 16, 16, (32, 32))
+
 
         # ---> Equipment
         self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
@@ -337,6 +339,7 @@ class ObjAssets:
             "S_SCROLL_2": self.S_SCROLL_2,
             "S_SCROLL_3": self.S_SCROLL_3,
             "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
+            "S_GOLD": self.S_GOLD,
             "S_32_SWORD": self.S_32_SWORD,
             "S_32_SHIELD": self.S_32_SHIELD,
             "S_STAIRS_UP": self.S_STAIRS_UP,

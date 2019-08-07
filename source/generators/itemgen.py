@@ -106,3 +106,13 @@ def gen_armour_shield(tup_coords):
                                 equipment=equipment_com)
 
     return shield_obj
+
+
+def gen_coins(tup_coords, amount):
+    x, y = tup_coords
+
+    item_com = itemcom.ComItem(type_item="gold", value=amount)
+
+    obj = actor.ObjActor(x, y, "Gold", "S_GOLD", item=item_com)
+
+    return obj

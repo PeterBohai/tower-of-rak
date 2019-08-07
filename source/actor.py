@@ -44,7 +44,8 @@ class ObjActor:
                  item=None,
                  equipment=None,
                  stairs=None,
-                 portal=None):   # None is implicitly False
+                 portal=None,
+                 gold=0):   # None is implicitly False
 
         self.x = x  # map address (not pixel address)
         self.y = y  # map address (not pixel address)
@@ -53,6 +54,7 @@ class ObjActor:
         self.animation = globalvars.ASSETS.animation_dict[animation_key]
         self.animation_speed = animation_speed/1.0   # in seconds (always converted to a float, even if its an int)
         self.status = status
+        self.gold = gold
 
         # animation flicker speed (over the course of # of secs)
         self.flicker_speed = self.animation_speed/len(self.animation)   # amount of display time for each img
