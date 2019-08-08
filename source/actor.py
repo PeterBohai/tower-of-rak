@@ -57,7 +57,6 @@ class ObjActor:
         self.gold = gold
 
         # animation flicker speed (over the course of # of secs)
-        self.flicker_speed = self.animation_speed/len(self.animation)   # amount of display time for each img
         self.flicker_timer = 0.0
         self.sprite_image = 0
 
@@ -96,6 +95,10 @@ class ObjActor:
         self.portal = portal
         if self.portal:
             self.portal.owner = self
+
+    @property
+    def flicker_speed(self):
+        return self.animation_speed / len(self.animation)
 
     @property
     def display_name(self):

@@ -166,7 +166,7 @@ def gen_darksoot(room_range_x, room_range_y):
     base_defence = 0
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_snake_monster)
+                                        death_function=death.death_enemy)
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
@@ -187,7 +187,7 @@ def gen_blazeo(room_range_x, room_range_y):
     base_defence = 0
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_snake_monster)
+                                        death_function=death.death_enemy)
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
@@ -208,7 +208,7 @@ def gen_shelk(room_range_x, room_range_y):
     base_defence = 3
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_snake_monster)
+                                        death_function=death.death_enemy)
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
@@ -229,7 +229,7 @@ def gen_kelpclopse(room_range_x, room_range_y):
     base_defence = 1
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_snake_monster)
+                                        death_function=death.death_enemy)
     item_com = itemcom.ComItem()
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
@@ -252,7 +252,7 @@ def gen_healer_slime(room_range_x, room_range_y):
     health = 5
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_healer_monster)
+                                        death_function=death.death_friendly)
 
     item_com = itemcom.ComItem(use_function=magic.cast_heal, value=2)
 

@@ -35,9 +35,12 @@ def move_one_tile(direction):
 
 def grab_item():
     objects_at_player = map.map_object_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
-    for obj in objects_at_player:
+
+    # only pick up the top most object that is an item
+    for obj in reversed(objects_at_player):
         if obj.item:
             obj.item.pick_up(globalvars.PLAYER)
+            break
 
 
 def drop_item():

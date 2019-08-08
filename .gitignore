@@ -17,3 +17,6 @@ __pycache__/
 dungeon-generation-examples/
 data/Other/
 data/saves/
+
+# aseprite files
+*.ase

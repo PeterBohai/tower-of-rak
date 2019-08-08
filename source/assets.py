@@ -130,6 +130,8 @@ class ObjAssets:
         self.reptile = ObjSpriteSheet("data/graphics/Characters/Reptile.png")
         self.player = ObjSpriteSheet("data/graphics/Characters/Player.png")
         self.slime = ObjSpriteSheet("data/graphics/Characters/Slime.png")
+        self.death = ObjSpriteSheet("data/graphics/Characters/Death.png")
+
 
         # ---> Items folder
         self.flesh = ObjSpriteSheet("data/graphics/Items/Flesh.png")
@@ -169,6 +171,10 @@ class ObjAssets:
 
         # friendly mobs
         self.A_HEALER_SLIME = self.slime.get_animation('A', 0, 2)
+
+        # Soul sprites
+        self.A_DEATH_RED = self.death.get_animation('A', 0, 9)
+        self.A_DEATH_BLUE = self.death.get_animation('A', 1, 9)
 
         #                        ||| Still Sprites |||
 
@@ -265,7 +271,7 @@ class ObjAssets:
         self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
         self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
         self.S_FLESH_SNAKE = self.flesh.get_image('b', 4, 16, 16, (32, 32))
-        self.S_GOLD = self.money.get_image('a', 2, 16, 16, (32, 32))
+        self.S_GOLD = self.money.get_image('A', 0)
 
 
         # ---> Equipment
@@ -331,6 +337,8 @@ class ObjAssets:
             "A_KELPCLOPSE": self.A_KELPCLOPSE,
             "A_SHELK": self.A_SHELK,
             "A_HEALER_SLIME": self.A_HEALER_SLIME,
+            "A_DEATH_RED": self.A_DEATH_RED,
+            "A_DEATH_BLUE": self.A_DEATH_BLUE,
             "S_TOMATO": self.S_TOMATO,
             "S_RADISH": self.S_RADISH,
             "S_CABBAGE": self.S_CABBAGE,

@@ -137,14 +137,28 @@ def death_healer_monster(monster):
 
 def death_enemy(mob):
 
-    death_msg = f"{mob.display_name} is dead and dropped a healing element!"
-    game.game_message(death_msg, constants.COLOR_GREEN)
+    death_msg = f"{mob.display_name} is dead!"
+    game.game_message(death_msg, constants.COLOR_WHITE)
 
-    mob.set_animation_key("S_WATER_CUP")
+    mob.set_animation_key("A_DEATH_RED")
     mob.name_object = "Red Soul"
+    mob.animation_speed = 1.5
 
     coin_drop = itemgen.gen_coins((mob.x, mob.y), 10)
     globalvars.GAME.current_objects.insert(0, coin_drop)
+
+    mob.creature = None
+    mob.ai = None
+
+
+def death_friendly(mob):
+
+    death_msg = f"{mob.display_name} is dead and dropped a healing element!"
+    game.game_message(death_msg, constants.COLOR_GREEN)
+
+    mob.set_animation_key("A_DEATH_BLUE")
+    mob.name_object = "Pure Soul"
+    mob.animation_speed = 1.6
 
     mob.creature = None
     mob.ai = None

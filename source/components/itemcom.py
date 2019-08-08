@@ -1,6 +1,6 @@
 
 # Local project imports
-from source import constants, globalvars, game
+from source import constants, globalvars, game, map
 
 
 class ComItem:
@@ -79,8 +79,14 @@ class ComItem:
 
         """
 
-        # inserting at the front of the list to make sure that it is drawn underneath any creature or PLAYER
-        globalvars.GAME.current_objects.insert(0, self.owner)
+        # inserting underneath any creature or PLAYER but above any objects already on that tile
+        insert_position = 0
+        for i, obj in enumerate(reversed(globalvars.GAME.current_objects)):
+            if obj.item and obj.x == new_x and obj.y == new_y:
+                insert_position = i
+                break
+
+        globalvars.GAME.current_objects.insert(insert_position, self.owner)
 
         self.owner.animation_init()
 

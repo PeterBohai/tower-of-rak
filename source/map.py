@@ -390,9 +390,9 @@ def map_object_at_coords(coords_x, coords_y):
 
     """
 
-    object_options = [obj for obj in globalvars.GAME.current_objects if obj.x == coords_x and obj.y == coords_y]
+    obj_list = [obj for obj in globalvars.GAME.current_objects if obj.x == coords_x and obj.y == coords_y]
 
-    return object_options
+    return obj_list
 
 
 def map_find_line(coords1, coords2):
