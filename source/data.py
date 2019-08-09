@@ -1,4 +1,5 @@
-import pygame, copy
+import pygame, copy, random
+from source import globalvars
 
 class StructTile:
 
@@ -14,7 +15,21 @@ class StructTile:
         self.block_path = block_path
         self.explored = False
         self.wall_assignment = 0     # for wall bitmasking purposes
-        self.floor_assignment = 0    # for floor bitmasking purposes
+        self._floor_assignment = 0    # for floor bitmasking purposes
+        self.floor_rand_index = 0  # for floor variation
+
+    @property
+    def floor_assignment(self):
+        return self._floor_assignment
+
+    @floor_assignment.setter
+    def floor_assignment(self, value):
+
+        # set random tile pattern for room tiles (not tunnel) when setting floor bitmask
+        if value in (0, 1, 2, 4, 8):
+            self.floor_rand_index = random.randrange(len(globalvars.ASSETS.floor_explored_dict[value]))
+
+        self._floor_assignment = value
 
 
 class StructPreferences:

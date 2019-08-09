@@ -3,6 +3,7 @@
 # Third party imports
 import pygame
 import tcod
+import random
 
 # Local project imports
 from source import constants
@@ -123,7 +124,7 @@ def draw_map(map_to_draw):
             floor_num = map_to_draw[x][y].floor_assignment
 
             is_visible = tcod.map_is_in_fov(globalvars.FOV_MAP, x, y)      # to check whether or not a tile is visible
-
+            index = map_to_draw[x][y].floor_rand_index
             if is_visible:
 
                 map_to_draw[x][y].explored = True
@@ -133,8 +134,12 @@ def draw_map(map_to_draw):
                                                 (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                 else:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num],
-                                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    if floor_num in (0, 1, 2, 4, 8):
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num][index],
+                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    else:
+                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num],
+                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             else:
                 if map_to_draw[x][y].explored:
@@ -144,8 +149,12 @@ def draw_map(map_to_draw):
                                                     (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                     else:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num],
-                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        if floor_num in (0, 1, 2, 4, 8):
+                            globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num][index],
+                                                        (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        else:
+                            globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num],
+                                                        (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
             # else if not visible:
                 # the background fill color of the surface being drawn on is displayed (black at the moment)
@@ -224,6 +233,7 @@ def draw_tile_rect(display_surface, tile_coords, color, alpha=150, mark=False):
 
 
 def draw_floor_num_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20, change_alpha=True):
+
     text_coords = (constants.CAMERA_WIDTH/2, constants.CAMERA_HEIGHT/2 - constants.CELL_HEIGHT - 5)
     floor_num = globalvars.GAME.cur_floor
 

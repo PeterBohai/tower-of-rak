@@ -503,7 +503,49 @@ def assign_tiles(incoming_map):
                 elif wall_assign_num == 15 and not map_check_for_wall(incoming_map, x+1, y+1):
                     wall_assign_num = 55
 
+                # for the dungeon_tileset walls
+                if wall_assign_num == 6 and map_check_for_wall(incoming_map, x+1, y+1) or \
+                        (wall_assign_num == 14 and map_check_for_wall(incoming_map, x+1, y+1)
+                         and not map_check_for_wall(incoming_map, x-1, y+1)):
+                    wall_assign_num = 77
+                elif (wall_assign_num == 3 and map_check_for_wall(incoming_map, x+1, y-1)) or \
+                        (wall_assign_num == 9 and map_check_for_wall(incoming_map, x-1, y-1)):
+                    wall_assign_num = 11
+
+                elif wall_assign_num == 12 and map_check_for_wall(incoming_map, x-1, y+1):
+                    wall_assign_num = 66
+
+                elif wall_assign_num == 14 and map_check_for_wall(incoming_map, x-1, y+1) and \
+                        not map_check_for_wall(incoming_map, x+1, y+1):
+                    wall_assign_num = 88
+
+                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y+1) and \
+                        not map_check_for_wall(incoming_map, x-1, y):
+                    wall_assign_num = 99
+                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y+1):
+                    wall_assign_num = 55
+                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y-1):
+                    wall_assign_num = 33
+                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y-1) and \
+                        not map_check_for_wall(incoming_map, x-1, y):
+                    wall_assign_num = 100
+
+                elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y+1):
+                    wall_assign_num = 44
+                elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y+1) and \
+                        not map_check_for_wall(incoming_map, x+1, y):
+                    wall_assign_num = 122
+                elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y-1) and \
+                        not map_check_for_wall(incoming_map, x+1, y):
+                    wall_assign_num = 111
+
+
+
+
+
+
                 incoming_map[x][y].wall_assignment = wall_assign_num
+
             else:
                 floor_assign_num = 0
 

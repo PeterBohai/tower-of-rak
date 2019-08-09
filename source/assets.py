@@ -1,5 +1,7 @@
 # Third party imports
 import pygame
+import random
+import tcod
 
 # Local project imports
 from source import constants
@@ -147,6 +149,7 @@ class ObjAssets:
         self.floor = ObjSpriteSheet("data/graphics/Objects/Floor.png")
         self.tile = ObjSpriteSheet("data/graphics/Objects/Tile.png")
         self.door = ObjSpriteSheet("data/graphics/Objects/Door.png")
+        self.dungeonTiles = ObjSpriteSheet("data/graphics/Objects/Dungeon_Tileset2.png")
 
         # ---> Menu folder
         self.menugui = ObjSpriteSheet("data/graphics/menu/menugui.png")
@@ -182,84 +185,144 @@ class ObjAssets:
         self.S_WALL = self.wall.get_image('d', 7, 16, 16, (32, 32))[0]
         self.S_WALL_EXPLORED = self.wall.get_image('d', 13, 16, 16, (32, 32))[0]
 
-        self.S_WALL_0 = self.wall.get_image('b', 5, 16, 16, (32, 32))[0]
-        self.S_WALL_1 = self.wall.get_image('c', 5, 16, 16, (32, 32))[0]
-        self.S_WALL_2 = self.wall.get_image('d', 6, 16, 16, (32, 32))[0]  # need wall piece
-        self.S_WALL_3 = self.wall.get_image('a', 6, 16, 16, (32, 32))[0]  # corner bot-left
-        self.S_WALL_4 = self.wall.get_image('b', 6, 16, 16, (32, 32))[0]  # need wall piece
-        self.S_WALL_5 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]
-        self.S_WALL_6 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # corner top-left
-        self.S_WALL_7 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]  # right (and left) side
-        self.S_WALL_8 = self.wall.get_image('f', 6, 16, 16, (32, 32))[0]  # need wall piece
-        self.S_WALL_9 = self.wall.get_image('c', 6, 16, 16, (32, 32))[0]  # corner bot-right
-        self.S_WALL_10 = self.wall.get_image('b', 4, 16, 16, (32, 32))[0]  # need wall piece
-        self.S_WALL_11 = self.wall.get_image('b', 4, 16, 16, (32, 32))[0]  # top side
-        self.S_WALL_12 = self.wall.get_image('c', 4, 16, 16, (32, 32))[0]  # corner top-right
-        self.S_WALL_13 = self.wall.get_image('a', 5, 16, 16, (32, 32))[0]  # left side
-        self.S_WALL_14 = self.wall.get_image('e', 6, 16, 16, (32, 32))[0]  # bot side
-        self.S_WALL_15 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # room corner
-        self.S_WALL_22 = self.wall.get_image('c', 6, 16, 16, (32, 32))[0]  # room corner
-        self.S_WALL_33 = self.wall.get_image('a', 6, 16, 16, (32, 32))[0]  # room corner
-        self.S_WALL_44 = self.wall.get_image('c', 4, 16, 16, (32, 32))[0]  # room corner
-        self.S_WALL_55 = self.wall.get_image('a', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_0 = self.dungeonTiles.get_image('a', 0, 16, 16, (32, 32))[0]
+        self.S_WALL_1 = self.dungeonTiles.get_image('c', 0, 16, 16, (32, 32))[0]
+        self.S_WALL_2 = self.dungeonTiles.get_image('b', 0, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_3 = self.dungeonTiles.get_image('A', 4, 16, 16, (32, 32))[0]  # corner bot-left
+        self.S_WALL_4 = self.dungeonTiles.get_image('e', 2, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_5 = self.dungeonTiles.get_image('e', 1, 16, 16, (32, 32))[0]
+        self.S_WALL_6 = self.dungeonTiles.get_image('A', 0, 16, 16, (32, 32))[0]  # corner top-left
+        self.S_WALL_7 = self.dungeonTiles.get_image('e', 3, 16, 16, (32, 32))[0]  # right (and left) side
+        self.S_WALL_8 = self.dungeonTiles.get_image('a', 0, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_9 = self.dungeonTiles.get_image('e', 4, 16, 16, (32, 32))[0]  # corner bot-right
+        self.S_WALL_10 = self.dungeonTiles.get_image('b', 0, 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_11 = self.dungeonTiles.get_image('a', 0, 16, 16, (32, 32))[0]  # top side
+        self.S_WALL_12 = self.dungeonTiles.get_image('e', 0, 16, 16, (32, 32))[0]  # corner top-right
+        self.S_WALL_13 = self.dungeonTiles.get_image('A', 1, 16, 16, (32, 32))[0]  # left side
+        self.S_WALL_14 = self.dungeonTiles.get_image('a', 4, 16, 16, (32, 32))[0]  # bot side
+        self.S_WALL_15 = self.dungeonTiles.get_image('a', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_22 = self.dungeonTiles.get_image('e', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_33 = self.dungeonTiles.get_image('A', 4, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_44 = self.dungeonTiles.get_image('e', 0, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_55 = self.dungeonTiles.get_image('A', 0, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_66 = self.dungeonTiles.get_image('c', 5, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_77 = self.dungeonTiles.get_image('d', 5, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_88 = self.dungeonTiles.get_image('e', 5, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_99 = self.dungeonTiles.get_image('f', 0, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_100 = self.dungeonTiles.get_image('f', 1, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_111 = self.dungeonTiles.get_image('f', 3, 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_122 = self.dungeonTiles.get_image('f', 2, 16, 16, (32, 32))[0]  # room corner
 
-        self.S_WALL_EXPLORED_0 = self.wall.get_image('b', (5 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_1 = self.wall.get_image('c', (5 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_2 = self.wall.get_image('d', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_3 = self.wall.get_image('a', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_4 = self.wall.get_image('b', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_5 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_6 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_7 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_8 = self.wall.get_image('f', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_9 = self.wall.get_image('c', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_10 = self.wall.get_image('b', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_11 = self.wall.get_image('b', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_12 = self.wall.get_image('c', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_13 = self.wall.get_image('a', (5 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_14 = self.wall.get_image('e', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_15 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_22 = self.wall.get_image('c', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_33 = self.wall.get_image('a', (6 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_44 = self.wall.get_image('c', (4 + 9), 16, 16, (32, 32))[0]
-        self.S_WALL_EXPLORED_55 = self.wall.get_image('a', (4 + 9), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_0 = self.dungeonTiles.get_image('a', (0 + 10), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_1 = self.dungeonTiles.get_image('c', (0 + 10), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_2 = self.dungeonTiles.get_image('b', (0 + 10), 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_EXPLORED_3 = self.dungeonTiles.get_image('A', (4 + 10), 16, 16, (32, 32))[0]  # corner bot-left
+        self.S_WALL_EXPLORED_4 = self.dungeonTiles.get_image('e', (2 + 10), 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_EXPLORED_5 = self.dungeonTiles.get_image('e', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_WALL_EXPLORED_6 = self.dungeonTiles.get_image('A', (0 + 10), 16, 16, (32, 32))[0]  # corner top-left
+        self.S_WALL_EXPLORED_7 = self.dungeonTiles.get_image('e', (3 + 10), 16, 16, (32, 32))[0]  # right (and left) side
+        self.S_WALL_EXPLORED_8 = self.dungeonTiles.get_image('a', (0 + 10), 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_EXPLORED_9 = self.dungeonTiles.get_image('e', (4 + 10), 16, 16, (32, 32))[0]  # corner bot-right
+        self.S_WALL_EXPLORED_10 = self.dungeonTiles.get_image('b', (0 + 10), 16, 16, (32, 32))[0]  # need wall piece
+        self.S_WALL_EXPLORED_11 = self.dungeonTiles.get_image('a', (0 + 10), 16, 16, (32, 32))[0]  # top side
+        self.S_WALL_EXPLORED_12 = self.dungeonTiles.get_image('e', (0 + 10), 16, 16, (32, 32))[0]  # corner top-right
+        self.S_WALL_EXPLORED_13 = self.dungeonTiles.get_image('A', (1 + 10), 16, 16, (32, 32))[0]  # left side
+        self.S_WALL_EXPLORED_14 = self.dungeonTiles.get_image('a', (4 + 10), 16, 16, (32, 32))[0]  # bot side
+        self.S_WALL_EXPLORED_15 = self.dungeonTiles.get_image('a', (4 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_22 = self.dungeonTiles.get_image('e', (4 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_33 = self.dungeonTiles.get_image('A', (4 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_44 = self.dungeonTiles.get_image('e', (0 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_55 = self.dungeonTiles.get_image('A', (0 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_66 = self.dungeonTiles.get_image('c', (5 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_77 = self.dungeonTiles.get_image('d', (5 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_88 = self.dungeonTiles.get_image('e', (5 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_99 = self.dungeonTiles.get_image('f', (0 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_100 = self.dungeonTiles.get_image('f', (1 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_111 = self.dungeonTiles.get_image('f', (3 + 10), 16, 16, (32, 32))[0]  # room corner
+        self.S_WALL_EXPLORED_122 = self.dungeonTiles.get_image('f', (2 + 10), 16, 16, (32, 32))[0]  # room corner
 
-        self.S_FLOOR = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED = self.floor.get_image('b', 14, 16, 16, (32, 32))[0]
 
-        self.S_FLOOR_0 = self.floor.get_image('b', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_1 = self.floor.get_image('b', 7, 16, 16, (32, 32))[0]
-        self.S_FLOOR_2 = self.floor.get_image('c', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_3 = self.floor.get_image('c', 7, 16, 16, (32, 32))[0]
-        self.S_FLOOR_4 = self.floor.get_image('b', 9, 16, 16, (32, 32))[0]
-        self.S_FLOOR_5 = self.floor.get_image('f', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_6 = self.floor.get_image('c', 9, 16, 16, (32, 32))[0]
-        self.S_FLOOR_7 = self.floor.get_image('g', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_8 = self.floor.get_image('a', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_9 = self.floor.get_image('a', 7, 16, 16, (32, 32))[0]
-        self.S_FLOOR_10 = self.floor.get_image('d', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_11 = self.floor.get_image('d', 7, 16, 16, (32, 32))[0]
-        self.S_FLOOR_12 = self.floor.get_image('a', 9, 16, 16, (32, 32))[0]
-        self.S_FLOOR_13 = self.floor.get_image('e', 8, 16, 16, (32, 32))[0]
-        self.S_FLOOR_14 = self.floor.get_image('d', 9, 16, 16, (32, 32))[0]
-        self.S_FLOOR_15 = self.floor.get_image('f', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_f6 = self.dungeonTiles.get_image('f', 6, 16, 16, (32, 32))[0]    # choose from a number of these later
+        self.S_FLOOR_0_f7 = self.dungeonTiles.get_image('f', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_f8 = self.dungeonTiles.get_image('f', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_g6 = self.dungeonTiles.get_image('g', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_g7 = self.dungeonTiles.get_image('g', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_g8 = self.dungeonTiles.get_image('g', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_h6 = self.dungeonTiles.get_image('h', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_h7 = self.dungeonTiles.get_image('h', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_h8 = self.dungeonTiles.get_image('h', 8, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_i6 = self.dungeonTiles.get_image('i', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_i7 = self.dungeonTiles.get_image('i', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_0_i8 = self.dungeonTiles.get_image('i', 8, 16, 16, (32, 32))[0]
 
-        self.S_FLOOR_EXPLORED_0 = self.floor.get_image('b', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_1 = self.floor.get_image('b', (7 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_2 = self.floor.get_image('c', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_3 = self.floor.get_image('c', (7 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_4 = self.floor.get_image('b', (9 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_5 = self.floor.get_image('f', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_6 = self.floor.get_image('c', (9 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_7 = self.floor.get_image('g', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_8 = self.floor.get_image('a', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_9 = self.floor.get_image('a', (7 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_10 = self.floor.get_image('d', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_11 = self.floor.get_image('d', (7 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_12 = self.floor.get_image('a', (9 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_13 = self.floor.get_image('e', (8 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_14 = self.floor.get_image('d', (9 + 6), 16, 16, (32, 32))[0]
-        self.S_FLOOR_EXPLORED_15 = self.floor.get_image('f', (7 + 6), 16, 16, (32, 32))[0]
+        self.S_FLOOR_1_a1 = self.dungeonTiles.get_image('a', 6, 16, 16, (32, 32))[0]    # choose
+        self.S_FLOOR_1_b1 = self.dungeonTiles.get_image('b', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_1_c1 = self.dungeonTiles.get_image('c', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_1_d1 = self.dungeonTiles.get_image('d', 6, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_2_e6 = self.dungeonTiles.get_image('e', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_2_e7 = self.dungeonTiles.get_image('e', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_2_e8 = self.dungeonTiles.get_image('e', 8, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_3 = self.dungeonTiles.get_image('d', 1, 16, 16, (32, 32))[0]
+        self.S_FLOOR_4_a3 = self.dungeonTiles.get_image('a', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_4_b3 = self.dungeonTiles.get_image('b', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_4_c3 = self.dungeonTiles.get_image('c', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_4_d3 = self.dungeonTiles.get_image('d', 7, 16, 16, (32, 32))[0]
+
+
+        self.S_FLOOR_5 = self.dungeonTiles.get_image('b', 1, 16, 16, (32, 32))[0]
+        self.S_FLOOR_6 = self.dungeonTiles.get_image('d', 3, 16, 16, (32, 32))[0]
+        self.S_FLOOR_7 = self.dungeonTiles.get_image('d', 1, 16, 16, (32, 32))[0]
+        self.S_FLOOR_8_A6 = self.dungeonTiles.get_image('A', 6, 16, 16, (32, 32))[0]
+        self.S_FLOOR_8_A7 = self.dungeonTiles.get_image('A', 7, 16, 16, (32, 32))[0]
+        self.S_FLOOR_8_A8 = self.dungeonTiles.get_image('A', 8, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_9 = self.dungeonTiles.get_image('a', 1, 16, 16, (32, 32))[0]
+        self.S_FLOOR_10 = self.dungeonTiles.get_image('a', 2, 16, 16, (32, 32))[0]   # change later
+        self.S_FLOOR_11 = self.dungeonTiles.get_image('a', 1, 16, 16, (32, 32))[0]   # change later
+        self.S_FLOOR_12 = self.dungeonTiles.get_image('a', 3, 16, 16, (32, 32))[0]
+        self.S_FLOOR_13 = self.dungeonTiles.get_image('a', 1, 16, 16, (32, 32))[0]
+        self.S_FLOOR_14 = self.dungeonTiles.get_image('a', 3, 16, 16, (32, 32))[0]   # change later
+        self.S_FLOOR_15 = self.dungeonTiles.get_image('c', 2, 16, 16, (32, 32))[0]
+
+        self.S_FLOOR_EXPLORED_0_f6 = self.dungeonTiles.get_image('f', (6 + 10), 16, 16, (32, 32))[0]  # choose from a number of these later
+        self.S_FLOOR_EXPLORED_0_f7 = self.dungeonTiles.get_image('f', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_f8 = self.dungeonTiles.get_image('f', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_g6 = self.dungeonTiles.get_image('g', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_g7 = self.dungeonTiles.get_image('g', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_g8 = self.dungeonTiles.get_image('g', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_h6 = self.dungeonTiles.get_image('h', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_h7 = self.dungeonTiles.get_image('h', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_h8 = self.dungeonTiles.get_image('h', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_i6 = self.dungeonTiles.get_image('i', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_i7 = self.dungeonTiles.get_image('i', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_0_i8 = self.dungeonTiles.get_image('i', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_1_a1 = self.dungeonTiles.get_image('a', (6 + 10), 16, 16, (32, 32))[0]  # choose
+        self.S_FLOOR_EXPLORED_1_b1 = self.dungeonTiles.get_image('b', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_1_c1 = self.dungeonTiles.get_image('c', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_1_d1 = self.dungeonTiles.get_image('d', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_2_e6 = self.dungeonTiles.get_image('e', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_2_e7 = self.dungeonTiles.get_image('e', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_2_e8 = self.dungeonTiles.get_image('e', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_3 = self.dungeonTiles.get_image('d', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_4_a3 = self.dungeonTiles.get_image('a', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_4_b3 = self.dungeonTiles.get_image('b', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_4_c3 = self.dungeonTiles.get_image('c', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_4_d3 = self.dungeonTiles.get_image('d', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_5 = self.dungeonTiles.get_image('b', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_6 = self.dungeonTiles.get_image('d', (3 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_7 = self.dungeonTiles.get_image('d', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_8_A6 = self.dungeonTiles.get_image('A', (6 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_8_A7 = self.dungeonTiles.get_image('A', (7 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_8_A8 = self.dungeonTiles.get_image('A', (8 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_9 = self.dungeonTiles.get_image('a', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_10 = self.dungeonTiles.get_image('a', (2 + 10), 16, 16, (32, 32))[0]  # change later
+        self.S_FLOOR_EXPLORED_11 = self.dungeonTiles.get_image('a', (1 + 10), 16, 16, (32, 32))[0]  # change later
+        self.S_FLOOR_EXPLORED_12 = self.dungeonTiles.get_image('a', (3 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_13 = self.dungeonTiles.get_image('a', (1 + 10), 16, 16, (32, 32))[0]
+        self.S_FLOOR_EXPLORED_14 = self.dungeonTiles.get_image('a', (3 + 10), 16, 16, (32, 32))[0]  # change later
+        self.S_FLOOR_EXPLORED_15 = self.dungeonTiles.get_image('c', (2 + 10), 16, 16, (32, 32))[0]
 
 
         # ---> Items
@@ -377,7 +440,15 @@ class ObjAssets:
             22: self.S_WALL_22,
             33: self.S_WALL_33,
             44: self.S_WALL_44,
-            55: self.S_WALL_55
+            55: self.S_WALL_55,
+            66: self.S_WALL_66,
+            77: self.S_WALL_77,
+            88: self.S_WALL_88,
+            99: self.S_WALL_99,
+            100: self.S_WALL_100,
+            111: self.S_WALL_111,
+            122: self.S_WALL_122,
+
         }
 
         self.wall_explored_dict = {
@@ -400,20 +471,31 @@ class ObjAssets:
             22: self.S_WALL_EXPLORED_22,
             33: self.S_WALL_EXPLORED_33,
             44: self.S_WALL_EXPLORED_44,
-            55: self.S_WALL_EXPLORED_55
+            55: self.S_WALL_EXPLORED_55,
+            66: self.S_WALL_EXPLORED_66,
+            77: self.S_WALL_EXPLORED_77,
+            88: self.S_WALL_EXPLORED_88,
+            99: self.S_WALL_EXPLORED_99,
+            100: self.S_WALL_EXPLORED_100,
+            111: self.S_WALL_EXPLORED_111,
+            122: self.S_WALL_EXPLORED_122,
 
         }
 
         self.floor_dict = {
-            0: self.S_FLOOR_0,
-            1: self.S_FLOOR_1,
-            2: self.S_FLOOR_2,
+            0: (self.S_FLOOR_0_f6, self.S_FLOOR_0_f7, self.S_FLOOR_0_f8,
+                self.S_FLOOR_0_g6, self.S_FLOOR_0_g7, self.S_FLOOR_0_g8,
+                self.S_FLOOR_0_h6, self.S_FLOOR_0_h7, self.S_FLOOR_0_h8,
+                self.S_FLOOR_0_i6, self.S_FLOOR_0_i7, self.S_FLOOR_0_i8),
+
+            1: (self.S_FLOOR_1_a1, self.S_FLOOR_1_b1, self.S_FLOOR_1_c1, self.S_FLOOR_1_d1,),
+            2: (self.S_FLOOR_2_e6, self.S_FLOOR_2_e7, self.S_FLOOR_2_e8),
             3: self.S_FLOOR_3,
-            4: self.S_FLOOR_4,
+            4: (self.S_FLOOR_4_a3, self.S_FLOOR_4_b3, self.S_FLOOR_4_c3, self.S_FLOOR_4_d3),
             5: self.S_FLOOR_5,
             6: self.S_FLOOR_6,
             7: self.S_FLOOR_7,
-            8: self.S_FLOOR_8,
+            8: (self.S_FLOOR_8_A6, self.S_FLOOR_8_A7, self.S_FLOOR_8_A8),
             9: self.S_FLOOR_9,
             10: self.S_FLOOR_10,
             11: self.S_FLOOR_11,
@@ -424,15 +506,18 @@ class ObjAssets:
         }
 
         self.floor_explored_dict = {
-            0: self.S_FLOOR_EXPLORED_0,
-            1: self.S_FLOOR_EXPLORED_1,
-            2: self.S_FLOOR_EXPLORED_2,
+            0: (self.S_FLOOR_EXPLORED_0_f6, self.S_FLOOR_EXPLORED_0_f7, self.S_FLOOR_EXPLORED_0_f8,
+                self.S_FLOOR_EXPLORED_0_g6, self.S_FLOOR_EXPLORED_0_g7, self.S_FLOOR_EXPLORED_0_g8,
+                self.S_FLOOR_EXPLORED_0_h6, self.S_FLOOR_EXPLORED_0_h7, self.S_FLOOR_EXPLORED_0_h8,
+                self.S_FLOOR_EXPLORED_0_i6, self.S_FLOOR_EXPLORED_0_i7, self.S_FLOOR_EXPLORED_0_i8),
+            1: (self.S_FLOOR_EXPLORED_1_a1, self.S_FLOOR_EXPLORED_1_b1, self.S_FLOOR_EXPLORED_1_c1, self.S_FLOOR_EXPLORED_1_d1,),
+            2: (self.S_FLOOR_EXPLORED_2_e6, self.S_FLOOR_EXPLORED_2_e7, self.S_FLOOR_EXPLORED_2_e8),
             3: self.S_FLOOR_EXPLORED_3,
-            4: self.S_FLOOR_EXPLORED_4,
+            4: (self.S_FLOOR_EXPLORED_4_a3, self.S_FLOOR_EXPLORED_4_b3, self.S_FLOOR_EXPLORED_4_c3, self.S_FLOOR_EXPLORED_4_d3),
             5: self.S_FLOOR_EXPLORED_5,
             6: self.S_FLOOR_EXPLORED_6,
             7: self.S_FLOOR_EXPLORED_7,
-            8: self.S_FLOOR_EXPLORED_8,
+            8: (self.S_FLOOR_EXPLORED_8_A6, self.S_FLOOR_EXPLORED_8_A7, self.S_FLOOR_EXPLORED_8_A8),
             9: self.S_FLOOR_EXPLORED_9,
             10: self.S_FLOOR_EXPLORED_10,
             11: self.S_FLOOR_EXPLORED_11,
