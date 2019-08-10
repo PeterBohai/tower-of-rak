@@ -19,11 +19,11 @@ class ComItem:
                  volume=0.0,
                  type_item=None,                         # consumable, magic, gold, equipment
                  use_function=None,
-                 value=None):
+                 value=0):
 
         self.weight = weight
         self.volume = volume
-        self.value = value
+        self.value = value      # gold amount or exp
         self.type_item = type_item
         self.use_function = use_function
         self.container = None
@@ -42,14 +42,31 @@ class ComItem:
 
         """
         if self.type_item == "gold":
+            globalvars.ASSETS.sfx_coin_pickup.play()
             actor.gold += self.value
             self.owner.animation_del()
             globalvars.GAME.current_objects.remove(self.owner)
             game.game_message(f"Gained {self.value} gold.", constants.COLOR_YELLOW)
             game.game_message(f"Player now has {actor.gold} gold total.", constants.COLOR_WHITE)
             return
+        elif self.type_item == "Red Soul":
+            globalvars.ASSETS.sfx_soul_consume.play()
+            actor.exp += self.value
+            globalvars.GAME.current_objects.remove(self.owner)
+            game.game_message(f"Gained {self.value} experience points.", constants.COLOR_BLUE3)
+            game.game_message(f"Player now has {actor.exp} experience total.", constants.COLOR_WHITE)
+            return
 
         if actor.container:
+            if self.type_item == "Pure Soul":
+                globalvars.ASSETS.sfx_pure_soul_consume.play()
+                actor.container.inventory.append(self.owner)
+                self.container = actor.container
+                self.use()
+                globalvars.GAME.current_objects.remove(self.owner)
+
+                return
+
             if actor.container.volume + self.volume > actor.container.max_volume:
                 game.game_message("Not enough room to pick up", constants.COLOR_WHITE)
 

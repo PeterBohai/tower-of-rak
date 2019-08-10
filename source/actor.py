@@ -33,10 +33,9 @@ class ObjActor:
 
     """
 
-    def __init__(self, x, y,
-                 name_object,
-                 animation_key,
-                 animation_speed=0.5,
+    def __init__(self, x, y, name_object,
+                 animation_key, animation_speed=0.5,
+                 exp=0, gold=0,
                  status=None,
                  creature=None,
                  ai=None,
@@ -44,8 +43,7 @@ class ObjActor:
                  item=None,
                  equipment=None,
                  stairs=None,
-                 portal=None,
-                 gold=0):   # None is implicitly False
+                 portal=None):   # None is implicitly False
 
         self.x = x  # map address (not pixel address)
         self.y = y  # map address (not pixel address)
@@ -55,6 +53,7 @@ class ObjActor:
         self.animation_speed = animation_speed/1.0   # in seconds (always converted to a float, even if its an int)
         self.status = status
         self.gold = gold
+        self.exp = exp
 
         # animation flicker speed (over the course of # of secs)
         self.flicker_timer = 0.0

@@ -160,8 +160,8 @@ class ObjAssets:
         #                        ||| Animations |||
 
         # ---> Player
-        self.A_PLAYER_LEFT = self.player.get_animation('A', 0, 2)
-        self.A_PLAYER_RIGHT = self.player.get_animation('A', 1, 2)
+        self.A_PLAYER_LEFT = self.player.get_animation('A', 5, 4)
+        self.A_PLAYER_RIGHT = self.player.get_animation('A', 4, 4)
 
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
@@ -538,7 +538,6 @@ class ObjAssets:
 
         #                          ||| Sound Effects |||
 
-        # complete sfx list
         self.sfx_list = []
 
         self.sfx_hit_punch1 = self.sfx_add("data/audio/sfx/hit_punch_1.wav")
@@ -549,6 +548,10 @@ class ObjAssets:
 
         self.sfx_click1 = self.sfx_add("data/audio/sfx/click3.wav")
         self.sfx_rollover = self.sfx_add("data/audio/sfx/rollover1.wav")
+        self.sfx_coin_pickup = self.sfx_add("data/audio/sfx/coin_pickup.wav")
+        self.sfx_soul_consume = self.sfx_add("data/audio/sfx/soul_consume.wav")
+        self.sfx_pure_soul_consume = self.sfx_add("data/audio/sfx/pure_soul_consume.wav")
+
 
         # sfx list for hitting creature
         self.sfx_hit_punch_list = [self.sfx_hit_punch1,

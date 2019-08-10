@@ -14,7 +14,7 @@ def gen_player(tup_coords):
 
     globalvars.PLAYER = actor.ObjActor(x, y, "PLAYER",
                                        "A_PLAYER_LEFT",
-                                       animation_speed=1,
+                                       animation_speed=0.8,
                                        creature=creature_com,
                                        container=container_com)
 

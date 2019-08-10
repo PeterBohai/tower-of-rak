@@ -143,10 +143,11 @@ def gen_dungo(room_range_x, room_range_y):
     health = 8
     base_attack = 2
     base_defence = 0
+    exp_pts = 4
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_enemy)
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem(type_item="Red Soul", value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -160,6 +161,7 @@ def gen_darksoot(room_range_x, room_range_y):
     creature_name = "DarkSoot"
     creature_sprite = "A_DARKSOOT"
     personal_name = tcod.namegen_generate("Fantasy male")
+    exp_pts = 6
 
     health = 10
     base_attack = 3
@@ -167,7 +169,7 @@ def gen_darksoot(room_range_x, room_range_y):
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_enemy)
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem(type_item="Red Soul", value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -185,10 +187,11 @@ def gen_blazeo(room_range_x, room_range_y):
     health = 8
     base_attack = 3
     base_defence = 0
+    exp_pts = 8
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_enemy)
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem(type_item="Red Soul", value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -206,10 +209,11 @@ def gen_shelk(room_range_x, room_range_y):
     health = 12
     base_attack = 2
     base_defence = 3
+    exp_pts = 9
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_enemy)
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem(type_item="Red Soul", value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -227,10 +231,11 @@ def gen_kelpclopse(room_range_x, room_range_y):
     health = 12
     base_attack = 4
     base_defence = 1
+    exp_pts = 12
 
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_enemy)
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem(type_item="Red Soul", value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -254,7 +259,7 @@ def gen_healer_slime(room_range_x, room_range_y):
     creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
                                         death_function=death.death_friendly)
 
-    item_com = itemcom.ComItem(use_function=magic.cast_heal, value=2)
+    item_com = itemcom.ComItem(type_item="Pure Soul", use_function=magic.cast_heal, value=2)
 
     ai_com = ai.AiFlee()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
