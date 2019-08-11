@@ -93,48 +93,6 @@ def death_player(player):
         pygame.display.update()
 
 
-def death_snake_monster(monster):
-    """Death_function for dead snake creatures.
-
-    Creature stops moving, loses its creature component and its idle animation becomes a still piece of snake flesh.
-
-    Args:
-        monster (ObjActor): The actor creature object that will execute this death function when it dies.
-
-    """
-
-    death_msg = "{} is dead!".format(monster.display_name)
-    # death_msg = monster.creature.name_instance + " is dead!"
-    game.game_message(death_msg, constants.COLOR_WHITE)
-
-    monster.animation_key = "S_FLESH_SNAKE"
-    monster.animation = globalvars.ASSETS.animation_dict[monster.animation_key]
-
-    monster.creature = None
-    monster.ai = None
-
-
-def death_healer_monster(monster):
-    """Death_function for dead healing creatures.
-
-    Creature stops moving, loses its creature component and its idle animation becomes a still piece of healing item.
-
-    Args:
-        monster (ObjActor): The actor creature object that will execute this death function when it dies.
-
-    """
-
-    death_msg = "{} is dead and dropped a healing element!".format(monster.display_name)
-    game.game_message(death_msg, constants.COLOR_GREEN)
-
-    monster.animation_key = "S_WATER_CUP"
-    monster.animation = globalvars.ASSETS.animation_dict[monster.animation_key]
-    monster.name_object = "Water Cup"
-
-    monster.creature = None
-    monster.ai = None
-
-
 def death_enemy(mob):
 
     death_msg = f"{mob.display_name} is dead!"
@@ -152,6 +110,12 @@ def death_enemy(mob):
 
 
 def death_friendly(mob):
+    """Death_function for friendly mobs.
+
+    Args:
+        mob (ObjActor): The actor creature object that will execute this death function when it dies.
+
+    """
 
     death_msg = f"{mob.display_name} is dead and dropped a healing element!"
     game.game_message(death_msg, constants.COLOR_GREEN)

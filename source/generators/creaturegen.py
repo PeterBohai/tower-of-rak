@@ -28,7 +28,7 @@ t6:   1.7503905009999698
 
 
 def gen_enemy(room_range_x, room_range_y, floor_num):
-    """Generates random enemies in random positions in a room.
+    """Generates random enemies at random positions in a room.
 
     Inserts a randomly generated enemy creature object at the end of the GAME.current_objects list.
 
@@ -43,62 +43,43 @@ def gen_enemy(room_range_x, room_range_y, floor_num):
     coord_range = (room_range_x, room_range_y)
 
     mob_dict = {
-        #  chance between species  |    the species  | max num of enemies per room
+        #  chance between species  |    the species
         1: ((0.95, 0.05),
-            (gen_dungo(*coord_range), gen_darksoot(*coord_range)),
-            4),
+            (gen_dungo(*coord_range), gen_darksoot(*coord_range))),
 
         2: ((0.8, 0.2),
-            (gen_dungo(*coord_range), gen_darksoot(*coord_range)),
-            4),
+            (gen_dungo(*coord_range), gen_darksoot(*coord_range))),
 
         3: ((0.5, 0.3, 0.2),
-            (gen_dungo(*coord_range), gen_blazeo(*coord_range), gen_darksoot(*coord_range)),
-            4),
+            (gen_dungo(*coord_range), gen_blazeo(*coord_range), gen_darksoot(*coord_range))),
 
         4: ((0.5, 0.3, 0.2),
-            (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range)),
-            1),
+            (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range))),
 
         5: ((0.4, 0.2, 0.2, 0.2),
             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             gen_kelpclopse(*coord_range))),
 
         6: ((0.4, 0.2, 0.2, 0.1),
             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             gen_kelpclopse(*coord_range))),
 
         7: ((0.4, 0.2, 0.2, 0.2),
             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             gen_kelpclopse(*coord_range))),
 
         8: ((0.4, 0.2, 0.2, 0.2),
             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             gen_kelpclopse(*coord_range))),
 
         9: ((0.4, 0.2, 0.2, 0.2),
             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             gen_kelpclopse(*coord_range))),
 
         10: ((0.4, 0.2, 0.2, 0.2),
-            (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
+             (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
+             gen_kelpclopse(*coord_range))),
 
-        11: ((0.4, 0.2, 0.2, 0.2),
-            (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
-
-        12: ((0.4, 0.2, 0.2, 0.2),
-            (gen_blazeo(*coord_range), gen_darksoot(*coord_range), gen_shelk(*coord_range),
-             gen_kelpclopse(*coord_range)),
-            1),
     }
 
     # choose one of the mobs according to their spawn probability

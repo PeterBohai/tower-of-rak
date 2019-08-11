@@ -136,12 +136,10 @@ class ObjAssets:
 
 
         # ---> Items folder
-        self.flesh = ObjSpriteSheet("data/graphics/Items/Flesh.png")
-        self.food = ObjSpriteSheet("data/graphics/Items/Food.png")
-        self.medium_weapon = ObjSpriteSheet("data/graphics/Items/MedWep.png")
-        self.shield = ObjSpriteSheet("data/graphics/Items/Shield.png")
+        self.weapon = ObjSpriteSheet("data/graphics/Items/Weapon.png")
+        self.defence = ObjSpriteSheet("data/graphics/Items/Defence.png")
         self.scroll = ObjSpriteSheet("data/graphics/Items/Scroll.png")
-        self.rock = ObjSpriteSheet("data/graphics/Items/Rock.png")
+        self.special = ObjSpriteSheet("data/graphics/Items/Special.png")
         self.money = ObjSpriteSheet("data/graphics/Items/Money.png")
 
         # ---> Objects folder
@@ -324,22 +322,35 @@ class ObjAssets:
         self.S_FLOOR_EXPLORED_14 = self.dungeonTiles.get_image('a', (3 + 10), 16, 16, (32, 32))[0]  # change later
         self.S_FLOOR_EXPLORED_15 = self.dungeonTiles.get_image('c', (2 + 10), 16, 16, (32, 32))[0]
 
-
         # ---> Items
-        self.S_TOMATO = self.food.get_image('g', 3, 16, 16, (32, 32))
-        self.S_RADISH = self.food.get_image('b', 4, 16, 16, (32, 32))
-        self.S_CABBAGE = self.food.get_image('f', 4, 16, 16, (32, 32))
-        self.S_WATER_CUP = self.food.get_image('f', 5, 16, 16, (32, 32))
-        self.S_SCROLL_1 = self.scroll.get_image('e', 2, 16, 16, (32, 32))
-        self.S_SCROLL_2 = self.scroll.get_image('c', 2, 16, 16, (32, 32))
-        self.S_SCROLL_3 = self.scroll.get_image('d', 6, 16, 16, (32, 32))
-        self.S_FLESH_SNAKE = self.flesh.get_image('b', 4, 16, 16, (32, 32))
+        self.S_SCROLL_YELLOW = self.scroll.get_image('A', 0)
+        self.S_SCROLL_GREEN = self.scroll.get_image('a', 0)
+        self.S_SCROLL_RED = self.scroll.get_image('b', 0)
+        self.S_SCROLL_BLUE = self.scroll.get_image('c', 0)
+        self.S_SCROLL_BROWN = self.scroll.get_image('d', 0)
+        self.S_SCROLL_WHITE = self.scroll.get_image('A', 1)
+        self.S_SCROLL_GRAY = self.scroll.get_image('a', 1)
+        self.S_SCROLL_MULTI = self.scroll.get_image('b', 1)
         self.S_GOLD = self.money.get_image('A', 0)
 
-
         # ---> Equipment
-        self.S_32_SWORD = self.medium_weapon.get_image('a', 1, 16, 16, (32, 32))
-        self.S_32_SHIELD = self.shield.get_image('a', 1, 16, 16, (32, 32))
+        self.S_SWORD_BRONZE = self.weapon.get_image('A', 0)
+        self.S_SWORD_IRON = self.weapon.get_image('a', 0)
+        self.S_SWORD_STEEL = self.weapon.get_image('b', 0)
+        self.S_SWORD_BLACK = self.weapon.get_image('c', 0)
+        self.S_SWORD_RUNE = self.weapon.get_image('d', 0)
+        self.S_SPEAR_BRONZE = self.weapon.get_image('A', 1)
+        self.S_SPEAR_IRON = self.weapon.get_image('a', 1)
+        self.S_SPEAR_STEEL = self.weapon.get_image('b', 1)
+        self.S_SPEAR_BLACK = self.weapon.get_image('c', 1)
+        self.S_SPEAR_RUNE = self.weapon.get_image('d', 1)
+
+        self.S_SHIELD_WOODEN = self.defence.get_image('A', 1)
+        self.S_SHIELD_BRONZE = self.defence.get_image('A', 0)
+        self.S_SHIELD_IRON = self.defence.get_image('a', 0)
+        self.S_SHIELD_STEEL = self.defence.get_image('b', 0)
+        self.S_SHIELD_BLACK = self.defence.get_image('c', 0)
+        self.S_SHIELD_RUNE = self.defence.get_image('d', 0)
 
         # ---> Special
         self.S_STAIRS_UP = self.tile.get_image('a', 2, 16, 16, (32, 32))
@@ -376,7 +387,7 @@ class ObjAssets:
         self.S_SIDE_R_BUTTON_BLUE_HOVER = self.menugui.get_image('a1', 1, 16, 16, (32, 32))[0]
         self.S_MID_BUTTON_BLUE_HOVER = self.menugui.get_image('z', 1, 16, 16, (32, 32))[0]
 
-        self.S_MAGIC_ROCK = self.rock.get_image('b', 1, 16, 16, (32, 32))
+        self.S_MAGIC_ROCK = self.special.get_image('a', 0)
         self.A_PORTAL_OPEN = self.door.get_animation('c', 6, 2, 16, 16, (32, 32))
         self.S_PORTAL_CLOSED = self.door.get_image('b', 6, 16, 16, (32, 32))
 
@@ -402,17 +413,31 @@ class ObjAssets:
             "A_HEALER_SLIME": self.A_HEALER_SLIME,
             "A_DEATH_RED": self.A_DEATH_RED,
             "A_DEATH_BLUE": self.A_DEATH_BLUE,
-            "S_TOMATO": self.S_TOMATO,
-            "S_RADISH": self.S_RADISH,
-            "S_CABBAGE": self.S_CABBAGE,
-            "S_WATER_CUP": self.S_WATER_CUP,
-            "S_SCROLL_1": self.S_SCROLL_1,
-            "S_SCROLL_2": self.S_SCROLL_2,
-            "S_SCROLL_3": self.S_SCROLL_3,
-            "S_FLESH_SNAKE": self.S_FLESH_SNAKE,
+            "S_SCROLL_YELLOW": self.S_SCROLL_YELLOW,
+            "S_SCROLL_GREEN": self.S_SCROLL_GREEN,
+            "S_SCROLL_RED": self.S_SCROLL_RED,
+            "S_SCROLL_BLUE": self.S_SCROLL_BLUE,
+            "S_SCROLL_BROWN": self.S_SCROLL_BROWN,
+            "S_SCROLL_WHITE": self.S_SCROLL_WHITE,
+            "S_SCROLL_GRAY": self.S_SCROLL_GRAY,
+            "S_SCROLL_MULTI": self.S_SCROLL_MULTI,
             "S_GOLD": self.S_GOLD,
-            "S_32_SWORD": self.S_32_SWORD,
-            "S_32_SHIELD": self.S_32_SHIELD,
+            "S_SWORD_BRONZE": self.S_SWORD_BRONZE,
+            "S_SWORD_IRON": self.S_SWORD_IRON,
+            "S_SWORD_STEEL": self.S_SWORD_STEEL,
+            "S_SWORD_BLACK": self.S_SWORD_BLACK,
+            "S_SWORD_RUNE": self.S_SWORD_RUNE,
+            "S_SPEAR_BRONZE": self.S_SPEAR_BRONZE,
+            "S_SPEAR_IRON": self.S_SPEAR_IRON,
+            "S_SPEAR_STEEL": self.S_SPEAR_STEEL,
+            "S_SPEAR_BLACK": self.S_SPEAR_BLACK,
+            "S_SPEAR_RUNE": self.S_SPEAR_RUNE,
+            "S_SHIELD_WOODEN": self.S_SHIELD_WOODEN,
+            "S_SHIELD_BRONZE": self.S_SHIELD_BRONZE,
+            "S_SHIELD_IRON": self.S_SHIELD_IRON,
+            "S_SHIELD_STEEL": self.S_SHIELD_STEEL,
+            "S_SHIELD_BLACK": self.S_SHIELD_BLACK,
+            "S_SHIELD_RUNE": self.S_SHIELD_RUNE,
             "S_STAIRS_UP": self.S_STAIRS_UP,
             "S_STAIRS_DOWN": self.S_STAIRS_DOWN,
             "S_MAGIC_ROCK": self.S_MAGIC_ROCK,

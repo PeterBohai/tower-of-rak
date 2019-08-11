@@ -258,7 +258,7 @@ def map_place_items_creatures(room_list):
             item_x = tcod.random_get_int(0, min_x, max_x)
             item_y = tcod.random_get_int(0, min_y, max_y)
 
-        itemgen.gen_item((item_x, item_y))
+        itemgen.gen_item(cur_floor, (item_x, item_y))
 
 
 
@@ -378,7 +378,7 @@ def map_calculate_fov():
                              constants.FOV_ALG)
 
 
-def map_object_at_coords(coords_x, coords_y):
+def map_objects_at_coords(coords_x, coords_y):
     """Check if there is an object at the specified x, y coordinates.
 
     Args:
@@ -524,25 +524,23 @@ def assign_tiles(incoming_map):
                     wall_assign_num = 99
                 elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y+1):
                     wall_assign_num = 55
-                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y-1):
-                    wall_assign_num = 33
                 elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y-1) and \
                         not map_check_for_wall(incoming_map, x-1, y):
                     wall_assign_num = 100
+                elif wall_assign_num == 7 and not map_check_for_wall(incoming_map, x+1, y-1):
+                    wall_assign_num = 33
 
-                elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y+1):
-                    wall_assign_num = 44
+                elif wall_assign_num == 9 and map_check_for_wall(incoming_map, x - 1, y - 1):
+                    wall_assign_num = 10
+
                 elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y+1) and \
                         not map_check_for_wall(incoming_map, x+1, y):
                     wall_assign_num = 122
+                elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y+1):
+                    wall_assign_num = 44
                 elif wall_assign_num == 13 and not map_check_for_wall(incoming_map, x-1, y-1) and \
                         not map_check_for_wall(incoming_map, x+1, y):
                     wall_assign_num = 111
-
-
-
-
-
 
                 incoming_map[x][y].wall_assignment = wall_assign_num
 
