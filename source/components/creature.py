@@ -41,6 +41,8 @@ class ComCreature:
         self.dmg_received = None
         self.was_hit = False
         self.dmg_alpha = 0
+        self.health_bar_alpha = 0
+        self.internal_timer = 0
 
     @property
     def power(self):
@@ -372,8 +374,14 @@ class ComCreature:
 
         healthy_width = health_percentage * bar_width
 
+        current_time = pygame.time.get_ticks()
+
         # draw health bar only if taken damage
         if self.current_hp < self.maxHp or self.dmg_received is not None:
+
+            # start fading after 5000 milliseconds (5 secs)
+            if current_time - self.internal_timer >= 5000:
+                self.health_bar_alpha = max(self.health_bar_alpha - 3, 0)
 
             pos_x = self.owner.x * constants.CELL_WIDTH - 4
             pos_y = self.owner.y * constants.CELL_HEIGHT - (bar_height + 3)
@@ -386,15 +394,20 @@ class ComCreature:
             healthy_surface.fill(color)
 
             back_surface = pygame.Surface((bar_width, bar_height))
-            back_surface.fill((0, 0, 0, 100))    # fill background with black but slightly translucent
+            back_surface.fill((0, 0, 0, 100))    # fill background with slightly translucent black
 
-            outline_rect = pygame.Rect(pos_x, pos_y, bar_width, bar_height)
+            alpha_surface = pygame.Surface(back_surface.get_size(), pygame.SRCALPHA)
+            alpha_surface.fill((255, 255, 255, self.health_bar_alpha))
 
-            back_surface.blit(healthy_surface, (0, 0))
+            outline_rect = pygame.Rect(0, 0, bar_width, bar_height)
+
+            back_surface.blit(healthy_surface, (0, 0))      # draw healthy portion on top of background
+            pygame.draw.rect(back_surface, constants.COLOR_BLACK, outline_rect, 1)      # draw border of health bar
+            back_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)      # for fading
+
             surface.blit(back_surface, (pos_x, pos_y))
 
-            # draw border of health bar
-            pygame.draw.rect(surface, constants.COLOR_BLACK, outline_rect, 1)
+
 
     def draw_damage_taken(self):
         is_below = globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1
