@@ -39,7 +39,7 @@ ROOM_MIN_WIDTH = 7
 
 
 # Color definitions
-COLOR_GAME_BG = (26, 14, 19)
+COLOR_GAME_BG = (21, 24, 44)
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 COLOR_GREY = (100, 100, 100)
