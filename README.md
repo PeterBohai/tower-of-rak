@@ -16,7 +16,7 @@ The game is set in a world of two opposing races, where the adventure begins as 
 <img src="screenshots/screenshot-3.png" width=430> <img src="screenshots/screenshot-4.png" width=430>
   
 ## Download
-The game can be downloaded as a zip file at the <a href="https://tower-of-rak.herokuapp.com/">official site</a>. Note that this is an **early demo** of the game for macOS only.  
+The game can be downloaded as a zip file at the <a href="https://towerofrak.herokuapp.com/">official site</a>. Note that this is an **early demo** of the game for macOS only.  
 - [py2app](https://pypi.org/project/py2app/) was used to bundle everything into this standalone Mac OS X application.
 
 Unzip the file and simply open the application file to start playing.  
