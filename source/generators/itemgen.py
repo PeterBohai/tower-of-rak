@@ -31,7 +31,7 @@ def gen_item(floor_num, tup_coords):
             (gen_none_item(), gen_scroll_lightening(tup_coords), gen_scroll_fireball(tup_coords),
              gen_scroll_confusion(tup_coords), gen_weapon_sword_iron(tup_coords), gen_defence_shield_bronze(tup_coords))),
 
-        4: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.11),
+        4: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
             (gen_none_item(), gen_scroll_lightening(tup_coords), gen_scroll_fireball(tup_coords),
              gen_scroll_confusion(tup_coords), gen_weapon_sword_iron(tup_coords), gen_defence_shield_iron(tup_coords))),
 
