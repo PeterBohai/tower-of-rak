@@ -3,7 +3,6 @@
 from source import globalvars, map
 
 
-
 def use_stairs():
     # check if the player is standing on top of a set of stairs
     list_of_obj = map.map_objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)

@@ -51,7 +51,7 @@ def draw_game():
     for objActor in globalvars.GAME.current_objects:
         if objActor.is_visible and objActor.creature:
 
-            if objActor.name_object != "PLAYER":
+            if objActor.object_name != "PLAYER":
                 objActor.creature.draw_health()
 
             if objActor.creature.dmg_alpha > 0:

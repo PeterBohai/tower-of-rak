@@ -12,10 +12,7 @@ from source import gui
 from source import globalvars
 from source import text
 from source import game
-from source import magic
 from source.generators import itemgen
-from source.components import itemcom
-
 
 
 # ================================================================= #
@@ -62,8 +59,12 @@ def death_player(player):
     save_to_rm = "data/saves/savegame"
     try:
         os.remove(save_to_rm)
-    except OSError as e:
-        print("Error: {} - {}".format(e.filename, e.strerror))
+    except OSError:
+        print("No prior save file to delete")
+
+    # deinitialize pygame Surface objects (animation sprites)
+    for obj in globalvars.GAME.current_objects:
+        obj.animation_del()
 
     # For exiting out of the game
     death_popup = True
@@ -98,8 +99,8 @@ def death_enemy(mob):
     death_msg = f"{mob.display_name} is dead!"
     game.game_message(death_msg, constants.COLOR_WHITE)
 
-    mob.set_animation_key("A_DEATH_RED")
-    mob.name_object = "Red Soul"
+    mob.animation_key = "A_DEATH_RED"
+    mob.object_name = "Red Soul"
     mob.animation_speed = 1.5
 
     coin_drop = itemgen.gen_coins((mob.x, mob.y), 10)
@@ -120,8 +121,8 @@ def death_friendly(mob):
     death_msg = f"{mob.display_name} is dead and dropped a healing element!"
     game.game_message(death_msg, constants.COLOR_GREEN)
 
-    mob.set_animation_key("A_DEATH_BLUE")
-    mob.name_object = "Pure Soul"
+    mob.animation_key = "A_DEATH_BLUE"
+    mob.object_name = "Pure Soul"
     mob.animation_speed = 1.6
 
     mob.creature = None

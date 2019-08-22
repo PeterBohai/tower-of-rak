@@ -8,18 +8,12 @@ class ComContainer:
         max_volume (arg, float): Optional argument that specifies the maximum volume of the container. Default value is
                                  initialized to 10.0.
 
-    Todo:
-        * Implement a method that gets the names of every item in the inventory.
-        * Implement a method that gets the weight of every item in the inventory.
-        * Implement a system if method for weight and volume use.
-
     """
 
     def __init__(self, volume=10.0, inventory=[]):
         self.inventory = inventory
         self.max_volume = volume    # further usage of this in the future for more strategic and robust inventory system
 
-    # TODO: Get Names of everything in inventory
 
     # Get volume within container
     @property
@@ -49,4 +43,3 @@ class ComContainer:
 
         return list_of_equipped_items
 
-    # TODO: Get weight of everything in inventory

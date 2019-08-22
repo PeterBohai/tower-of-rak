@@ -12,28 +12,50 @@ from source.components import itemcom
 class ObjActor:
     """An actor object class that essentially represents every entity in the game.
 
-    This is an object that can be anything that appears in the game and is differentiated mainly through the components
-    that make up and control the object.
+    This is an object that can be anything that appears in the game (except for walls and floors) and is differentiated
+    mainly through the components that make up and control the object.
     Note that this rouge-like game mainly uses the composition/component system over inheritance.
 
-    Attributes:
-        x (arg, int): Tile map address of the actor object on the x-axis.
-        y (arg, int): Tile map address of the actor object on the y-axis.
-        name_object (arg, str): Name of the object type, "scroll" or "snake" for example.
-        animation (list): List of images for the object's display (can be a list of one image).
-                          Created in the ObjAssets class and usually denoted as "A_..." or "S_...".
-        animation_speed (arg, float): Time in seconds it takes to loop through the object animation.
-                                      Default value is initialized as 0.5
-
-    Components:
-        creature: Created from the ComCreature class. Has health, and can move and fight.
-        ai: Created from classes that have the prefix "Ai" like AiChase. Gives actor object specific rules to follow.
-        container: Created from the ComContainer class. Gives actor object ability to have an inventory.
-        item: Created from the ComItem class. Gives actor objects the ability to be picked up and be potentially usable.
+    Attributes
+    ----------
+    x : int
+        The x-coordinate of the object in terms of map tiles (grid not pixels).
+    y : int
+        The y-coordinate of the object in terms of map tiles (grid not pixels).
+    object_name : str
+        Name of the object.
+    _animation_key :  str
+        The actor object's animation key to access its sprite sequence from the animation dictionary in the assets.
+    _animation_seq : list
+        The sequence of sprites to be cycled through that make up the animation of the object.
+    animation_index : int
+        The current index of the animation sequence list to be displayed (a single still sprite).
+    animation_speed : float
+        Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
+    status : str
+        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
+    exp : int
+        Total experience points of the actor object (mainly for creatures).
+    gold : int
+        Total gold value the actor object currently contains/owns.
+    creature: object
+        A component class (ComCreature) that gives the object creature-specific attributes and functionality.
+    ai: object
+        A component class that gives the object the ability to move and act on their own.
+    container: object
+        A component class (ComContainer) that gives the object an inventory (hold more than one item).
+    item: object
+        A component class (ComItem) that gives the object attributes and functionality of items (pick/drop/use).
+    equipment: object
+        A component class (ComEquipment) that gives the object equipment attributes (wear/bonuses).
+    stairs: object
+        A structure component class (ComStairs) that gives the object staircase attributes (move up/down floors).
+    portal: object
+        A structure component class (ComPortal) that gives the object portal attributes (enter/win the game).
 
     """
 
-    def __init__(self, x, y, name_object,
+    def __init__(self, x, y, object_name,
                  animation_key, animation_speed=0.5,
                  exp=0, gold=0,
                  status=None,
@@ -43,21 +65,21 @@ class ObjActor:
                  item=None,
                  equipment=None,
                  stairs=None,
-                 portal=None):   # None is implicitly False
+                 portal=None):
 
-        self.x = x  # map address (not pixel address)
-        self.y = y  # map address (not pixel address)
-        self.name_object = name_object  # name of object, might change to object_name or name_object_type
-        self.animation_key = animation_key
-        self.animation = globalvars.ASSETS.animation_dict[animation_key]
-        self.animation_speed = animation_speed/1.0   # in seconds (always converted to a float, even if its an int)
+        self.x = x
+        self.y = y
+        self.object_name = object_name
+
+        self._animation_key = animation_key
+        self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]
+        self.animation_index = 0
+        self.animation_speed = animation_speed
+        self.sprite_time_elapsed = 0.0
+
         self.status = status
         self.gold = gold
         self.exp = exp
-
-        # animation flicker speed (over the course of # of secs)
-        self.flicker_timer = 0.0
-        self.sprite_image = 0
 
         self.creature = creature
         if creature:
@@ -96,8 +118,17 @@ class ObjActor:
             self.portal.owner = self
 
     @property
-    def flicker_speed(self):
-        return self.animation_speed / len(self.animation)
+    def animation_key(self):
+        return self._animation_key
+
+    @animation_key.setter
+    def animation_key(self, value):
+        self._animation_key = value
+        self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]
+
+    @property
+    def time_per_sprite(self):
+        return self.animation_speed / len(self._animation_seq)
 
     @property
     def display_name(self):
@@ -109,15 +140,15 @@ class ObjActor:
         """
 
         if self.creature:
-            name_to_display = "{} the {}".format(self.creature.name_instance, self.name_object)
+            name_to_display = "{} the {}".format(self.creature.name_instance, self.object_name)
             return name_to_display
 
         if self.item:
             if self.equipment and self.equipment.equipped is True:
-                name_to_display = "{} [E]".format(self.name_object)
+                name_to_display = "{} [E]".format(self.object_name)
                 return name_to_display
             else:
-                name_to_display = self.name_object
+                name_to_display = self.object_name
                 return name_to_display
 
     @property
@@ -135,28 +166,28 @@ class ObjActor:
         """
 
         if self.is_visible:
-            if len(self.animation) == 1:
+            if len(self._animation_seq) == 1:
                 # pixel address
-                globalvars.SURFACE_MAP.blit(self.animation[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+                globalvars.SURFACE_MAP.blit(self._animation_seq[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
-            elif len(self.animation) > 1:
+            elif len(self._animation_seq) > 1:
                 if globalvars.CLOCK.get_fps() > 0.0:
-                    self.flicker_timer += 1/globalvars.CLOCK.get_fps()
+                    self.sprite_time_elapsed += 1/globalvars.CLOCK.get_fps()
 
-                if self.flicker_timer >= self.flicker_speed:
-                    self.flicker_timer = 0.0
+                if self.sprite_time_elapsed >= self.time_per_sprite:
+                    self.sprite_time_elapsed = 0.0
 
-                    if self.sprite_image >= len(self.animation) - 1:
-                        self.sprite_image = 0
+                    if self.animation_index >= len(self._animation_seq) - 1:
+                        self.animation_index = 0
                     else:
-                        self.sprite_image += 1
+                        self.animation_index += 1
 
             # fixes rare occurrence when self.sprite_image is 1 when len(self.animation) changed from 2 to 1 already,
             # which caused index out of bounds error
-            if len(self.animation) == 1:
-                self.sprite_image = 0
+            if len(self._animation_seq) == 1:
+                self.animation_index = 0
 
-            globalvars.SURFACE_MAP.blit(self.animation[self.sprite_image],
+            globalvars.SURFACE_MAP.blit(self._animation_seq[self.animation_index],
                                         (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
     def distance_to(self, other):
@@ -179,16 +210,16 @@ class ObjActor:
         return shortest_distance_to_other
 
     def animation_del(self):
-        """ Get rid of any animation assets.
+        """ Get rid of any animation assets (pygame.Surface objects).
 
-        For the purpose of avoiding pygame.Surface objects dump, which can't be pickled.
+        For avoiding pygame.Surface objects dump, which can't be pickled.
 
         Returns:
             None
 
         """
 
-        self.animation = None
+        self._animation_seq = None
 
     def animation_init(self):
         """ Sets animation back to referencing animations from ASSETS (and not None after animation_del)
@@ -197,8 +228,5 @@ class ObjActor:
             None
         """
 
-        self.animation = globalvars.ASSETS.animation_dict[self.animation_key]
+        self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]
 
-    def set_animation_key(self, new_key):
-        self.animation_key = new_key
-        self.animation_init()

@@ -71,7 +71,7 @@ class ComItem:
                 game.game_message("Not enough room to pick up", constants.COLOR_WHITE)
 
             else:
-                game.game_message("Picking up [{}]".format(self.owner.name_object))
+                game.game_message("Picking up [{}]".format(self.owner.object_name))
                 actor.container.inventory.append(self.owner)
 
                 self.owner.animation_del()
@@ -110,7 +110,7 @@ class ComItem:
         self.container.inventory.remove(self.owner)
         self.owner.x = new_x
         self.owner.y = new_y
-        game.game_message("Dropped [{}]".format(self.owner.name_object))
+        game.game_message("Dropped [{}]".format(self.owner.object_name))
 
     def use(self):
         """Uses the item to produce an effect and removes it from the inventory.
@@ -190,7 +190,7 @@ class ComEquipment:
                     return
 
         self.equipped = True
-        game.game_message("Equipped [{}] in the {} slot".format(self.owner.name_object, self.slot))
+        game.game_message("Equipped [{}] in the {} slot".format(self.owner.object_name, self.slot))
 
     def unequip(self):
         """Unequips the item and sets the equipped attribute to False.

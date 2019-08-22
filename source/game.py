@@ -62,10 +62,10 @@ class ObjGame:
 
         self.cur_floor += 1
 
-        # if the current floor is the top floor so far
+        # if the current floor has no explored floors above it
         if len(self.maps_next) == 0:
 
-            # erase all items from previous map except the globalvars.PLAYER
+            # erase all items from previous map except the PLAYER
             self.current_objects = [globalvars.PLAYER]
             globalvars.PLAYER.animation_init()
 
@@ -114,6 +114,7 @@ class ObjGame:
         game_message("{} moved down a floor!".format(globalvars.PLAYER.creature.name_instance), constants.COLOR_BLUE)
         self.cur_floor -= 1
 
+
 def game_main_loop():
     """Main game loop.
 
@@ -121,8 +122,6 @@ def game_main_loop():
     quits the game when requested.
 
     """
-    globalvars.GAME_QUIT = False
-    globalvars.FLOOR_CHANGED = False
 
     # player action definition
     player_action = "no-action"
@@ -133,7 +132,10 @@ def game_main_loop():
 
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
-    # for fading creature damage taken text setup
+    # set flags
+    globalvars.GAME_QUIT = False
+    globalvars.FLOOR_CHANGED = False
+
     while not globalvars.GAME_QUIT:
 
         draw.draw_game()
@@ -168,7 +170,6 @@ def game_main_loop():
 
         # quit the game
         if player_action == "QUIT":
-            pygame.mixer.fadeout(10)
             game_exit()
 
         # creatures takes their turn
@@ -242,28 +243,28 @@ def game_handle_keys():
             # 'left arrow' key: move player one tile to the left, hold down to continuing moving automatically
             if event.key == keys["left"][1]:
                 if len(keys["left"]) == 2:
-                    globalvars.PLAYER.set_animation_key("A_PLAYER_LEFT")
+                    globalvars.PLAYER.animation_key = "A_PLAYER_LEFT"
                     actions.move_one_tile("left")
                     return "player moved"
 
                 elif len(keys["left"]) == 3 and \
                         (keys["left"][2] == pygame.K_LSHIFT or keys["left"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
-                        globalvars.PLAYER.set_animation_key("A_PLAYER_LEFT")
+                        globalvars.PLAYER.animation_key = "A_PLAYER_LEFT"
                         actions.move_one_tile("left")
                         return "player moved"
 
             # 'right arrow' key: move player one tile to the right, hold down to continuing moving automatically
             if event.key == keys["right"][1]:
                 if len(keys["right"]) == 2:
-                    globalvars.PLAYER.set_animation_key("A_PLAYER_RIGHT")
+                    globalvars.PLAYER.animation_key = "A_PLAYER_RIGHT"
                     actions.move_one_tile("right")
                     return "player moved"
 
                 elif len(keys["right"]) == 3 and \
                         (keys["right"][2] == pygame.K_LSHIFT or keys["right"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
-                        globalvars.PLAYER.set_animation_key("A_PLAYER_RIGHT")
+                        globalvars.PLAYER.animation_key = "A_PLAYER_RIGHT"
                         actions.move_one_tile("right")
                         return "player moved"
 
@@ -371,36 +372,60 @@ def game_message(game_msg, msg_color=constants.COLOR_GREY):
 
 
 def game_new():
+    """Starts a new game starting from Floor 1.
+
+    Initializes the player, GAME object, all other actors for the first floor as well as the FOV_CALCULATE.
+
+    Returns
+    -------
+    None
+
+    """
 
     globalvars.GAME = ObjGame()
+
+    # position doesn't matter as it will be set when every actor is placed with map_place_items_creatures
     playergen.gen_player((0, 0))
     map.map_place_items_creatures(globalvars.GAME.current_rooms)
     globalvars.FOV_CALCULATE = True
 
 
 def game_exit():
+    """ Saves current game before exiting the game.
 
-    # save the game
+    Returns
+    -------
+    None
+
+    """
+    pygame.mixer.fadeout(10)
     game_save()
-
     pygame.quit()
     sys.exit()
 
 
 def game_save():
 
-    # destroy Surface object (from actor animations)
-    for obj in globalvars.GAME.current_objects:
-        obj.animation_del()
-
-    # write globalvars.GAME and PLAYER objects into compressed binary file
+    # write GAME and PLAYER objects into compressed binary file
     with gzip.open("data/saves/savegame", "wb") as save_file:
-        pickle.dump([globalvars.GAME, globalvars.PLAYER], save_file)
+        try:
+            # destroy Surface objects so pickle can save the data
+            for obj in globalvars.GAME.current_objects:
+                obj.animation_del()
+
+            pickle.dump([globalvars.GAME, globalvars.PLAYER], save_file)
+        except TypeError:
+            print("TypeError, couldn't save game")
 
 
 def game_load():
+    """Load previous game from save file.
 
-    # since re-assigning these globals
+    Returns
+    -------
+    None
+
+    """
 
     with gzip.open("data/saves/savegame", "rb") as load_file:
         globalvars.GAME, globalvars.PLAYER = pickle.load(load_file)
@@ -409,8 +434,9 @@ def game_load():
     for obj in globalvars.GAME.current_objects:
         obj.animation_init()
 
-    # create FOV_MAP
     globalvars.GAME.from_main_menu = True
+
+    # create FOV_MAP
     map.map_make_fov(globalvars.GAME.current_map)
     globalvars.FOV_CALCULATE = True
 
@@ -441,12 +467,23 @@ def preferences_load():
         globalvars.PREFERENCES = pickle.load(load_file)
 
 
-def game_start():
-    # generate a new game or load a game if there is a save data available
-    try:
-        game_load()
+def game_start(new=True):
+    """Loads a saved game or generate a new game if there is a no save data
 
-    except:
+    Returns
+    -------
+    None
+
+    """
+    if new:
         game_new()
+    else:
+        try:
+            game_load()
 
+        except FileNotFoundError:
+            # TODO indicate that a new game was initiated instead (pop up notice)
+            game_new()
+
+    # start the game loop
     game_main_loop()

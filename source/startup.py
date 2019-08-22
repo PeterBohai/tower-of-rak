@@ -35,7 +35,7 @@ def game_initialize():
     try:
         game.preferences_load()
 
-    except:
+    except FileNotFoundError:
         globalvars.PREFERENCES = data.StructPreferences()
 
     # Parse name generation files

@@ -11,19 +11,25 @@ from source.menu import options
 
 
 def menu_main():
+    """Initialize the game and draws the main menu
+
+    Returns
+    -------
+    None
+    """
+
     startup.game_initialize()
-    menu_running = True
 
     # tile address
     center_x = constants.CAMERA_WIDTH / 2
     title_y = constants.CAMERA_HEIGHT / 4
 
     # ======================= button variables ====================== #
-    button_list = []
-    # button sizes
+
+    # button sizes (px)
     button_width = 160
     button_height = 32
-    button_offset_y = 5/4 * button_height
+    button_offset_y = int(round(5/4 * button_height))
 
     # button address
     new_game_button_y = title_y + 100
@@ -36,36 +42,35 @@ def menu_main():
     new_game_button = gui.GuiButton(globalvars.SURFACE_MAIN, "New Game",
                                     (center_x, new_game_button_y),
                                     (button_width, button_height))
-    button_list.append(new_game_button)
 
     cont_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Continue",
                                 (center_x, cont_button_y),
                                 (button_width, button_height))
-    button_list.append(cont_button)
 
     options_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Options",
                                    (center_x, options_button_y),
                                    (button_width, button_height))
-    button_list.append(options_button)
 
     credits_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Credits",
                                    (center_x, credits_button_y),
                                    (button_width, button_height))
-    button_list.append(credits_button)
 
     quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "QUIT",
                                 (center_x, quit_button_y),
                                 (button_width, button_height))
-    button_list.append(quit_button)
 
+    # all main menu buttons in vertical order (top to bottom) along with relevant coords as last element
     menu_buttons_tup = (new_game_button, cont_button, options_button, credits_button, quit_button, (center_x, title_y))
 
-    # play background music
+    # play background music (on loop)
     pygame.mixer.music.load(globalvars.ASSETS.main_menu_music)
     pygame.mixer.music.play(-1)
 
+    # set flags
     display_changed = False
+    menu_running = True
 
+    # ====================== main menu loop ===================== #
     while menu_running:
 
         # process inputs
@@ -85,22 +90,15 @@ def menu_main():
         if new_game_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
             draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
-            game.game_new()
-            game.game_main_loop()
+            game.game_start()
             menu_main()
 
         # load previous game if clicked
         if cont_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
             draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup, color=pygame.Color('white'))
-            game.game_start()
+            game.game_start(new=False)
             menu_main()
-
-        # quit the game
-        if quit_button.update(player_events):
-            pygame.mixer.music.stop()
-            pygame.quit()
-            sys.exit()
 
         # display options menu
         if options_button.update(player_events):
@@ -115,12 +113,18 @@ def menu_main():
         if credits_button.update(player_events):
             menu_credits()
 
+        # quit the game
+        if quit_button.update(player_events):
+            pygame.mixer.fadeout(10)
+            pygame.quit()
+            sys.exit()
+
         # Change cursor when hovering over a button
-        for i, button in enumerate(button_list):
+        for i, button in enumerate(menu_buttons_tup[:-1]):
             if button.mouse_hover:
                 pygame.mouse.set_cursor(*pygame.cursors.diamond)
                 break
-            if i == len(button_list) - 1:
+            if i == len(menu_buttons_tup) - 2:
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
         # ================== draw elements ================== #
@@ -137,8 +141,6 @@ def menu_main():
     elif display_changed:
         globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
         menu_main()
-
-
 
 
 def menu_credits():
@@ -266,7 +268,6 @@ def menu_credits():
         for r in range(1, num_tiles_height + 1):
             for c in range(1, num_tiles_width + 1):
                 surface_credits_menu.blit(globalvars.ASSETS.S_MID_MENU_LIGHT, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
 
         pygame.display.update()
 

@@ -134,7 +134,6 @@ class ComCreature:
                 if objActor.is_visible and objActor.creature:
                     objActor.creature.was_hit = False
 
-
     def move_towards(self, target):
         """Moves this actor object closer towards another object.
 

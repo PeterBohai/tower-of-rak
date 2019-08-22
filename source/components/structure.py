@@ -53,7 +53,7 @@ class ComPortal:
         portal_is_open = (self.owner.status == "STATUS_OPEN")
 
         for obj in globalvars.PLAYER.container.inventory:
-            if obj.name_object == "MAGIC ROCK":
+            if obj.object_name == "MAGIC ROCK":
                 found_lamp = True
 
         # open the portal if player has lamp in their inventory
@@ -97,12 +97,16 @@ class ComPortal:
 
                 win_file.write("Deleted any game save files\n")
 
-            # delete save game file
+            # delete save game file if there is one
             save_to_rm = "data/saves/savegame"
             try:
                 os.remove(save_to_rm)
-            except OSError as e:
-                print("Error: {} - {}".format(e.filename, e.strerror))
+            except OSError:
+                print("No prior save file to delete")
+
+            # deinitialize pygame Surface objects (animation sprites)
+            for obj in globalvars.GAME.current_objects:
+                obj.animation_del()
 
             # For exiting out of the game
             win_popup = True
