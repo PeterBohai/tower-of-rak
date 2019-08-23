@@ -30,27 +30,27 @@ class ObjActor:
         The sequence of sprites to be cycled through that make up the animation of the object.
     animation_index : int
         The current index of the animation sequence list to be displayed (a single still sprite).
-    animation_speed : float
+    animation_speed : float, optional
         Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
-    status : str
-        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
-    exp : int
+    exp : int, optional
         Total experience points of the actor object (mainly for creatures).
-    gold : int
+    gold : int, optional
         Total gold value the actor object currently contains/owns.
-    creature: object
+    status : str, optional
+        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
+    creature: object, optional
         A component class (ComCreature) that gives the object creature-specific attributes and functionality.
-    ai: object
+    ai: object, optional
         A component class that gives the object the ability to move and act on their own.
-    container: object
+    container: object, optional
         A component class (ComContainer) that gives the object an inventory (hold more than one item).
-    item: object
+    item: object, optional
         A component class (ComItem) that gives the object attributes and functionality of items (pick/drop/use).
-    equipment: object
+    equipment: object, optional
         A component class (ComEquipment) that gives the object equipment attributes (wear/bonuses).
-    stairs: object
+    stairs: object, optional
         A structure component class (ComStairs) that gives the object staircase attributes (move up/down floors).
-    portal: object
+    portal: object, optional
         A structure component class (ComPortal) that gives the object portal attributes (enter/win the game).
 
     """
@@ -81,11 +81,12 @@ class ObjActor:
         self.gold = gold
         self.exp = exp
 
+        # components
         self.creature = creature
         if creature:
-            self.creature.owner = self   # component system implementation
+            self.creature.owner = self
 
-            # coordinates for the disappearing damage taken float number for creatures
+            # coordinates for the disappearing damage taken float number
             self.dmg_taken_posx = self.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
             self.dmg_taken_posy = self.y * constants.CELL_HEIGHT
 
@@ -94,7 +95,7 @@ class ObjActor:
             self.ai.owner = self
 
         self.container = container
-        if self.container:    # if it has a container component, then...
+        if self.container:
             self.container.owner = self
 
         self.item = item
@@ -119,6 +120,10 @@ class ObjActor:
 
     @property
     def animation_key(self):
+        """str: Gets the animation key that accesses the sprite sequence from the animation dictionary in the assets.
+
+        When the animation key is set, the animation sequence will also be reset accordingly.
+        """
         return self._animation_key
 
     @animation_key.setter
@@ -128,15 +133,13 @@ class ObjActor:
 
     @property
     def time_per_sprite(self):
+        """float: Gets the time one still image sprite should be displayed for."""
         return self.animation_speed / len(self._animation_seq)
 
     @property
     def display_name(self):
-        """Combines creature names and their object (type) name. Adds the "[E]" indicator for equipped items.
-
-        Returns:
-            name_to_display (str): The full name of a creature or the equip status of an equipment item.
-
+        """str: Gets the combined creature names and their object (type) name.
+        Adds the "[E]" indicator for equipped items.
         """
 
         if self.creature:
@@ -153,22 +156,26 @@ class ObjActor:
 
     @property
     def is_visible(self):
+        """bool: Returns True if this object is in the field of view of the PLAYER, False otherwise."""
         return tcod.map_is_in_fov(globalvars.FOV_MAP, self.x, self.y)
 
     def draw(self):
         """Draws the actor object to the screen.
 
-        Draws the actor object to the map screen if it appears within the PLAYER's fov. If the object as multiple sprite
-        images in its animation list, it keeps track of the timing of the animations and triggers a transition to
+        Draws the actor object to the map screen if it appears within the PLAYER's fov. If the object has multiple
+        sprites in its animation list, it keeps track of the timing of the animations and triggers a transition to
         display the next image in the list. This will give off an "idle" animation look, where creatures usually bob up
         and down.
+
+        Returns
+        -------
+        None
 
         """
 
         if self.is_visible:
             if len(self._animation_seq) == 1:
-                # pixel address
-                globalvars.SURFACE_MAP.blit(self._animation_seq[0], (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+                self.animation_index = 0
 
             elif len(self._animation_seq) > 1:
                 if globalvars.CLOCK.get_fps() > 0.0:
@@ -182,50 +189,51 @@ class ObjActor:
                     else:
                         self.animation_index += 1
 
-            # fixes rare occurrence when self.sprite_image is 1 when len(self.animation) changed from 2 to 1 already,
-            # which caused index out of bounds error
-            if len(self._animation_seq) == 1:
-                self.animation_index = 0
-
             globalvars.SURFACE_MAP.blit(self._animation_seq[self.animation_index],
                                         (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
 
     def distance_to(self, other):
-        """Calculates the relative distance of this actor object to another.
+        """Calculates the relative distance of this object to another (other).
 
-        Args:
-            other (ObjActor): Another actor object.
+        Parameters
+        ----------
+        other : ObjActor
+            Another actor object.
 
-        Returns:
-            shortest_distance_to_other (float): The straight distance to the "other" actor object.
+        Returns
+        -------
+        float
+            The direct (straight diagonal) distance to the other actor object.
 
         """
 
         dx = other.x - self.x
         dy = other.y - self.y
 
-        # shortest distance to another actor object in tile number measurements
         shortest_distance_to_other = math.sqrt(dx ** 2 + dy ** 2)
 
         return shortest_distance_to_other
 
     def animation_del(self):
-        """ Get rid of any animation assets (pygame.Surface objects).
+        """Removes all animation assets (pygame.Surface objects).
 
-        For avoiding pygame.Surface objects dump, which can't be pickled.
+        For the purpose of being able to save GAME.current_objects with pickle.
 
-        Returns:
-            None
+        Returns
+        -------
+        None
 
         """
 
         self._animation_seq = None
 
     def animation_init(self):
-        """ Sets animation back to referencing animations from ASSETS (and not None after animation_del)
+        """Sets animation back to referencing animations from ASSETS (and not None after animation_del).
 
-        Returns:
-            None
+        Returns
+        -------
+        None
+
         """
 
         self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]

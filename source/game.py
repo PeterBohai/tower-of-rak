@@ -144,12 +144,15 @@ def game_main_loop():
         player_action = game_handle_keys()
 
         for objActor in globalvars.GAME.current_objects:
-            if objActor.is_visible and objActor.creature and objActor is not globalvars.PLAYER:
+            if objActor.is_visible and objActor.creature:
 
-                if objActor.creature.was_hit:
+                if objActor.creature.was_hit and objActor is not globalvars.PLAYER:
                     objActor.creature.internal_timer = pygame.time.get_ticks()
                     objActor.creature.dmg_alpha = 255
                     objActor.creature.health_bar_alpha = 255
+
+                elif objActor.creature.was_hit and objActor is globalvars.PLAYER:
+                    objActor.creature.dmg_alpha = 255
 
                 if objActor.creature.dmg_alpha > 0:
                     objActor.creature.draw_damage_taken()

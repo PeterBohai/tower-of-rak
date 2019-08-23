@@ -9,11 +9,16 @@ from source import globalvars
 class ObjCamera:
     """Camera object that updates the view of the map as the player moves around.
 
-    Attributes:
-        width (int): The width of the rectangular camera display in pixels
-        height (int): The height of the rectangular camera display in pixels
-        x (int): The x (pixel) coordinate of the camera rectangle to be aligned to a surface.
-        y (int): The y (pixel) coordinate of the camera rectangle to be aligned to a surface.
+     Attributes
+    ----------
+    width : int
+        The width of the rectangular camera display in pixels (typically same as the game window dimensions).
+    height : int
+        The height of the rectangular camera display in pixels (typically same as the game window dimensions).
+    x : int
+        The x-coordinate in pixels of where the camera will be aligned to relative to the map.
+    y : int
+        The y-coordinate in pixels of where the camera will be aligned to relative to the map.
 
     """
 
@@ -24,101 +29,96 @@ class ObjCamera:
 
     @property
     def rectangle(self):
-        """Creates the rectangle area of the camera object and aligns its center coordinates accordingly.
-
-        Returns:
-            pos_rect (Rect): A pygame's rectangle object aligned at the center.
-
-        """
+        """pygame.Rect obj: The rectangle area of the camera object aligned at its center coordinates."""
         pos_rect = pygame.Rect((0, 0), (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
-
         pos_rect.center = (self.x, self.y)
 
         return pos_rect
 
     @property
     def map_address(self):
-        """Converts the camera's center map-pixel coordinates to map-tile coordinates.
-
-        Returns:
-            tup_map_tile_coords (tuple): The converted map-tile coordinates of the camera's center position on the map.
-
-        """
+        """tuple: The map-grid coordinates (not pixels) of where the camera object's center is currently at."""
 
         map_x = int(self.x / constants.CELL_WIDTH)
         map_y = int(self.y / constants.CELL_HEIGHT)
 
-        tup_map_tile_coords = (map_x, map_y)
-
-        return tup_map_tile_coords
+        return map_x, map_y
 
     def update_pos(self):
-        """Updates and sets the position of the x, y coordinates of camera.
+        """Updates the x, y coordinates of camera as the PLAYER moves.
 
-        Follows the coordinate (relative to SURFACE_MAP) of the center of the player. Have the option of making the
-        camera lag behind a bit, or have to catch up in a smooth motion.
+        Returns
+        -------
+        None
 
         """
+        camera_speed = 1
 
-        # add half the pixel dimensions of one cell as PLAYER coordinates are aligned to the cell's upper-left corner
+        # add half the dimensions of one cell as PLAYER coordinates are aligned to the cell's upper-left corner
         target_x = (globalvars.PLAYER.x * constants.CELL_WIDTH) + (constants.CELL_WIDTH/2)
         target_y = (globalvars.PLAYER.y * constants.CELL_HEIGHT) + (constants.CELL_HEIGHT/2)
-
-        distance_to_target_x, distance_to_target_y = self. map_dist_to_cam((target_x, target_y))
-
-        camera_speed = 1
+        distance_to_target_x, distance_to_target_y = self.map_dist_to_cam((target_x, target_y))
 
         self.x += int(distance_to_target_x * camera_speed)
         self.y += int(distance_to_target_y * camera_speed)
 
-    def map_dist_to_cam(self, tup_coords):
-        """Gives x and y distance from specified map-coordinate to camera's center map-coordinate.
+    def map_dist_to_cam(self, map_pixel_coord):
+        """Calculates the distance between the camera and the specified `coords`
 
-        Calculates the x and y coordinate difference between a specified coordinate on the map and the center
-        map-coordinate of the camera. Every value is expressed in pixels.
+        Parameters
+        ----------
+        map_pixel_coord : tuple
+            The (x, y) pixel coordinates relative to the map for the camera object to compare to.
 
-        Args:
-            tup_coords (tuple): Pixel coordinates relative to the map, or SURFACE_MAP.
-
-        Returns:
-            tup_diff_coord (tuple): Pixel coordinates relative to the map of the calculated x and y difference.
+        Returns
+        -------
+        tuple
+            The (x, y) pixel coordinate difference between the camera and `coords` relative to the map.
 
         """
-
-        map_x, map_y = tup_coords
+        map_x, map_y = map_pixel_coord
 
         distance_diff_x = map_x - self.x
         distance_diff_y = map_y - self.y
 
-        tup_diff_coord = (distance_diff_x, distance_diff_y)
+        return distance_diff_x, distance_diff_y
 
-        return tup_diff_coord
+    def window_dist_to_cam(self, window_coord):
+        """Calculates the distance the camera's center (in terms of the window) from the specified window `coords`.
 
-    def window_dist_to_cam(self, tup_coords):
-        """Gives x and y distance from specified window-coordinate to camera's center window-coordinate.
+        Parameters
+        ----------
+        window_coord : tuple
+            The (x, y) pixel coordinates relative to the window for the camera object to compare to.
 
-        Calculates the x and y coordinate difference between a specified coordinate on the window and the center
-        window-coordinate of the camera. Every value is expressed in pixels.
-
-        Args:
-            tup_coords (tuple): Pixel coordinates relative to the window, or SURFACE_MAIN.
-
-        Returns:
-            tup_diff_coord (tuple): Pixel coordinates relative to the window of the calculated x and y difference.
+        Returns
+        -------
+        tuple
+            The (x, y) pixel coordinate difference between the camera and `coords` relative to the window.
 
         """
-
-        window_x, window_y = tup_coords
+        window_x, window_y = window_coord
 
         distance_diff_x = window_x - (self.width / 2)
         distance_diff_y = window_y - (self.height / 2)
 
-        tup_diff_coord = (distance_diff_x, distance_diff_y)
+        return distance_diff_x, distance_diff_y
 
-        return tup_diff_coord
+    def window_to_map(self, window_coord):
+        """Calculates the map-grid coordinates of the given window-pixel `coords`.
 
-    def window_to_map(self, tup_coords):
-        target_x, target_y = tup_coords
+        Parameters
+        ----------
+        window_coord : tuple
+            The (x, y) pixel window coordinate to be converted into map-grid coordinates.
+
+        Returns
+        -------
+        tuple
+            The map-grid coordinate equivalent of the given `window_coords`
+
+        """
+        target_x, target_y = window_coord
 
         # convert window coordinates to distance from camera
         cam_wind_dx, cam_wind_dy = self.window_dist_to_cam((target_x, target_y))
@@ -127,13 +127,7 @@ class ObjCamera:
         map_pix_x = self.x + cam_wind_dx
         map_pix_y = self.y + cam_wind_dy
 
-        # pixel map coordinates converted from window pixel coordinates
-        tup_map_coords = (map_pix_x, map_pix_y)
+        map_grid_x = int(map_pix_x / constants.CELL_WIDTH)
+        map_grid_y = int(map_pix_y / constants.CELL_HEIGHT)
 
-        return tup_map_coords
-
-    def set_width(self, new_width):
-        self.width = new_width
-
-    def set_height(self, new_height):
-        self.height = new_height
+        return map_grid_x, map_grid_y

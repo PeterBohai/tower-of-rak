@@ -1,4 +1,3 @@
-
 # standard library imports
 import datetime
 import os
@@ -15,23 +14,20 @@ from source import game
 from source.generators import itemgen
 
 
-# ================================================================= #
-#                   -----  Death Functions -----                    #
-#                          --- SECTION ---                          #
-# ================================================================= #
-
 def death_player(player):
-    """Death_function for the player.
+    """Death function for when PLAYER dies.
 
-    Display a death message and kick player out of game and into the main menu.
+    Parameters
+    ----------
+    player : ObjActor obj
+        The PLAYER object that executes this death function.
 
-    Args:
-        player (ObjActor): The PLAYER object that executes this death function when it dies.
+    Returns
+    -------
+    None
 
     """
-
     player.status = "STATUS_DEAD"
-
     center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
 
     # button variables
@@ -40,22 +36,19 @@ def death_player(player):
     quit_button_x = constants.CAMERA_WIDTH/2
     quit_button_y = constants.CAMERA_HEIGHT * 3/4
 
-    quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Quit",
-                                (quit_button_x, quit_button_y),
+    quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Quit", (quit_button_x, quit_button_y),
                                 (button_width, button_height))
 
-    # make a legacy file
+    # create a legacy file and delete any game save files
     file_name = "legacy_{}_{}.txt".format(player.creature.name_instance,
                                           datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
-
     with open("data/saves/{}".format(file_name), 'a+') as legacy_file:
         legacy_file.write("************* {}'s LEGACY FILE ************* \n\n".format(player.creature.name_instance))
         for (message, color) in globalvars.GAME.message_history:
             legacy_file.write(message + '\n')
 
-        legacy_file.write("Deleted any game save files\n")
+        legacy_file.write("Deleted any previous game save files\n")
 
-    # delete save game file
     save_to_rm = "data/saves/savegame"
     try:
         os.remove(save_to_rm)
@@ -66,11 +59,9 @@ def death_player(player):
     for obj in globalvars.GAME.current_objects:
         obj.animation_del()
 
-    # For exiting out of the game
+    # popup menu displaying a "You Died!" message and a quit to main menu button
     death_popup = True
     while death_popup:
-
-        # get player input
         events_list = pygame.event.get()
         mouse_pos = pygame.mouse.get_pos()
         player_events = (events_list, mouse_pos)
@@ -90,11 +81,25 @@ def death_player(player):
                        center=True)
 
         quit_button.draw()
-
         pygame.display.update()
 
 
 def death_enemy(mob):
+    """Death function for unfriendly mobs.
+
+    The dead mob leaves a slow bobbing red soul behind that gives experience points when consumed/picked up and has a
+    chance to drop coins or items.
+
+    Parameters
+    ----------
+    mob : ObjActor obj
+        The mob object that executes this death function (an actor object with a creature component).
+
+    Returns
+    -------
+    None
+
+    """
 
     death_msg = f"{mob.display_name} is dead!"
     game.game_message(death_msg, constants.COLOR_WHITE)
@@ -111,10 +116,18 @@ def death_enemy(mob):
 
 
 def death_friendly(mob):
-    """Death_function for friendly mobs.
+    """Death function for friendly mobs.
 
-    Args:
-        mob (ObjActor): The actor creature object that will execute this death function when it dies.
+    The dead mob leaves a slow bobbing blue soul behind that gives heals for a certain amount when consumed/picked up.
+
+    Parameters
+    ----------
+    mob : ObjActor obj
+        The mob object that executes this death function (an actor object with a creature component).
+
+    Returns
+    -------
+    None
 
     """
 

@@ -31,12 +31,8 @@ def menu_tile_select(coords_origin=None,
         # Get mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        # convert mouse window address to map pixel address
-        map_x_pixel, map_y_pixel = globalvars.CAMERA.window_to_map((mouse_x, mouse_y))
-
-        # convert to map tile address
-        map_tile_x = int(map_x_pixel/constants.CELL_WIDTH)
-        map_tile_y = int(map_y_pixel/constants.CELL_HEIGHT)
+        # convert mouse window address to map grid address
+        map_tile_x, map_tile_y = globalvars.CAMERA.window_to_map((mouse_x, mouse_y))
 
         if coords_origin:
             list_of_tiles = map.map_find_line(coords_origin, (map_tile_x, map_tile_y))

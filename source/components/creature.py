@@ -406,10 +406,8 @@ class ComCreature:
 
             surface.blit(back_surface, (pos_x, pos_y))
 
-
-
     def draw_damage_taken(self):
-        is_below = globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1
+        is_below = (globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1)
 
         start_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
         if is_below:
@@ -439,5 +437,5 @@ class ComCreature:
                 text_color = pygame.Color('royalblue3')
 
             self.dmg_alpha = text.draw_fading_text(globalvars.SURFACE_MAP, dmg_text, font, display_coords,
-                                  text_color, self.dmg_alpha, center=True)
+                                                    text_color, self.dmg_alpha, center=True)
 

@@ -964,8 +964,8 @@ def menu_options_display():
         if default_button.update(player_events):
             constants.CAMERA_WIDTH = constants.CAMERA_WIDTH_DEFAULT
             constants.CAMERA_HEIGHT = constants.CAMERA_HEIGHT_DEFAULT
-            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
-            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
+            globalvars.CAMERA.width = constants.CAMERA_WIDTH
+            globalvars.CAMERA.height = constants.CAMERA_HEIGHT
 
             globalvars.PREFERENCES.display_window = "default"
             globalvars.DISPLAY_CHANGE = True
@@ -973,8 +973,8 @@ def menu_options_display():
         if fill_button.update(player_events):
             constants.CAMERA_WIDTH = constants.screen_width
             constants.CAMERA_HEIGHT = constants.screen_height - 45
-            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
-            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
+            globalvars.CAMERA.width = constants.CAMERA_WIDTH
+            globalvars.CAMERA.height = constants.CAMERA_HEIGHT
 
             globalvars.PREFERENCES.display_window = "fill"
             globalvars.DISPLAY_CHANGE = True
@@ -982,8 +982,8 @@ def menu_options_display():
         if fullscreen_button.update(player_events):
             constants.CAMERA_WIDTH = constants.screen_width
             constants.CAMERA_HEIGHT = constants.screen_height
-            globalvars.CAMERA.set_width(constants.CAMERA_WIDTH)
-            globalvars.CAMERA.set_height(constants.CAMERA_HEIGHT)
+            globalvars.CAMERA.width = constants.CAMERA_WIDTH
+            globalvars.CAMERA.height = constants.CAMERA_HEIGHT
 
             globalvars.PREFERENCES.display_window = "fullscreen"
             globalvars.DISPLAY_CHANGE = True

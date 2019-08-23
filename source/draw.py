@@ -1,16 +1,12 @@
-# Standard library imports
-
 # Third party imports
 import pygame
 import tcod
-import random
 
 # Local project imports
 from source import constants
 from source import globalvars
 from source import text
 from source import hud
-from source import map
 
 # ================================================================= #
 #                        -----  Draw  -----                         #
@@ -156,11 +152,6 @@ def draw_map(map_to_draw):
                         else:
                             globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num],
                                                         (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
-
-
-
-            # else if not visible:
-                # the background fill color of the surface being drawn on is displayed (black at the moment)
 
 
 def draw_debug():

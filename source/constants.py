@@ -1,3 +1,5 @@
+import os
+
 # Third party imports
 import tcod
 import pygame
@@ -6,7 +8,7 @@ pygame.init()
 
 # GAME SIZES
 CELL_WIDTH = 32
-CELL_HEIGHT = 32  # because of the size of the sprite character's png
+CELL_HEIGHT = 32
 
 CAMERA_WIDTH_DEFAULT = 900
 CAMERA_HEIGHT_DEFAULT = 700
@@ -25,9 +27,9 @@ GAME_FPS = 60
 # MAP VARS
 MAP_WIDTH = 90
 MAP_HEIGHT = 70
-MAP_MAX_NUM_ROOMS = 2
+MAP_MAX_NUM_ROOMS = 12
 
-MAP_MAX_NUM_FLOORS = 2
+MAP_MAX_NUM_FLOORS = 10
 
 
 # ROOM LIMITS
@@ -68,7 +70,6 @@ COLOR_ORANGE = (255, 155, 84)
 COLOR_BROWN = (213, 178, 171)
 
 # FOV SETTINGS
-
 FOV_ALG = tcod.FOV_BASIC
 FOV_LIGHT_WALLS = True
 TORCH_RADIUS = 6
@@ -78,27 +79,24 @@ NUM_MESSAGES = 6
 MSG_WIDTH = 600
 
 # FONTS
-FONT_DEBUG_MESSAGE2 = pygame.font.Font('data/fonts/AppleII.ttf', 16)
+font_path = os.path.join("data", "fonts")
 
-FONT_GAME_TITLE = pygame.font.Font('data/fonts/Future_TimeSplitters.otf', 60)
+FONT_DEBUG_MESSAGE2 = pygame.font.Font(os.path.join(font_path, "AppleII.ttf"), 16)
+FONT_GAME_TITLE = pygame.font.Font(os.path.join(font_path, "Future_TimeSplitters.otf"), 60)
+FONT_PLAYER_DEATH = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), 50)
+FONT_VIGA = pygame.font.Font(os.path.join(font_path, "Viga-Regular.ttf"), 16)
 
-FONT_PLAYER_DEATH = pygame.font.Font('data/fonts/fixedsys300.ttf', 50)
-FONT_VIGA = pygame.font.Font('data/fonts/Viga-Regular.ttf', 16)
+FONT_BEST = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), 16)
+FONT_BEST_20 = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), 20)
+FONT_BEST_18 = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), 18)
 
-FONT_BEST = pygame.font.Font('data/fonts/fixedsys300.ttf', 16)
-FONT_BEST_20 = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
-FONT_BEST_18 = pygame.font.Font('data/fonts/fixedsys300.ttf', 18)
+FONT_OSRS_BOLD = pygame.font.Font(os.path.join(font_path, "runescape_chat_bold_2.ttf"), 16)
+FONT_OSRS_NPC = pygame.font.Font(os.path.join(font_path, "runescape_npc_chat_2.ttf"), 20)
 
-
-FONT_OSRS_BOLD = pygame.font.Font('data/fonts/runescape_chat_bold_2.ttf', 16)
-FONT_OSRS_NPC = pygame.font.Font('data/fonts/runescape_npc_chat_2.ttf', 20)
-
-FONT_MENU_TITLE = pygame.font.Font('data/fonts/fixedsys300.ttf', 20)
+FONT_MENU_TITLE = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), 20)
 FONT_MENU_TITLE.set_underline(True)
 
-FONT_TARGET_X = pygame.font.Font('data/fonts/fixedsys300.ttf', CELL_HEIGHT + 10)
+FONT_TARGET_X = pygame.font.Font(os.path.join(font_path, "fixedsys300.ttf"), CELL_HEIGHT + 10)
 
 FONT_CREDITS = pygame.font.SysFont('arial', 14)
-
-FONT_CREDIT_LABELS = pygame.font.SysFont('data/fonts/fixedsys300.ttf', 20)
-
+FONT_CREDIT_LABELS = pygame.font.SysFont(os.path.join(font_path, "fixedsys300.ttf"), 20)

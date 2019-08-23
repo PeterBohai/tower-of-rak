@@ -1,31 +1,40 @@
 import pygame, copy, random
 from source import globalvars
 
+
 class StructTile:
+    """A tile object class that tracks the data of a tile (wall/floor) within a map.
 
-    """A class which functions like a struct that tracks the data for each tile within a map.
-
-    Attributes:
-        block_path (arg, bool) : True if the tile is like a wall, which blocks any movement onto or through the tile.
-        explored (bool): Indicates whether the player has encountered the tile before and is initialized to False.
+     Attributes
+    ----------
+    block_path : bool
+        True if the tile is wall-like and False for floor tiles.
+    explored : bool
+        True if PLAYER has seen the tile (default is False).
+    wall_assignment : int
+        The bit-mask value for wall tiles.
+    _floor_assignment : int
+        The bit-mask value for floor tiles.
+    floor_rand_index : int
+        The index that assigns a random floor tile design accordingly.
 
     """
 
     def __init__(self, block_path):
         self.block_path = block_path
         self.explored = False
-        self.wall_assignment = 0     # for wall bitmasking purposes
-        self._floor_assignment = 0    # for floor bitmasking purposes
-        self.floor_rand_index = 0  # for floor variation
+        self.wall_assignment = 0
+        self._floor_assignment = 0
+        self.floor_rand_index = 0
 
     @property
     def floor_assignment(self):
+        """int: Gets the floor bit-mask value and assigns a random floor design when set."""
         return self._floor_assignment
 
     @floor_assignment.setter
     def floor_assignment(self, value):
-
-        # set random tile pattern for room tiles (not tunnel) when setting floor bitmask
+        # set random tile pattern for room tiles (not tunnel)
         if value in (0, 1, 2, 4, 8):
             self.floor_rand_index = random.randrange(len(globalvars.ASSETS.floor_explored_dict[value]))
 
@@ -33,6 +42,19 @@ class StructTile:
 
 
 class StructPreferences:
+    """A preferences object class that tracks general game settings such as volume, display, or key bindings
+
+     Attributes
+    ----------
+    sfx_volume_val : float
+    music_volume_val : float
+    master_volume_vol : float
+    default_keybindings : dict
+    keybindings : dict
+    default_display_window : str
+    display_window: str
+
+    """
     def __init__(self):
         self.sfx_volume_val = 0.5
         self.music_volume_val = 0.15
@@ -51,7 +73,6 @@ class StructPreferences:
                                     "back": ("Esc", pygame.K_ESCAPE),
                                     "pause": ("P", pygame.K_p)
                                     }
-
         # user changes this
         self.keybindings = copy.deepcopy(self.default_keybindings)
 
