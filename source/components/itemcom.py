@@ -1,6 +1,4 @@
-
-# Local project imports
-from source import constants, globalvars, game, map
+from source import constants, globalvars, game
 
 
 class ComItem:

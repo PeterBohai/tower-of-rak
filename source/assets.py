@@ -1,8 +1,7 @@
 import os
-# Third party imports
+
 import pygame
 
-# Local project imports
 from source import constants
 from source import globalvars
 
@@ -13,7 +12,7 @@ class ObjSpriteSheet:
     Loads sprite sheet files and grab relevant portions of the file for making animation sequence lists or simply still
     image sprites. Will also have scaling functionality (to 32 x 32).
 
-     Attributes
+    Attributes
     ----------
     sprite_sheet : pygame.Surface
         The sprite sheet that is loaded from `file_dir` and `file_name`.

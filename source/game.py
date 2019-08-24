@@ -1,60 +1,73 @@
-# Standard library imports
 import gzip
 import pickle
 import sys
 import textwrap
 
-# Third party imports
 import pygame
 
-# Local project imports
-from source import constants, globalvars, map, draw, text, actions
+from source import constants, globalvars, map, draw, actions, hud
 from source.menu import pause, inventory, options
 from source.generators import playergen
 
 
-# ================================================================= #
-#                         -----  Game  -----                        #
-# ================================================================= #
-
 class ObjGame:
-    """A game object class that tracks game progress and entities.
+    """A game object class that keeps track of game progress.
 
-    Stores and tracks all information including maps, objects, and a record of game messages.
+    Stores and tracks all game information including maps, objects, and a record of game messages.
 
-    Attributes:
-        current_objects (list): List of objects on the current map (and not in an actor's container inventory).
-        message_history (list): List of messages that have been displayed to the player on the game screen.
-        maps_next (list): List map data (tuple) saved before transitioning to previous maps.
-        maps_prev (list): List map data (tuple) saved before transitioning to a new map.
-        current_map (2d-array): The map that is currently loaded and displayed.
-        current_rooms (list): List of all valid ObjRoom objects on the displayed map.
+     Attributes
+    ----------
+    current_objects : list
+        List of objects on the current map (excluding inventory objects).
+    message_history : list
+        List of messages that have been displayed on the game screen.
+    maps_next : list of tuples
+        List of map data for encountered maps, where maps are saved to before transitioning to a lower floor.
+    maps_prev : list of tuples
+        List of map data for encountered maps, where maps are saved to before transitioning to a higher floor.
+    current_map : list (nested)
+        The map that is currently loaded and displayed (contains floor and wall tile info).
+    current_rooms : list
+        List of all valid ObjRoom objects on the current map.
+    cur_floor : int
+        The current floor number the PLAYER is on.
+    max_floor_reached : int
+        The max floor number the PLAYER has reached.
+    floor_transition_alpha : int
+        The alpha value [0, 255], that is used to fade out the floor title text when entering a new floor.
+    from_main_menu : bool
+        Tracks if the PLAYER has just started a game from the main menu.
 
     """
     def __init__(self):
         self.current_objects = []
-        self.message_history = []  # an empty list
+        self.message_history = []
         self.maps_next = []
         self.maps_prev = []
         self.current_map, self.current_rooms = map.map_create()
         self.cur_floor = 1
         self.max_floor_reached = 1
         self.floor_transition_alpha = 0
-        self.from_main_menu = True      # to make sure that the floor number
-                                        # (title-style not the corner one) displays when game starts
+        self.from_main_menu = True
 
     def map_transition_next(self):
-        """Creates a new map if there are no maps in maps_next queue. Otherwise, load the last map in maps_next.
+        """Transitions the PLAYER to a higher floor map when using stairs that go upwards.
+
+        Creates a new map if there are no maps in maps_next queue. Otherwise, load the last map in maps_next.
+
+        Returns
+        -------
+        None
 
         """
 
         globalvars.FOV_CALCULATE = True
-
         for obj in self.current_objects:
             obj.animation_del()
 
         # save data of current map (before creating new map) on to maps_prev list
-        save_data = (globalvars.PLAYER.x, globalvars.PLAYER.y, self.current_map, self.current_rooms, self.current_objects)
+        save_data = (globalvars.PLAYER.x, globalvars.PLAYER.y,
+                     self.current_map, self.current_rooms, self.current_objects)
         self.maps_prev.append(save_data)
 
         if self.max_floor_reached == self.cur_floor:
@@ -75,7 +88,8 @@ class ObjGame:
         # if there are floors above the current floor
         else:
 
-            (globalvars.PLAYER.x, globalvars.PLAYER.y, self.current_map, self.current_rooms, self.current_objects) = self.maps_next[-1]
+            (globalvars.PLAYER.x, globalvars.PLAYER.y,
+             self.current_map, self.current_rooms, self.current_objects) = self.maps_next[-1]
 
             for obj in self.current_objects:
                 obj.animation_init()
@@ -89,10 +103,15 @@ class ObjGame:
         game_message("{} moved up a floor!".format(globalvars.PLAYER.creature.name_instance), constants.COLOR_BLUE)
 
     def map_transition_prev(self):
-        """Loads the last map in maps_prev, saving data of current map before doing so.
+        """Transitions the PLAYER to a lower floor map when using stairs that go downwards.
+
+        Loads the last map in maps_prev, saving data of current map before doing so.
+
+        Returns
+        -------
+        None
 
         """
-
         if len(self.maps_prev) != 0:
             for obj in self.current_objects:
                 obj.animation_del()
@@ -121,18 +140,16 @@ def game_main_loop():
     Draws the game, takes care of any keyboard or mouse events from the player, keeps track of time/turns, and
     quits the game when requested.
 
+    Returns
+    -------
+    None
+
     """
-
-    # player action definition
-    player_action = "no-action"
-
-    # play in-game music
     pygame.mixer.music.load(globalvars.ASSETS.ingame_music)
     pygame.mixer.music.play(-1)
-
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
-    # set flags
+    # set flags and counters
     globalvars.GAME_QUIT = False
     globalvars.FLOOR_CHANGED = False
 
@@ -140,11 +157,12 @@ def game_main_loop():
 
         draw.draw_game()
 
-        # handle player input
         player_action = game_handle_keys()
+        if player_action == "QUIT":
+            game_exit()
 
         for objActor in globalvars.GAME.current_objects:
-            if objActor.is_visible and objActor.creature:
+            if objActor.is_visible and objActor.creature is not None:
 
                 if objActor.creature.was_hit and objActor is not globalvars.PLAYER:
                     objActor.creature.internal_timer = pygame.time.get_ticks()
@@ -160,59 +178,58 @@ def game_main_loop():
         # makes sure that damage taken ui gets applied to player as well (since creature takes turn in next for loop)
         globalvars.PLAYER.creature.was_hit = False
 
-        # display floor number (title) in the middle for a few seconds when floor changes and when game first starts
+        # display floor title for a few seconds when floor changes and when game first starts
         if (globalvars.FLOOR_CHANGED and player_action == "Just Changed Floors") or globalvars.GAME.from_main_menu:
             globalvars.GAME.floor_transition_alpha = 255
             if globalvars.GAME.from_main_menu:
                 globalvars.FLOOR_CHANGED = False
 
         if globalvars.GAME.floor_transition_alpha > 0:
-            draw.draw_floor_num_title()
+            hud.draw_floor_title()
 
         map.map_calculate_fov()
 
-        # quit the game
-        if player_action == "QUIT":
-            game_exit()
-
         # creatures takes their turn
         for obj in globalvars.GAME.current_objects:
-            if obj.ai:
+            if obj.ai is not None:
                 if player_action != "no-action":
                     obj.ai.take_turn()
 
-            if obj.is_visible and obj.creature and obj is not globalvars.PLAYER:
+            if obj.is_visible and obj.creature is not None and obj is not globalvars.PLAYER:
                 obj.creature.was_hit = False
 
-            if obj.portal:
+            if obj.portal is not None:
                 obj.portal.update()
 
         if globalvars.PLAYER.status == "STATUS_DEAD" or globalvars.PLAYER.status == "STATUS_WIN":
             globalvars.GAME_QUIT = True
 
         globalvars.GAME.from_main_menu = False
-        # update the display
         pygame.display.flip()
-
-        # tick the CLOCK
         globalvars.CLOCK.tick(constants.GAME_FPS)
 
 
 def game_handle_keys():
+    """Handles player keyboard and mouse inputs and executes them accordingly.
+
+    Returns
+    -------
+    str
+        Status information indicating the action the PLAYER took.
+
+    """
 
     # get player input
-    events_list = pygame.event.get()  # list of all events so far (like keys pressed and mouse clicks)
-    pressed_key_list = pygame.key.get_pressed()    # list of booleans for whether a key is pressed or not
+    events_list = pygame.event.get()
+    pressed_key_list = pygame.key.get_pressed()
 
     # load in keybindings from preferences (note this is not a copy of the keybindings dict, just a reference/alias)
     keys = globalvars.PREFERENCES.keybindings
 
-    # shift pressed
     shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])
 
     # process input
     for event in events_list:
-        # exit game and close entire window when user clicks on the exit (x) button in the top left corner
         if event.type == pygame.QUIT:
             return "QUIT"
 
@@ -359,19 +376,36 @@ def game_handle_keys():
                         options.menu_main_options(ingame_menu_options=True)
                         pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
-
     return "no-action"
 
 
-def game_message(game_msg, msg_color=constants.COLOR_GREY):
-    new_msg_lines = textwrap.wrap(game_msg, constants.MSG_WIDTH)
+def game_message(text, color=constants.COLOR_GREY):
+    """Adds a game message to the list of messages.
+
+    Separates lines of text that is longer than the specified msg width (constants.MSG_MAX_CHARS) into different
+    message pieces to be appended to the list of messages separately.
+
+    Parameters
+    ----------
+    text : str
+        The game message content.
+    color : tuple
+        The color the message text will be displayed in.
+
+    Returns
+    -------
+    None
+
+    """
+    new_msg_lines = textwrap.wrap(text, constants.MSG_MAX_CHARS)
 
     for line in new_msg_lines:
+
         # if the buffer is full, remove the first line to make room for the new one
         if len(globalvars.GAME.message_history) == constants.NUM_MESSAGES:
             del globalvars.GAME.message_history[0]
 
-    globalvars.GAME.message_history.append((game_msg, msg_color))
+        globalvars.GAME.message_history.append((line, color))
 
 
 def game_new():
@@ -394,7 +428,7 @@ def game_new():
 
 
 def game_exit():
-    """ Saves current game before exiting the game.
+    """Saves current game before exiting the game.
 
     Returns
     -------
@@ -407,9 +441,14 @@ def game_exit():
     sys.exit()
 
 
-def game_save():
+def game_save(in_game=False):
+    """Saves the game into a compressed binary file. Reinitialize animations if saving in-game from options menu.
 
-    # write GAME and PLAYER objects into compressed binary file
+    Returns
+    -------
+    None
+
+    """
     with gzip.open("data/saves/savegame", "wb") as save_file:
         try:
             # destroy Surface objects so pickle can save the data
@@ -419,6 +458,11 @@ def game_save():
             pickle.dump([globalvars.GAME, globalvars.PLAYER], save_file)
         except TypeError:
             print("TypeError, couldn't save game")
+
+    if in_game:
+        # reinitialize animations
+        for obj in globalvars.GAME.current_objects:
+            obj.animation_init()
 
 
 def game_load():
@@ -444,27 +488,27 @@ def game_load():
     globalvars.FOV_CALCULATE = True
 
 
-def ingame_save():
-    # destroy Surface object (from actor animations)
-    for obj in globalvars.GAME.current_objects:
-        obj.animation_del()
-
-    # write GAME and PLAYER objects into compressed binary file
-    with gzip.open("data/saves/savegame", "wb") as save_file:
-        pickle.dump([globalvars.GAME, globalvars.PLAYER], save_file)
-
-    # reinitialize animations
-    for obj in globalvars.GAME.current_objects:
-        obj.animation_init()
-
-
 def preferences_save():
+    """Saves games settings.
+
+    Returns
+    -------
+    None
+
+    """
 
     with gzip.open("data/saves/settings", "wb") as save_file:
         pickle.dump(globalvars.PREFERENCES, save_file)
 
 
 def preferences_load():
+    """Loads previous game settings.
+
+    Returns
+    -------
+    None
+
+    """
 
     with gzip.open("data/saves/settings", "rb") as load_file:
         globalvars.PREFERENCES = pickle.load(load_file)
@@ -488,5 +532,4 @@ def game_start(new=True):
             # TODO indicate that a new game was initiated instead (pop up notice)
             game_new()
 
-    # start the game loop
     game_main_loop()

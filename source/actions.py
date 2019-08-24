@@ -1,5 +1,3 @@
-
-# Local project imports
 from source import globalvars, map
 
 

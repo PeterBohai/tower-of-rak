@@ -1,10 +1,8 @@
-# Standard library imports
-import numpy, copy
+import copy
 
-# Third party imports
+import numpy
 import pygame
 
-# Local project imports
 from source import constants, globalvars, text, gui, game, draw
 
 
@@ -166,7 +164,7 @@ def menu_main_options(ingame_menu_options=False):
                 menu_close = True
 
             if save_button.update(player_events):
-                game.ingame_save()
+                game.game_save(in_game=True)
 
             main_menu_button.draw()
             save_button.draw()

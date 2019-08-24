@@ -1,14 +1,10 @@
-
-# Third party imports
 import pygame
 import tcod
 
-# Local project imports
 from source import constants, globalvars, game, data, camera, assets
 
 
 def game_initialize():
-
     """Initializes the main game window and other game assets.
 
     Initializes pygame, the main surface (game window), ObjGame, clock (time tracker), ObjAssets, and PLAYER.
@@ -28,9 +24,7 @@ def game_initialize():
 
     # initialize pygame
     pygame.init()
-    pygame.key.set_repeat(180, 90)  # (delay, interval) in milliseconds for movement when holding down keys
-
-    globalvars.init()
+    pygame.key.set_repeat(165, 85)  # (delay, interval) in milliseconds for movement when holding down keys
 
     try:
         game.preferences_load()

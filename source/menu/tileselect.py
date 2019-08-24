@@ -1,8 +1,5 @@
-
-# Third party imports
 import pygame
 
-# Local project imports
 from source import constants, globalvars, draw, map
 
 
@@ -114,19 +111,18 @@ def menu_tile_select(coords_origin=None,
                 if target_creature:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, mark=True)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, mark=True)
 
                     else:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color)
 
                 # highlight anything else (walls, floor, items) in orange
                 else:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y),
-                                            constants.COLOR_ORANGE, alpha=200, mark=True)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=200, mark=True)
                     else:
-                        draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=125)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=125)
 
         # Draw rectangle at mouse position over game visuals
 
@@ -134,28 +130,27 @@ def menu_tile_select(coords_origin=None,
 
             # mark target with an "X"
             if (tile_x, tile_y) == list_of_tiles[-1] and not radius:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
+                draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
             target_creature = map.map_check_for_creatures(tile_x, tile_y)
 
             # highlight tile in red if tile contains a monster
             if target_creature:
                 if target_creature is not globalvars.PLAYER:
-                    draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, alpha=100, mark=True)
+                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, alpha=100, mark=True)
 
                 # no highlight of tile if tile is PLAYER (setting transparency to max)
                 elif target_creature and target_creature is globalvars.PLAYER and single_tile:
-                    draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, mark=True)
+                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, mark=True)
 
             # highlight anything else (walls, floor, items) in white
             else:
-                draw.draw_tile_rect(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
+                draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
         # next half of draw_game()
         globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)
 
-        draw.draw_debug()
-        draw.draw_messages()
+        draw.draw_window_ui()
 
         pygame.display.flip()  # pygame.display.update() does the same thing if given without any arguments
 

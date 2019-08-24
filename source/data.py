@@ -1,11 +1,15 @@
-import pygame, copy, random
+import copy
+import random
+
+import pygame
+
 from source import globalvars
 
 
 class StructTile:
     """A tile object class that tracks the data of a tile (wall/floor) within a map.
 
-     Attributes
+    Attributes
     ----------
     block_path : bool
         True if the tile is wall-like and False for floor tiles.
@@ -44,7 +48,7 @@ class StructTile:
 class StructPreferences:
     """A preferences object class that tracks general game settings such as volume, display, or key bindings
 
-     Attributes
+    Attributes
     ----------
     sfx_volume_val : float
     music_volume_val : float

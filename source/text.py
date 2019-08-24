@@ -1,9 +1,5 @@
 import pygame
 
-# ================================================================= #
-#                         -----  Text  -----                        #
-# ================================================================= #
-
 
 def draw_text(display_surface, text, font, t_coords, text_color, back_color=None, center=False):
     """ Displays text to the specified Surface.
@@ -77,7 +73,7 @@ def helper_text_objects(incoming_text, font, incoming_color, incoming_bg):
     if incoming_bg:
         text_surface = font.render(incoming_text, False, incoming_color, incoming_bg)
     else:
-        text_surface = font.render(incoming_text, False, incoming_color)  # constants.FONT_BEST
+        text_surface = font.render(incoming_text, False, incoming_color)
 
     return text_surface, text_surface.get_rect()
 

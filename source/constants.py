@@ -1,6 +1,5 @@
 import os
 
-# Third party imports
 import tcod
 import pygame
 
@@ -27,9 +26,9 @@ GAME_FPS = 60
 # MAP VARS
 MAP_WIDTH = 90
 MAP_HEIGHT = 70
-MAP_MAX_NUM_ROOMS = 12
+MAP_MAX_NUM_ROOMS = 3
 
-MAP_MAX_NUM_FLOORS = 10
+MAP_MAX_NUM_FLOORS = 3
 
 
 # ROOM LIMITS
@@ -76,7 +75,7 @@ TORCH_RADIUS = 6
 
 # MESSAGE DEFAULTS
 NUM_MESSAGES = 6
-MSG_WIDTH = 600
+MSG_MAX_CHARS = 80
 
 # FONTS
 font_path = os.path.join("data", "fonts")

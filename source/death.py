@@ -1,16 +1,9 @@
-# standard library imports
 import datetime
 import os
 
-# Third party imports
 import pygame
 
-# Local project imports
-from source import constants
-from source import gui
-from source import globalvars
-from source import text
-from source import game
+from source import constants, gui, globalvars, text, game
 from source.generators import itemgen
 
 

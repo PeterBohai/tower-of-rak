@@ -1,5 +1,3 @@
-
-# Local project imports
 from source import globalvars, actor
 from source.components import itemcom, structure
 

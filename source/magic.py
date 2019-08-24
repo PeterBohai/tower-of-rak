@@ -1,18 +1,6 @@
-# Standard library imports
-import math
-
-# Third party imports
-import pygame
-import tcod
-
-# Local project imports
-from source import constants, map, game, globalvars
+from source import constants, map, game
 from source.menu import tileselect
 from source.components import ai
-
-# ================================================================= #
-#                        -----  Magic  -----                        #
-# ================================================================= #
 
 
 def cast_heal(target, value):

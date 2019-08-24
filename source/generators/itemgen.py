@@ -1,9 +1,9 @@
-# Third party imports
 import tcod
 import numpy
 
-# Local project imports
-from source import globalvars, actor, magic
+from source import globalvars
+from source import actor
+from source import magic
 from source.components import itemcom
 
 

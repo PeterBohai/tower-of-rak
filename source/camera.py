@@ -1,15 +1,12 @@
-# Third party imports
 import pygame
 
-# Local project imports
-from source import constants
-from source import globalvars
+from source import constants, globalvars
 
 
 class ObjCamera:
     """Camera object that updates the view of the map as the player moves around.
 
-     Attributes
+    Attributes
     ----------
     width : int
         The width of the rectangular camera display in pixels (typically same as the game window dimensions).

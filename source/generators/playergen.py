@@ -1,6 +1,3 @@
-
-
-# Local project imports
 from source import globalvars, actor, death
 from source.components import creature, container
 

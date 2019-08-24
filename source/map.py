@@ -1,18 +1,10 @@
-# Standard library imports
 import random
 
-# Third party imports
 import tcod
 
-# Local project imports
 from source import constants, globalvars, data
-from source.generators import itemgen, creaturegen, playergen, specialgen
+from source.generators import itemgen, creaturegen, specialgen
 
-
-# ================================================================= #
-#                         -----  Map  -----                         #
-#                          --- SECTION ---                          #
-# ================================================================= #
 
 class ObjRoom:
     """Rectangular room objects on the map that have various useful properties.

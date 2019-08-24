@@ -1,16 +1,7 @@
+import pygame
 import numpy
 
-# Third party imports
-import pygame
-
-
-# Local project imports
 from source import constants, globalvars, text
-
-# ================================================================= #
-#                         -----  GUI  -----                         #
-#                          --- SECTION ---                          #
-# ================================================================= #
 
 
 class GuiButton:

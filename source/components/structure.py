@@ -1,11 +1,8 @@
-# Standard library imports
 import os
 import datetime
 
-# Third party imports
 import pygame
 
-# Local project imports
 from source import constants, globalvars, gui, text
 
 

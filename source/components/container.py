@@ -1,4 +1,3 @@
-
 class ComContainer:
     """Container component gives actor objects an inventory that can hold item objects.
 

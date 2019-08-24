@@ -1,10 +1,6 @@
-
-# Third party imports
 import pygame
 
-# Local project imports
 from source import constants, globalvars, text
-
 
 
 def menu_pause():

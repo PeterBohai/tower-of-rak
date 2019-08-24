@@ -1,17 +1,6 @@
-# Standard library imports
-import math
-
-# Third party imports
 import tcod
 
-# Local project imports
 from source import constants, globalvars, game
-
-
-# ================================================================= #
-#                    -----  Ai Components  -----                    #
-#                          --- SECTION ---                          #
-# ================================================================= #
 
 
 class AiConfuse:

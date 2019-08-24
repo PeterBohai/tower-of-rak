@@ -1,12 +1,9 @@
-# Standard library imports
 import random
 import math
 
-# Third party imports
 import pygame
 import tcod
 
-# Local project imports
 from source import constants, globalvars, game, map, text
 
 

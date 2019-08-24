@@ -1,10 +1,7 @@
-# Standard library imports
 import math
 
-# Third party imports
 import tcod
 
-# Local project imports
 from source import constants, globalvars
 from source.components import itemcom
 

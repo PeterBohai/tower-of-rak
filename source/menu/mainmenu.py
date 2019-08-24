@@ -1,11 +1,8 @@
-# Standard library imports
 import sys
+
+import pygame
 import numpy
 
-# Third party imports
-import pygame
-
-# Local project imports
 from source import constants, globalvars, text, startup, gui, game, draw
 from source.menu import options
 
@@ -96,7 +93,8 @@ def menu_main():
         # load previous game if clicked
         if cont_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
-            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup, color=pygame.Color('white'))
+            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT,
+                               draw_main_menu, menu_buttons_tup, color=pygame.Color('white'))
             game.game_start(new=False)
             menu_main()
 

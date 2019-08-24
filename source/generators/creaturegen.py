@@ -1,9 +1,9 @@
-# Third party imports
-import tcod, random, numpy
+import tcod
+import numpy
 
-# Local project imports
 from source import globalvars, actor, death, magic
 from source.components import creature, ai, itemcom
+
 
 """
 Note the speed performance of generating random integers varies quite drastically between different methods
