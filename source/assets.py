@@ -380,9 +380,10 @@ class ObjAssets:
         self.S_TARGET_MARK = self.menugui.get_image('c1', 2, 16, 16, (32, 32))[0]
 
         # ---> GUI
+        self.slider_button_size = (26, 20)
         self.slider_btn_path = os.path.join("data", "graphics", "GUI", "buttons", "BTN_SLIDER_SM_(1).png")
         self.S_SLIDER_BUTTON = pygame.image.load(self.slider_btn_path).convert()
-        self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, (26, 20))
+        self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
 
         self.animation_dict = {
             "A_PLAYER_LEFT": self.A_PLAYER_LEFT,

@@ -62,6 +62,7 @@ class ComItem:
                 self.container = actor.container
                 self.use()
                 globalvars.GAME.current_objects.remove(self.owner)
+                self.container.inventory.remove(self.owner)
 
                 return
 
@@ -77,7 +78,6 @@ class ComItem:
                 # remove from global map and list of objects in the game
                 globalvars.GAME.current_objects.remove(self.owner)
                 self.container = actor.container
-
 
     def drop(self, new_x, new_y):
         """Drops the item object onto the ground specified by the coordinate arguments.
@@ -129,8 +129,8 @@ class ComItem:
             # However, self.container, which was initialized in the pick_up(actor) method, is related to the actor
             # holding the item.
 
-            result = self.use_function(self.container.owner, self.value)
-            if result != "unused":
+            used = self.use_function(self.container.owner, self.value)
+            if used:
                 self.container.inventory.remove(self.owner)
 
 

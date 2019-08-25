@@ -4,41 +4,61 @@ from source.components import ai
 
 
 def cast_heal(target, value):
-    if target.creature.current_hp == target.creature.maxHp:
-        full_hp_msg = target.creature.name_instance + " is already at full health!"
-        game.game_message(full_hp_msg, constants.COLOR_BLUE)
-        return "Already full health!"
+    """Heals the `target` creature for `value` amount.
 
-    else:
+    Notifies the PLAYER that health is already full if currently at max hp.
+
+    Parameters
+    ----------
+    target : ObjActor obj
+        The actor object with a creature component that will be healed.
+    value : int
+        The amount of hp the `target` creature will gain.
+
+    Returns
+    -------
+    bool
+        True if the heal was successful, False otherwise.
+
+    """
+    if target.creature.current_hp < target.creature.maxHp:
         target.creature.heal(value)
-    return None
+        return True
+    else:
+        full_hp_msg = f"{target.creature.name_instance} is already at full health!"
+        game.game_message(full_hp_msg, constants.COLOR_BLUE)
+        return False
 
 
-def cast_lightening(caster, tup_dmg_range):
+def cast_lightening(caster, dmg_and_range):
+    """Casts a spell that damages all targets in a line of tiles within a certain range of the `caster`.
 
-    # might set this from a parameter in the future if enemies, other creatures other than the PLAYER uses this spell
+    Notifies the PLAYER that health is already full if currently at max hp.
+
+    Parameters
+    ----------
+    caster : ObjActor obj
+        The actor object using or casting this spell.
+    dmg_and_range : tuple
+        Contains (damage amount, max range) int values.
+
+    Returns
+    -------
+    bool
+        True if the spell was successful, False otherwise.
+
+    """
     caster_location = (caster.x, caster.y)
-
-    damage, max_r = tup_dmg_range
-
-    # prompt player for a target tile
-    selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location,
-                                                        max_range=max_r,
-                                                        wall_penetration=False,
-                                                        base_color=constants.COLOR_YELLOW)
-
+    damage, max_r = dmg_and_range
     damaged_something = False
+    selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location, max_range=max_r,
+                                                        wall_penetration=False, base_color=constants.COLOR_YELLOW)
 
-    # continue with casting of spell only if caster did not "cancel" the spell (by escaping from tileselect.menu_tile_select)
+    # continue with casting of spell only if caster did not cancel the spell (by using esc from menu_tile_select)
     if selected_tile_address:
-
-        # convert tile into a list of coords between a and b
         list_of_tiles_affected = map.map_find_line(caster_location, selected_tile_address)
 
-        game.game_message("{} cast lightening".format(caster.creature.name_instance),
-                          constants.COLOR_WHITE)
-
-        # cycle through list and damage everything in that list
+        # damage all creatures in the line of sight of the spell
         for i, (x, y) in enumerate(list_of_tiles_affected):
             target_creature = map.map_check_for_creatures(x, y)
 
@@ -47,57 +67,81 @@ def cast_lightening(caster, tup_dmg_range):
                 damaged_something = True
 
             if target_creature and len(list_of_tiles_affected) == 1:
-                game.game_message("Aim away from yourself please.".format(caster.creature.name_instance),
-                                  constants.COLOR_WHITE)
-                return "unused"
+                game.game_message("Watch out! Aim away from yourself please.", constants.COLOR_WHITE)
+                return False
 
+        game.game_message(f"{caster.creature.name_instance} casts lightening", constants.COLOR_WHITE)
         if not damaged_something:
-            game.game_message("Nothing was harmed, what a waste.".format(caster.creature.name_instance),
-                              constants.COLOR_WHITE)
+            game.game_message("Nothing was hit, what a waste.", constants.COLOR_WHITE)
 
+        return True
     else:
-        return "unused"
+        return False
 
 
-def cast_fireball(caster, tup_dmg_range_radius):
+def cast_fireball(caster, dmg_range_radius):
+    """Casts a spell that damages all targets in a radius of tiles within a certain range of the `caster`.
 
-    damage, spell_range, spell_radius = tup_dmg_range_radius
+    Parameters
+    ----------
+    caster : ObjActor obj
+        The actor object using or casting this spell.
+    dmg_range_radius : tuple
+        Contains (damage amount, max range, max radius) int values.
 
-    # caster is the one holding the spell
+    Returns
+    -------
+    bool
+        True if the spell was successful, False otherwise.
+
+    """
+    damage, spell_range, spell_radius = dmg_range_radius
     caster_location = (caster.x, caster.y)
-
-    # prompt player for a target tile
+    damaged_something = False
     selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location,
                                                         max_range=spell_range,
                                                         radius=spell_radius,
                                                         wall_penetration=False,
                                                         creature_penetration=False)
-    # get sequence of tiles
     if selected_tile_address:
-        game.game_message("{} casts fireball".format(caster.creature.name_instance),
-                          constants.COLOR_WHITE)
+        game.game_message(f"{caster.creature.name_instance} casts fireball", constants.COLOR_WHITE)
 
         list_of_tiles_to_damage = map.map_find_radius(selected_tile_address, spell_radius)
 
-        # damage all creatures in tiles
+        # damage all creatures in the aoe sphere
         for (x, y) in list_of_tiles_to_damage:
             target_creature = map.map_check_for_creatures(x, y)
-
             if target_creature:
                 target_creature.creature.take_damage(damage)
+                damaged_something = True
 
+        if not damaged_something:
+            game.game_message("Nothing was hit, what a waste.", constants.COLOR_WHITE)
+
+        return True
     else:
-        return "unused"
+        return False
 
 
 def cast_confusion(caster, effect_length):
+    """Casts a spell that confuses the selected target and forces them to move in uncontrollable, random directions.
 
-    # prompt player for a target tile
+    Parameters
+    ----------
+    caster : ObjActor obj
+        The actor object using or casting this spell.
+    effect_length : int
+        The number of turns the spell lasts.
+
+    Returns
+    -------
+    bool
+        True if the spell was successful, False otherwise.
+
+    """
     selected_tile_address = tileselect.menu_tile_select(wall_penetration=False,
                                                         single_tile=True,
                                                         target_color=constants.COLOR_GREEN)
-
-    # get target
     if selected_tile_address:
 
         target_tile_x, target_tile_y = selected_tile_address
@@ -105,15 +149,16 @@ def cast_confusion(caster, effect_length):
         target_creature = map.map_check_for_creatures(target_tile_x, target_tile_y)
 
         if target_creature:
-            game.game_message("{} casts confusion on {}".format(caster.creature.name_instance, target_creature.display_name),
+            game.game_message(f"{caster.creature.name_instance} casts confusion on {target_creature.display_name}",
                               constants.COLOR_WHITE)
-
             normal_ai = target_creature.ai
 
             target_creature.ai = ai.AiConfuse(original_ai=normal_ai, num_turns=effect_length)
             target_creature.ai.owner = target_creature
 
-            game.game_message("{} is now confused!".format(target_creature.display_name), constants.COLOR_GREEN)
+            game.game_message(f"{target_creature.display_name} is confused for {effect_length} turns!",
+                              constants.COLOR_GREEN)
 
+        return True
     else:
-        return "unused"
+        return False

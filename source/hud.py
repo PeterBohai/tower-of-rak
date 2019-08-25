@@ -3,55 +3,67 @@ import pygame
 from source import constants, text, globalvars
 
 
-def draw_player_health(surface, tup_coords, percentage):
+def draw_player_health(surface, coords, percentage):
+    """Displays the player's health onto the screen.
 
+    Parameters
+    ----------
+    surface : pygame Surface obj
+        The surface that the health bar will be drawn on.
+    coords : tuple
+        The pixel topleft-aligned coordinates of where the health bar will be drawn.
+    percentage : float
+        The percentage of total health remaining.
+
+    Returns
+    -------
+    None
+
+    """
     if percentage < 0:
         percentage = 0
 
-    pos_x, pos_y = tup_coords
-
-    BAR_WIDTH = 260
-    BAR_HEIGHT = 20
+    bar_width = 260
+    bar_height = 20
+    bg_color = constants.COLOR_DARK_GREY
+    health_text = f"hp:  {globalvars.PLAYER.creature.current_hp}/{globalvars.PLAYER.creature.maxHp}"
+    text_coords = (int(bar_width / 2), int(bar_height / 2))
 
     if percentage > 0.6:
-        color = constants.COLOR_HP_GREEN
+        health_color = constants.COLOR_HP_GREEN
     elif percentage > 0.3:
-        color = constants.COLOR_HP_YELLOW
+        health_color = constants.COLOR_HP_YELLOW
     else:
-        color = constants.COLOR_HP_RED
+        health_color = constants.COLOR_HP_RED
 
-    healthy_width = percentage * BAR_WIDTH
-    # healthy_rect = pygame.Rect(0, 0, healthy_width, BAR_HEIGHT)
+    # initiate outline surface, health surface and back surface
+    outline_rect = pygame.Rect(0, 0, bar_width, bar_height)
 
-    healthy_surface = pygame.Surface((healthy_width, BAR_HEIGHT))
-    healthy_surface.fill(color)
+    healthy_width = percentage * bar_width
+    healthy_surface = pygame.Surface((healthy_width, bar_height))
+    healthy_surface.fill(health_color)
 
-    back_surface = pygame.Surface((BAR_WIDTH, BAR_HEIGHT))
-    back_surface.fill(constants.COLOR_DARK_GREY)
+    back_surface = pygame.Surface((bar_width, bar_height))
+    back_surface.fill(bg_color)
 
-    outline_rect = pygame.Rect(pos_x, pos_y, BAR_WIDTH, BAR_HEIGHT)
-
+    # draw the health, outline, and text on to back_surface
     back_surface.blit(healthy_surface, (0, 0))
-    # pygame.draw.rect(back_surface, color, healthy_rect)
-    surface.blit(back_surface, tup_coords)
-    pygame.draw.rect(surface, constants.COLOR_WHITE, outline_rect, 1)
-    health_text = "hp:  {}/{}".format(globalvars.PLAYER.creature.current_hp, globalvars.PLAYER.creature.maxHp)
-    text_coords = (pos_x + int(BAR_WIDTH/2), pos_y + int(BAR_HEIGHT/2))
-    text.draw_text(surface, health_text, constants.FONT_BEST, text_coords, pygame.Color('black'), center=True)
+    pygame.draw.rect(back_surface, constants.COLOR_WHITE, outline_rect, 1)
+    text.draw_text(back_surface, health_text, constants.FONT_BEST, text_coords, pygame.Color('black'), center=True)
+
+    surface.blit(back_surface, coords)
 
 
 def draw_fps():
-    """Draws the debug console onto the game screen window.
+    """Draws the current fps onto the game screen window.
 
-    Draws debug message text to the upper left corner of the screen.
-    Displays only the current FPS for now.
-
-    Returns:
-        pos_x (int): x-coordinate of debug message
+    Returns
+    -------
+    int
+        The x-coordinate of the topleft corner of the fps message
 
     """
-
-    fps_text = "fps: " + str(int(globalvars.CLOCK.get_fps()))
+    fps_text = f"fps: {int(globalvars.CLOCK.get_fps())}"
     pos_x = constants.CAMERA_WIDTH - text.helper_text_width(constants.FONT_BEST, fps_text) - 5
     pos_y = 0
 
@@ -64,45 +76,45 @@ def draw_fps():
 def draw_messages():
     """Draws the message console to the game screen window.
 
-    Displays a max number of messages from the game's list of messages stored in globalvars.GAME.message_history
-    in sequence to the lower left corner of the screen. The order of messages starts at the bottom with the most
-    recent message.
-
-    Returns:
-        None
-
-    """
-    if len(globalvars.GAME.message_history) <= constants.NUM_MESSAGES:
-        globalvars.GAME.message_history = globalvars.GAME.message_history   # the last 4 messages in the list
-    else:
-        del globalvars.GAME.message_history[0]
-        # globalvars.GAME.message_history = globalvars.GAME.message_history[-constants.NUM_MESSAGES:]
-
-    text_height = text.helper_text_height(constants.FONT_BEST)
-    text_x = 10
-    start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height) - 16
-
-    for i, (message, color) in enumerate(globalvars.GAME.message_history):
-
-        text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST,
-                       (text_x, start_y + (i * text_height)), color, constants.COLOR_GAME_BG)
-
-
-def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20, change_alpha=True):
-    """
-
-    Parameters
-    ----------
-    text_color
-    font
-    change_alpha
+    Displays a number of messages from GAME.message_history in sequence. The order of messages starts from
+    the most recent at the bottom and older at the top.
 
     Returns
     -------
     None
 
     """
+    if len(globalvars.GAME.message_history) <= constants.NUM_MESSAGES:
+        globalvars.GAME.message_history = globalvars.GAME.message_history
+    else:
+        del globalvars.GAME.message_history[0]
 
+    text_height = text.helper_text_height(constants.FONT_BEST)
+    text_x = 10
+    start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height) - 16
+
+    for i, (message, color) in enumerate(globalvars.GAME.message_history):
+        text.draw_text(globalvars.SURFACE_MAIN, message, constants.FONT_BEST,
+                       (text_x, start_y + (i * text_height)), color, constants.COLOR_GAME_BG)
+
+
+def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20, change_alpha=True):
+    """Displays the fading floor title text when entering game from the main menu or entering a floor.
+
+    Parameters
+    ----------
+    text_color : tuple, optional
+        The color of the text.
+    font : pygame Font obj, optional
+        The font of the text.
+    change_alpha : bool, optional
+        True if the alpha value needs to be decremented.
+
+    Returns
+    -------
+    None
+
+    """
     text_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2 - constants.CELL_HEIGHT - 5)
     floor_num = globalvars.GAME.cur_floor
 

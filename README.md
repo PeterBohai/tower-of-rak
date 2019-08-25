@@ -32,7 +32,7 @@ As this game is still under development, please help by [reporting](https://gith
 - [pygame](https://www.pygame.org/) (2.0.0.dev2)
 - [tcod](https://pypi.org/project/tcod/) (6.0.6)
 - [tdl](https://python-tcod.readthedocs.io/en/latest/tdl.html) (6.0.0)
-- [numpy](https://numpy.org/) (1.15.2)
+- [numpy](https://numpy.org/) (1.17.0)
 
 ## License
 This project is licensed under the GNU General Public License v3.0 License - see the [LICENSE](LICENSE) file for details. The license does not cover the game content (artwork, audio, etc.), which are not included and can only be used with the appropriate attributions to the original owners.
