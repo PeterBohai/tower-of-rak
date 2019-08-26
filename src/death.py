@@ -3,8 +3,8 @@ import os
 
 import pygame
 
-from source import constants, gui, globalvars, text, game
-from source.generators import itemgen
+from src import constants, gui, globalvars, text, game
+from src.generators import itemgen
 
 
 def death_player(player):

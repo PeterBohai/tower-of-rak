@@ -1,6 +1,6 @@
 import pygame
 
-from source import constants, globalvars, draw, map
+from src import constants, globalvars, draw, map
 
 
 def menu_tile_select(coords_origin=None,
@@ -32,7 +32,7 @@ def menu_tile_select(coords_origin=None,
         map_tile_x, map_tile_y = globalvars.CAMERA.window_to_map((mouse_x, mouse_y))
 
         if coords_origin:
-            list_of_tiles = map.map_find_line(coords_origin, (map_tile_x, map_tile_y))
+            list_of_tiles = map.tiles_in_line(coords_origin, (map_tile_x, map_tile_y))
 
             # deal with "valid" tiles
             for i, (tile_x, tile_y) in enumerate(list_of_tiles):
@@ -52,7 +52,7 @@ def menu_tile_select(coords_origin=None,
                 # stop at first creature encountered
                 # same as slicing used above but slightly faster truncation method with deletion
                 if not creature_penetration:
-                    target_creature = map.map_check_for_creatures(tile_x, tile_y)
+                    target_creature = map.creature_at_coords(tile_x, tile_y)
                     if target_creature and target_creature is not globalvars.PLAYER:
                         del list_of_tiles[i+1:]
 
@@ -96,12 +96,12 @@ def menu_tile_select(coords_origin=None,
 
         # draw area of affect with the correct radius
         if radius:
-            area_of_effect = map.map_find_radius(list_of_tiles[-1], radius)
+            area_of_effect = map.tiles_in_radius(list_of_tiles[-1], radius)
             target_tile = list_of_tiles[-1]
 
             # prevent tiles to be highlighted twice (as it changes the opaqueness of the highlight)
             for (tile_x, tile_y) in area_of_effect:
-                target_creature = map.map_check_for_creatures(tile_x, tile_y)
+                target_creature = map.creature_at_coords(tile_x, tile_y)
 
                 for x, y in list_of_tiles:
                     if (tile_x, tile_y) == (x, y):
@@ -132,7 +132,7 @@ def menu_tile_select(coords_origin=None,
             if (tile_x, tile_y) == list_of_tiles[-1] and not radius:
                 draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
-            target_creature = map.map_check_for_creatures(tile_x, tile_y)
+            target_creature = map.creature_at_coords(tile_x, tile_y)
 
             # highlight tile in red if tile contains a monster
             if target_creature:

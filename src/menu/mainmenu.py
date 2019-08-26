@@ -3,8 +3,8 @@ import sys
 import pygame
 import numpy
 
-from source import constants, globalvars, text, startup, gui, game, draw
-from source.menu import options
+from src import constants, globalvars, text, startup, gui, game, draw
+from src.menu import options
 
 
 def menu_main():
@@ -163,9 +163,9 @@ def menu_credits():
 
     text_x = menu_rect.left + 20
     line1_y = title_y + 30
-    line2_y = line1_y + text.helper_text_height(constants.FONT_CREDITS) + 2
-    line3_y = line2_y + text.helper_text_height(constants.FONT_CREDITS) + 15
-    line4_y = line3_y + text.helper_text_height(constants.FONT_CREDITS) + 2
+    line2_y = line1_y + text.get_text_height(constants.FONT_CREDITS) + 2
+    line3_y = line2_y + text.get_text_height(constants.FONT_CREDITS) + 15
+    line4_y = line3_y + text.get_text_height(constants.FONT_CREDITS) + 2
 
 
     # ================= slider/button variables ================ #

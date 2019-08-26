@@ -1,6 +1,6 @@
-from source import constants, map, game
-from source.menu import tileselect
-from source.components import ai
+from src import constants, map, game
+from src.menu import tileselect
+from src.components import ai
 
 
 def cast_heal(target, value):
@@ -56,11 +56,11 @@ def cast_lightening(caster, dmg_and_range):
 
     # continue with casting of spell only if caster did not cancel the spell (by using esc from menu_tile_select)
     if selected_tile_address:
-        list_of_tiles_affected = map.map_find_line(caster_location, selected_tile_address)
+        list_of_tiles_affected = map.tiles_in_line(caster_location, selected_tile_address)
 
         # damage all creatures in the line of sight of the spell
         for i, (x, y) in enumerate(list_of_tiles_affected):
-            target_creature = map.map_check_for_creatures(x, y)
+            target_creature = map.creature_at_coords(x, y)
 
             if target_creature and i != 0:
                 target_creature.creature.take_damage(damage)
@@ -106,11 +106,11 @@ def cast_fireball(caster, dmg_range_radius):
     if selected_tile_address:
         game.game_message(f"{caster.creature.name_instance} casts fireball", constants.COLOR_WHITE)
 
-        list_of_tiles_to_damage = map.map_find_radius(selected_tile_address, spell_radius)
+        list_of_tiles_to_damage = map.tiles_in_radius(selected_tile_address, spell_radius)
 
         # damage all creatures in the aoe sphere
         for (x, y) in list_of_tiles_to_damage:
-            target_creature = map.map_check_for_creatures(x, y)
+            target_creature = map.creature_at_coords(x, y)
             if target_creature:
                 target_creature.creature.take_damage(damage)
                 damaged_something = True
@@ -146,7 +146,7 @@ def cast_confusion(caster, effect_length):
 
         target_tile_x, target_tile_y = selected_tile_address
 
-        target_creature = map.map_check_for_creatures(target_tile_x, target_tile_y)
+        target_creature = map.creature_at_coords(target_tile_x, target_tile_y)
 
         if target_creature:
             game.game_message(f"{caster.creature.name_instance} casts confusion on {target_creature.display_name}",

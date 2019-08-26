@@ -1,8 +1,8 @@
 import tcod
 import numpy
 
-from source import globalvars, actor, death, magic
-from source.components import creature, ai, itemcom
+from src import globalvars, actor, death, magic
+from src.components import creature, ai, itemcom
 
 
 """

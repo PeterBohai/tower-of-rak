@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from source import globalvars
+from src import globalvars
 
 
 class StructTile:

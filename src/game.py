@@ -5,9 +5,9 @@ import textwrap
 
 import pygame
 
-from source import constants, globalvars, map, draw, actions, hud
-from source.menu import pause, inventory, options
-from source.generators import playergen
+from src import constants, globalvars, map, draw, actions, hud
+from src.menu import pause, inventory, options
+from src.generators import playergen
 
 
 class ObjGame:
@@ -94,7 +94,7 @@ class ObjGame:
             for obj in self.current_objects:
                 obj.animation_init()
 
-            map.map_make_fov(self.current_map)
+            map.create_fov_map(self.current_map)
 
             globalvars.FOV_CALCULATE = True
 
@@ -124,7 +124,7 @@ class ObjGame:
             for obj in self.current_objects:
                 obj.animation_init()
 
-            map.map_make_fov(self.current_map)
+            map.create_fov_map(self.current_map)
 
             globalvars.FOV_CALCULATE = True
 
@@ -187,7 +187,7 @@ def game_main_loop():
         if globalvars.GAME.floor_transition_alpha > 0:
             hud.draw_floor_title()
 
-        map.map_calculate_fov()
+        map.update_fov()
 
         # creatures takes their turn
         for obj in globalvars.GAME.current_objects:
@@ -483,8 +483,7 @@ def game_load():
 
     globalvars.GAME.from_main_menu = True
 
-    # create FOV_MAP
-    map.map_make_fov(globalvars.GAME.current_map)
+    map.create_fov_map(globalvars.GAME.current_map)
     globalvars.FOV_CALCULATE = True
 
 

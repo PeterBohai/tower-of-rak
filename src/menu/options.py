@@ -3,7 +3,7 @@ import copy
 import numpy
 import pygame
 
-from source import constants, globalvars, text, gui, game, draw
+from src import constants, globalvars, text, gui, game, draw
 
 
 def menu_main_options(ingame_menu_options=False):
@@ -453,7 +453,7 @@ def menu_options_controls():
 
     # text positions
     text_x = 0
-    text_y_offset = text.helper_text_height(constants.FONT_BEST) + 24
+    text_y_offset = text.get_text_height(constants.FONT_BEST) + 24
     line_y = [8]      # [title_y + 40]
     for line in range(1, 20):
         line_y.append(line_y[0] + line * text_y_offset)
@@ -715,8 +715,8 @@ def menu_change_controls(action):
 
     # message
     message_x = center_x
-    message_y = center_y - text.helper_text_height(constants.FONT_BEST) + 5
-    text_y_offset = text.helper_text_height(constants.FONT_BEST) + 10
+    message_y = center_y - text.get_text_height(constants.FONT_BEST) + 5
+    text_y_offset = text.get_text_height(constants.FONT_BEST) + 10
 
     # =============== Menu LOOP =============== #
     menu_close = False

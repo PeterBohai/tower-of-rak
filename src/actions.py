@@ -1,11 +1,11 @@
-from source import globalvars, map
+from src import globalvars, map
 
 
 def use_stairs():
     # check if the player is standing on top of a set of stairs
-    list_of_obj = map.map_objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
+    objs_at_player = map.objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
 
-    for obj in list_of_obj:
+    for obj in objs_at_player:
         # check if the object contains a stairs component
         if obj.stairs:
             obj.stairs.use()
@@ -31,10 +31,9 @@ def move_one_tile(direction):
 
 
 def grab_item():
-    objects_at_player = map.map_objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
-
+    objs_at_player = map.objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
     # only pick up the top most object that is an item
-    for obj in reversed(objects_at_player):
+    for obj in reversed(objs_at_player):
         if obj.item:
             obj.item.pick_up(globalvars.PLAYER)
             break

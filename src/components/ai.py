@@ -1,6 +1,6 @@
 import tcod
 
-from source import constants, globalvars, game
+from src import constants, globalvars, game
 
 
 class AiConfuse:

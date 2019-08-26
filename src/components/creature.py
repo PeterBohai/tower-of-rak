@@ -4,7 +4,7 @@ import math
 import pygame
 import tcod
 
-from source import constants, globalvars, game, map, text
+from src import constants, globalvars, game, map, text
 
 
 class ComCreature:
@@ -112,7 +112,7 @@ class ComCreature:
         # boolean to check if a tile is a wall
         tile_is_wall = (globalvars.GAME.current_map[self.owner.x + dx][self.owner.y + dy].block_path is True)
 
-        target = map.map_check_for_creatures(self.owner.x + dx, self.owner.y + dy, self.owner)
+        target = map.creature_at_coords(self.owner.x + dx, self.owner.y + dy, exclude=self.owner)
 
         if target:
             # player or a confused creature (not normal ai)can hurt anyone
@@ -152,7 +152,7 @@ class ComCreature:
         dy = round(dy / distance)
 
         # check for wall in the direction it was supposed to move
-        if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
+        if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
             # move towards target in the x-direction if blocked in the y-direction
             if dx == 0:
                 if target.x > self.owner.x:
@@ -198,11 +198,11 @@ class ComCreature:
             # move towards direction that is not blocked by walls 2 tiles or closer away
 
             if dx == 0:
-                if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + 1, self.owner.y) or \
-                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + 2, self.owner.y):
+                if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 1, self.owner.y) or \
+                      map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 2, self.owner.y):
                     dx = -1
-                elif map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x - 1, self.owner.y) or \
-                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x - 2, self.owner.y):
+                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x - 1, self.owner.y) or \
+                        map.wall_at_coords(globalvars.GAME.current_map, self.owner.x - 2, self.owner.y):
                     dx = 1
                 else:
                     dx = random.choice((-1, 1))
@@ -210,20 +210,19 @@ class ComCreature:
                 dy = 0
 
             elif dy == 0:
-                if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y + 1) or \
-                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y + 2):
+                if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 1) or \
+                      map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 2):
                     dy = -1
-                elif map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y - 1) or \
-                      map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x, self.owner.y - 2):
+                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y - 1) or \
+                        map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y - 2):
                     dy = 1
                 else:
                     dy = random.choice((-1, 1))
 
                 dx = 0
 
-
         # check for wall in the direction it was supposed to move
-        if map.map_check_for_wall(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
+        if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
 
             # move randomly to either left or right if blocked in the y-direction
             if dx == 0:

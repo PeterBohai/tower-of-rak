@@ -2,8 +2,8 @@ import os
 
 import pygame
 
-from source import constants
-from source import globalvars
+from src import constants
+from src import globalvars
 
 
 class ObjSpriteSheet:

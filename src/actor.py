@@ -2,8 +2,8 @@ import math
 
 import tcod
 
-from source import constants, globalvars
-from source.components import itemcom
+from src import constants, globalvars
+from src.components import itemcom
 
 
 class ObjActor:

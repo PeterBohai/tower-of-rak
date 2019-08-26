@@ -1,5 +1,5 @@
-from source import globalvars, actor, death
-from source.components import creature, container
+from src import globalvars, actor, death
+from src.components import creature, container
 
 
 def gen_player(tup_coords):

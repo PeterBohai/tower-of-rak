@@ -1,6 +1,6 @@
 import pygame
 
-from source import constants, globalvars, text
+from src import constants, globalvars, text
 
 
 def menu_pause():
@@ -16,8 +16,8 @@ def menu_pause():
     pause_menu_text = "PAUSED"
     pause_menu_font = constants.FONT_BEST
 
-    pause_text_height = text.helper_text_height(pause_menu_font)
-    pause_text_width = text.helper_text_width(pause_menu_font, pause_menu_text)
+    pause_text_height = text.get_text_height(pause_menu_font)
+    pause_text_width = text.get_text_height(pause_menu_font, pause_menu_text)
 
     pause_menu_x = (window_width/2) - (pause_text_width/2)
     pause_menu_y = (window_height/2) - (pause_text_height/2)

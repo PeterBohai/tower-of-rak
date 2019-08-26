@@ -3,7 +3,7 @@ import datetime
 
 import pygame
 
-from source import constants, globalvars, gui, text
+from src import constants, globalvars, gui, text
 
 
 class ComStairs:

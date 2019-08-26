@@ -1,4 +1,4 @@
-from source import constants, globalvars, game
+from src import constants, globalvars, game
 
 
 class ComItem:
@@ -62,8 +62,6 @@ class ComItem:
                 self.container = actor.container
                 self.use()
                 globalvars.GAME.current_objects.remove(self.owner)
-                self.container.inventory.remove(self.owner)
-
                 return
 
             if actor.container.volume + self.volume > actor.container.max_volume:
@@ -131,6 +129,8 @@ class ComItem:
 
             used = self.use_function(self.container.owner, self.value)
             if used:
+                self.container.inventory.remove(self.owner)
+            elif self.type_item == "Pure Soul":
                 self.container.inventory.remove(self.owner)
 
 

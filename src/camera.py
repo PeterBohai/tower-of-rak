@@ -1,6 +1,6 @@
 import pygame
 
-from source import constants, globalvars
+from src import constants, globalvars
 
 
 class ObjCamera:

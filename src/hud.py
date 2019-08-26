@@ -1,6 +1,6 @@
 import pygame
 
-from source import constants, text, globalvars
+from src import constants, text, globalvars
 
 
 def draw_player_health(surface, coords, percentage):
@@ -64,7 +64,7 @@ def draw_fps():
 
     """
     fps_text = f"fps: {int(globalvars.CLOCK.get_fps())}"
-    pos_x = constants.CAMERA_WIDTH - text.helper_text_width(constants.FONT_BEST, fps_text) - 5
+    pos_x = constants.CAMERA_WIDTH - text.get_text_width(constants.FONT_BEST, fps_text) - 5
     pos_y = 0
 
     text.draw_text(globalvars.SURFACE_MAIN, fps_text,
@@ -89,7 +89,7 @@ def draw_messages():
     else:
         del globalvars.GAME.message_history[0]
 
-    text_height = text.helper_text_height(constants.FONT_BEST)
+    text_height = text.get_text_height(constants.FONT_BEST)
     text_x = 10
     start_y = constants.CAMERA_HEIGHT - (constants.NUM_MESSAGES * text_height) - 16
 

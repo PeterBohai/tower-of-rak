@@ -1,7 +1,7 @@
 import pygame
 import numpy
 
-from source import constants, globalvars, text
+from src import constants, globalvars, text
 
 
 class GuiButton:

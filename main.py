@@ -6,7 +6,7 @@
 #     |_|\___/ \_/\_/ \___|_|     \___/|_|   |_|  \_\__,_|_|\_\
 #
 
-from source.menu import mainmenu
+from src.menu import mainmenu
 
 if __name__ == '__main__':
     mainmenu.menu_main()

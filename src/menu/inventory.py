@@ -1,6 +1,6 @@
 import pygame
 
-from source import constants, globalvars, text, draw
+from src import constants, globalvars, text, draw
 
 
 def menu_inventory():
@@ -17,7 +17,7 @@ def menu_inventory():
     menu_x = (window_width/2) - (menu_width/2)          # number of pixels to the right from the left game window side
     menu_y = (window_height/2) - (menu_height/2)        # number of pixels down from the top game window side
     menu_text_font = constants.FONT_BEST
-    menu_text_height = text.helper_text_height(constants.FONT_BEST)
+    menu_text_height = text.get_text_height(constants.FONT_BEST)
     menu_text_color = constants.COLOR_WHITE
 
     local_inventory_menu_surface = pygame.Surface((menu_width, menu_height))

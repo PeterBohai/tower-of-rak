@@ -1,10 +1,10 @@
 import tcod
 import numpy
 
-from source import globalvars
-from source import actor
-from source import magic
-from source.components import itemcom
+from src import globalvars
+from src import actor
+from src import magic
+from src.components import itemcom
 
 
 def gen_item(floor_num, tup_coords):

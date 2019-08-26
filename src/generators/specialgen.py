@@ -1,5 +1,5 @@
-from source import globalvars, actor
-from source.components import itemcom, structure
+from src import globalvars, actor
+from src.components import itemcom, structure
 
 
 def gen_stairs(tup_coords, up=True):

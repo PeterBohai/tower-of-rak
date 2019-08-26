@@ -1,7 +1,7 @@
 import pygame
 import tcod
 
-from source import constants, globalvars, text, hud
+from src import constants, globalvars, text, hud
 
 
 def draw_game():
@@ -144,7 +144,7 @@ def draw_window_ui():
     else:
         floor_text = f"{globalvars.GAME.cur_floor}F [final]"
 
-    floor_x = debug_pos_x - text.helper_text_width(floor_font, floor_text) - 10
+    floor_x = debug_pos_x - text.get_text_width(floor_font, floor_text) - 10
     text.draw_text(globalvars.SURFACE_MAIN, floor_text,
                    floor_font, (floor_x, 0), pygame.Color('aquamarine1'))
 
