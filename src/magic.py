@@ -52,21 +52,21 @@ def cast_lightening(caster, dmg_and_range):
     damage, max_r = dmg_and_range
     damaged_something = False
     selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location, max_range=max_r,
-                                                        wall_penetration=False, base_color=constants.COLOR_YELLOW)
+                                                        wall_pen=False, base_color=constants.COLOR_YELLOW)
 
     # continue with casting of spell only if caster did not cancel the spell (by using esc from menu_tile_select)
     if selected_tile_address:
-        list_of_tiles_affected = map.tiles_in_line(caster_location, selected_tile_address)
+        tiles_affected = map.tiles_in_line(caster_location, selected_tile_address)
 
         # damage all creatures in the line of sight of the spell
-        for i, (x, y) in enumerate(list_of_tiles_affected):
+        for i, (x, y) in enumerate(tiles_affected):
             target_creature = map.creature_at_coords(x, y)
 
             if target_creature and i != 0:
                 target_creature.creature.take_damage(damage)
                 damaged_something = True
 
-            if target_creature and len(list_of_tiles_affected) == 1:
+            if target_creature and len(tiles_affected) == 1:
                 game.game_message("Watch out! Aim away from yourself please.", constants.COLOR_WHITE)
                 return False
 
@@ -101,8 +101,8 @@ def cast_fireball(caster, dmg_range_radius):
     selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location,
                                                         max_range=spell_range,
                                                         radius=spell_radius,
-                                                        wall_penetration=False,
-                                                        creature_penetration=False)
+                                                        wall_pen=False,
+                                                        creature_pen=False)
     if selected_tile_address:
         game.game_message(f"{caster.creature.name_instance} casts fireball", constants.COLOR_WHITE)
 
@@ -139,7 +139,7 @@ def cast_confusion(caster, effect_length):
         True if the spell was successful, False otherwise.
 
     """
-    selected_tile_address = tileselect.menu_tile_select(wall_penetration=False,
+    selected_tile_address = tileselect.menu_tile_select(wall_pen=False,
                                                         single_tile=True,
                                                         target_color=constants.COLOR_GREEN)
     if selected_tile_address:

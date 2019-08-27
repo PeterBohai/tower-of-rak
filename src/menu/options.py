@@ -4,16 +4,26 @@ import numpy
 import pygame
 
 from src import constants, globalvars, text, gui, game, draw
+from src.menu import popup
 
 
-def menu_main_options(ingame_menu_options=False):
+def main_options_menu(in_game=False):
+    """The primary options menu that includes sub-menus like audio, control, display, etc.
 
+    Parameters
+    ----------
+    in_game : bool, optional
+        True if the menu was brought up in-game, False if in main menu.
+
+    Returns
+    -------
+    None
+
+    """
     # ============== options menu dimensions ============== #
-    # options menu dimensions (in MAIN MENU)
     menu_width = 448
     menu_height = 256
 
-    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
@@ -22,7 +32,6 @@ def menu_main_options(ingame_menu_options=False):
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
-    # title
     title_x = center_x
     title_y = menu_rect.top + 30
 
@@ -55,7 +64,7 @@ def menu_main_options(ingame_menu_options=False):
     display_button_text = "Display Settings"
 
     # ================== Options menu is in-game =================== #
-    if ingame_menu_options:
+    if in_game:
         button_width = 96
 
         save_button_text = "Save game"
@@ -124,10 +133,10 @@ def menu_main_options(ingame_menu_options=False):
         if back_button.update(player_events):
             menu_close = True
         if audio_button.update(player_events):
-            menu_options_audio()
+            audio_options_menu()
         if controls_button.update(player_events):
-            menu_options_controls()
-            if ingame_menu_options:
+            controls_options_menu()
+            if in_game:
                 draw.draw_game()
             else:
                 globalvars.SURFACE_MAIN.blit(globalvars.ASSETS.S_MAIN_MENU, (0, 0))
@@ -137,7 +146,7 @@ def menu_main_options(ingame_menu_options=False):
                                constants.COLOR_RED,
                                center=True)
         if display_button.update(player_events):
-            menu_options_display()
+            display_options_menu()
 
         # Change cursor when hovering over a button
         for i, button in enumerate(button_list):
@@ -157,14 +166,14 @@ def menu_main_options(ingame_menu_options=False):
         controls_button.draw()
         display_button.draw()
 
-        if ingame_menu_options:
-
+        if in_game:
             if main_menu_button.update(player_events):
                 globalvars.GAME_QUIT = True
                 menu_close = True
 
             if save_button.update(player_events):
                 game.game_save(in_game=True)
+                popup.popup_menu("Saved game!")
 
             main_menu_button.draw()
             save_button.draw()
@@ -180,8 +189,8 @@ def menu_main_options(ingame_menu_options=False):
         surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
 
         # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
-        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+        num_tiles_width = int(menu_width/32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
 
         for w in range(1, num_tiles_width + 1):
             surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
@@ -200,14 +209,19 @@ def menu_main_options(ingame_menu_options=False):
         pygame.display.update()
 
 
-def menu_options_audio():
+def audio_options_menu():
+    """Displays the options sub-menu for audio control.
+
+    Returns
+    -------
+    None
+
+    """
 
     # ============== options menu dimensions ============== #
-    # options menu dimensions (in MAIN MENU)
     menu_width = 448
     menu_height = 256
 
-    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
@@ -216,7 +230,6 @@ def menu_options_audio():
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
-    # title
     title_x = center_x
     title_y = menu_rect.top + 30
 
@@ -340,7 +353,6 @@ def menu_options_audio():
         botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
         botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
 
-
         # >>>>> update display <<<<<
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
 
@@ -351,8 +363,8 @@ def menu_options_audio():
         surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
 
         # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
-        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+        num_tiles_width = int(menu_width/32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
 
         for w in range(1, num_tiles_width + 1):
             surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
@@ -371,10 +383,16 @@ def menu_options_audio():
         pygame.display.update()
 
 
-def menu_options_controls():
+def controls_options_menu():
+    """Displays the options sub-menu for keybindings.
+
+    Returns
+    -------
+    None
+
+    """
 
     # ============== options menu dimensions ============== #
-    # options menu dimensions (in MAIN MENU)
     menu_width = 448
     menu_height = 416
 
@@ -383,7 +401,6 @@ def menu_options_controls():
 
     controls_height = 448
 
-    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
@@ -400,7 +417,6 @@ def menu_options_controls():
     surface_controls.fill((184, 163, 143))
     scroll_y = 0
 
-    # title
     title_x = center_x
     title_y = menu_rect.top + 30
 
@@ -454,7 +470,7 @@ def menu_options_controls():
     # text positions
     text_x = 0
     text_y_offset = text.get_text_height(constants.FONT_BEST) + 24
-    line_y = [8]      # [title_y + 40]
+    line_y = [8]
     for line in range(1, 20):
         line_y.append(line_y[0] + line * text_y_offset)
 
@@ -525,7 +541,7 @@ def menu_options_controls():
 
         # update relative mouse position
         mouse_x, mouse_y = mouse_pos
-        mouse_rel_x = mouse_x -scroll_window_pos[0]
+        mouse_rel_x = mouse_x - scroll_window_pos[0]
         mouse_rel_y = mouse_y - (scroll_window_pos[1] + scroll_y)
         mouse_rel_pos = (mouse_rel_x, mouse_rel_y)
         if mouse_y > (scroll_window_pos[1] + scroll_window_height):
@@ -613,29 +629,20 @@ def menu_options_controls():
             if i == len(button_list) - 1:
                 pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
-        # draw functions
-
         text.draw_text(surface_controls, "Move Left",
                        constants.FONT_BEST, (text_x, line_y[0]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Move Right",
                        constants.FONT_BEST, (text_x, line_y[1]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Move Up",
                        constants.FONT_BEST, (text_x, line_y[2]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Move Down",
                        constants.FONT_BEST, (text_x, line_y[3]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Stay",
                        constants.FONT_BEST, (text_x, line_y[4]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Grab Item",
                        constants.FONT_BEST, (text_x, line_y[5]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Drop Item",
                        constants.FONT_BEST, (text_x, line_y[6]), constants.COLOR_BLACK)
-
         text.draw_text(surface_controls, "Inventory",
                        constants.FONT_BEST, (text_x, line_y[7]), constants.COLOR_BLACK)
 
@@ -644,7 +651,6 @@ def menu_options_controls():
 
         text.draw_text(surface_controls, "Back/Exit",
                        constants.FONT_BEST, (text_x, line_y[9]), constants.COLOR_BLACK)
-
 
         left_button.draw()
         right_button.draw()
@@ -667,8 +673,8 @@ def menu_options_controls():
         surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
 
         # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
-        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+        num_tiles_width = int(menu_width/32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
 
         for w in range(1, num_tiles_width + 1):
             surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
@@ -698,13 +704,18 @@ def menu_options_controls():
 
 
 def menu_change_controls(action):
+    """Displays a pop-up prompt menu when player clicks on a key button to change in the controls menu.
+
+    Returns
+    -------
+    None
+
+    """
 
     # ============== options menu dimensions ============== #
-    # options menu dimensions (in MAIN MENU)
     menu_width = 352
     menu_height = 128
 
-    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
@@ -713,7 +724,6 @@ def menu_change_controls(action):
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
-    # message
     message_x = center_x
     message_y = center_y - text.get_text_height(constants.FONT_BEST) + 5
     text_y_offset = text.get_text_height(constants.FONT_BEST) + 10
@@ -818,12 +828,9 @@ def menu_change_controls(action):
                     is_invalid = True
                     break
 
-
-        # draw functions
         text.draw_text(surface_menu, text_1, constants.FONT_BEST,
                        (message_x, message_y),
                        constants.COLOR_BLACK, center=True)
-
         text.draw_text(surface_menu, text_2, constants.FONT_BEST,
                        (message_x, message_y + text_y_offset),
                        constants.COLOR_BLACK, center=True)
@@ -845,8 +852,8 @@ def menu_change_controls(action):
         surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
 
         # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
-        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+        num_tiles_width = int(menu_width/32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
 
         for w in range(1, num_tiles_width + 1):
             surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
@@ -865,13 +872,18 @@ def menu_change_controls(action):
         pygame.display.update()
 
 
-def menu_options_display():
+def display_options_menu():
+    """Displays the options sub-menu for window display settings.
+
+    Returns
+    -------
+    None
+
+    """
     # ============== options menu dimensions ============== #
-    # options menu dimensions (in MAIN MENU)
     menu_width = 448
     menu_height = 256
 
-    # window coordinates
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
@@ -880,7 +892,6 @@ def menu_options_display():
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
-    # title
     title_x = center_x
     title_y = menu_rect.top + 30
 
@@ -954,7 +965,6 @@ def menu_options_display():
                     menu_close = True
 
         # >>> button actions <<<
-
         if back_button.update(player_events):
             game.preferences_save()
             menu_close = True
@@ -1014,8 +1024,8 @@ def menu_options_display():
         surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
 
         # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2        # number of tiles width-wise ignoring the 2 corners
-        num_tiles_height = int(menu_height / 32) - 2     # number of tiles height-wise ignoring the 2 corners
+        num_tiles_width = int(menu_width/32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
 
         for w in range(1, num_tiles_width + 1):
             surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))

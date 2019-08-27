@@ -201,4 +201,4 @@ class ComEquipment:
         """
         self.equipped = False
 
-        game.game_message("Unequipped [{}]".format(self.owner.name_object))
+        game.game_message("Unequipped [{}]".format(self.owner.object_name))

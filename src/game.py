@@ -6,7 +6,7 @@ import textwrap
 import pygame
 
 from src import constants, globalvars, map, draw, actions, hud
-from src.menu import pause, inventory, options
+from src.menu import inventory, options
 from src.generators import playergen
 
 
@@ -318,16 +318,6 @@ def game_handle_keys():
                     if shift_pressed:
                         actions.drop_item()
 
-            # 'p' key: pause the game
-            if event.key == keys["pause"][1]:
-                if len(keys["pause"]) == 2:
-                    pause.menu_pause()
-
-                elif len(keys["pause"]) == 3 and \
-                        (keys["pause"][2] == pygame.K_LSHIFT or keys["pause"][2] == pygame.K_RSHIFT):
-                    if shift_pressed:
-                        pause.menu_pause()
-
             # 'i' key: open inventory menu
             if event.key == keys["inventory"][1]:
                 if len(keys["inventory"]) == 2:
@@ -356,7 +346,7 @@ def game_handle_keys():
                 if len(keys["back"]) == 2:
                     previous_display = globalvars.PREFERENCES.display_window
 
-                    options.menu_main_options(ingame_menu_options=True)
+                    options.main_options_menu(in_game=True)
                     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
                     # Change display after exiting options menu (only if there was a change)
@@ -373,7 +363,7 @@ def game_handle_keys():
                 elif len(keys["back"]) == 3 and \
                         (keys["back"][2] == pygame.K_LSHIFT or keys["back"][2] == pygame.K_RSHIFT):
                     if shift_pressed:
-                        options.menu_main_options(ingame_menu_options=True)
+                        options.main_options_menu(in_game=True)
                         pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 
     return "no-action"

@@ -75,7 +75,6 @@ class StructPreferences:
                                     "inventory": ("I", pygame.K_i),
                                     "next": (">", pygame.K_PERIOD, pygame.K_LSHIFT),
                                     "back": ("Esc", pygame.K_ESCAPE),
-                                    "pause": ("P", pygame.K_p)
                                     }
         # user changes this
         self.keybindings = copy.deepcopy(self.default_keybindings)
