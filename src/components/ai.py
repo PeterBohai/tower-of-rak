@@ -6,10 +6,14 @@ from src import constants, globalvars, game
 class AiConfuse:
     """Ai component class that makes a creature actor walk in random directions.
 
-    Attributes:
-        original_ai (arg, Ai class): The ai component the actor had originally before being set to AiConfuse.
-        num_turns (arg, int): The number of turns it takes before the affected creature's ai is reset to original_ai.
-        hurt_kin (bool): True if the ai is allowed to make the creature hurt its own kind/type. Default set to True.
+    Attributes
+    ----------
+    original_ai : ai obj
+        The ai component object that the actor originally had before being set to this one.
+    num_turns : int
+        Number of turns before the affected creature's ai is reset to `original_ai`.
+    hurt_kin : bool
+        True if the creature is allowed to hurt other creatures when in this ai state. Default is True.
 
     """
 
@@ -19,84 +23,72 @@ class AiConfuse:
         self.hurt_kin = True
 
     def take_turn(self):
-        """Performs one move action towards a random direction/tile.
+        """Performs one move action towards a random adjacent tile.
 
-        Resets the affected creature's ai to its previous (normal) ai after num_turns have been exhausted to 0.
+        Resets ai component to `original_ai` after `num_turns` reaches 0.
 
-        Returns:
-            Displays a game message when the creature actor has broken free of this AiConfuse.
+        Returns
+        -------
 
         """
-
         if self.num_turns > 0:
-            # default (0) random gen
             self.owner.creature.move(tcod.random_get_int(0, -1, 1), tcod.random_get_int(0, -1, 1))
-
             self.num_turns -= 1
-
-        # reset creature's ai
         else:
             self.owner.ai = self.original_ai
-            game.game_message("{} has broken out of its confusion!".format(self.owner.display_name), constants.COLOR_YELLOW)
+            game.game_message(f"{self.owner.display_name} has broken out of its confusion!", constants.COLOR_YELLOW)
 
 
 class AiChase:
-    """Ai component class for enemy creatures that chases the PLAYER and attacks when the it is next to the PLAYER.
+    """Ai component class that chases the PLAYER and attacks when adjacent to the PLAYER.
 
-    Attributes:
-        hurt_kin (bool): True if the ai is allowed to make the creature hurt its own kind/type. Default set to False.
+    Attributes
+    ----------
+    hurt_kin : bool
+        True if the creature is allowed to hurt other creatures when in this ai state. Default is False.
 
     """
     def __init__(self):
         self.hurt_kin = False
 
     def take_turn(self):
-        """Performs one move action towards the PLAYER's current location when the creature is in the PLAYER's fov.
+        """Performs one move action towards the PLAYER's current location.
 
-        When the creature is adjacent to the PLAYER, attack. Prevents creatures from hurt other creatures when moving
-        towards PLAYER together (implemented in the move() method of ComCreature).
+        Creature only takes a turn if it is in the PLAYER's fov or 6 tiles and less away from the PLAYER. When
+        the creature is adjacent to the PLAYER, attack. Creatures are prevented from hurting other creatures when
+        moving towards PLAYER (implemented in the move() method of ComCreature).
 
         """
+        mob = self.owner
+        distance = mob.distance_to(globalvars.PLAYER)
 
-        monster = self.owner
-
-        distance = monster.distance_to(globalvars.PLAYER)
-
-        # when the monster creature is in the field of vision of the player or is 6 radius within the player
-        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y) or distance <= 6:
-
-            # move towards player
+        if tcod.map_is_in_fov(globalvars.FOV_MAP, mob.x, mob.y) or distance <= 6:
             if distance >= 2:
-                monster.creature.move_towards(globalvars.PLAYER)
-
+                mob.creature.move_towards(globalvars.PLAYER)
             else:
-                monster.creature.attack(globalvars.PLAYER)
+                mob.creature.attack(globalvars.PLAYER)
 
 
 class AiFlee:
-    """Ai component class for enemy creatures that chases the PLAYER and attacks when the it is next to the PLAYER.
+    """Ai component class that is non-aggressive and moves away from the PLAYER.
 
-    Attributes:
-        hurt_kin (bool): True if the ai is allowed to make the creature hurt its own kind/type. Default set to False.
+    Attributes
+    ----------
+    hurt_kin : bool
+        True if the creature is allowed to hurt other creatures when in this ai state. Default is False.
 
     """
     def __init__(self):
         self.hurt_kin = False
 
     def take_turn(self):
-        """Performs one move action towards the PLAYER's current location when the creature is in the PLAYER's fov.
+        """Performs one move action away from the PLAYER's current location.
 
-        When the creature is adjacent to the PLAYER, attack. Prevents creatures from hurt other creatures when moving
-        towards PLAYER together (implemented in the move() method of ComCreature).
+        Creature takes a turn when it is in the PLAYER's fov and 2 tiles or less from the PLAYER.
 
         """
+        mob = self.owner
+        distance = mob.distance_to(globalvars.PLAYER)
 
-        monster = self.owner
-
-        distance = monster.distance_to(globalvars.PLAYER)
-
-        # when the monster creature is in the field of vision of the player
-        if tcod.map_is_in_fov(globalvars.FOV_MAP, monster.x, monster.y) and distance <= 2:
-
-            # move away from player
-            monster.creature.move_away(globalvars.PLAYER)
+        if tcod.map_is_in_fov(globalvars.FOV_MAP, mob.x, mob.y) and distance <= 2:
+            mob.creature.move_away(globalvars.PLAYER)

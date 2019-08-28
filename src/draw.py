@@ -149,7 +149,7 @@ def draw_window_ui():
                    floor_font, (floor_x, 0), pygame.Color('aquamarine1'))
 
     # draw PLAYER health bar
-    hud.draw_player_health(globalvars.SURFACE_MAIN, (10, 10), globalvars.PLAYER.creature.get_health_percentage())
+    hud.draw_player_health(globalvars.SURFACE_MAIN, (10, 10), globalvars.PLAYER.creature.hp_percent)
 
     # draw PLAYER messages
     hud.draw_messages()

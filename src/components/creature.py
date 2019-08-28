@@ -8,29 +8,45 @@ from src import constants, globalvars, game, map, text
 
 
 class ComCreature:
-    """Creature component gives actor objects health and fighting properties.
+    """Creature component class which give actor objects creature-like properties and functionality.
 
-    Creatures have health, can damage other objects by attacking them and possibly die.
+    These creatures contain health and the ability to move and attack, etc.
 
-    Attributes:
-        name_instance (arg, str): Name of the individual creature. Randomly generated using namegen methods in tcod
-                                  library. See gen_enemy() function under Generation for details.
-        max_hp (arg, int): Max hit points of the creature. Default value initialized as 10.
-        base_atk (arg, int): Base attack power of the creature. Default value initialized as 2.
-        base_def (arg, int): Base defence of the creature. Default value initialized as 0.
-        death_function (arg, function): Function to be executed when current_hp is 0 or below.
-        current_hp (int): Current health of the creature.
+    Attributes
+    ----------
+    personal_name : str
+        The ai component object that the actor originally had before being set to this one.
+    max_hp : int
+        Max health points of the creature. Default is 10.
+    base_atk : int
+        Base attack points of the creature. Default is 2.
+    base_def : int
+        Base defence points of the creature. Default is 0.
+    current_hp : int
+        Current health points of the creature.
+    death_function : function
+        Function that the creature executes when its `current_hp` reaches 0 or less.
+    dmg_received : int
+        The amount of damaged received if this creature was attacked.
+    was_hit : bool
+        True if the creature was hit in the previous turn, regardless of the damage taken (even 0).
+    dmg_alpha : int
+        Alpha value [0, 255] of the fading damage number display on top of the creature when hit.
+    health_bar_alpha : int
+        Alpha value [0, 255] of the small health bar display on top of the creature when being hit.
+    internal_timer : int
+        The number of ticks (total since pygame init) at the moment this creature was hit.
 
     """
 
-    def __init__(self, name_instance,
+    def __init__(self, personal_name,
                  max_hp=10,
                  base_atk=2,
                  base_def=0,
                  death_function=None):
 
-        self.name_instance = name_instance
-        self.maxHp = max_hp
+        self.personal_name = personal_name
+        self.max_hp = max_hp
         self.base_atk = base_atk
         self.base_def = base_def
         self.current_hp = max_hp
@@ -43,17 +59,12 @@ class ComCreature:
 
     @property
     def power(self):
-        """A property that calculates and returns the current total power of the creature.
+        """int: Calculates and returns the current total power of the creature.
 
-        Adds base_atk and all attack bonuses currently available to the creature (equipped items, etc.) to its
-        total power.
-
-        Returns:
-            total_power (int): The current total power of the creature (including base and bonuses)
+        Takes into account the creature's raw damage amount (base attack + randomness) and any equipment/item/spell
+        bonuses.
 
         """
-
-        # some additional random variation of attack power
         additional_random = 0
 
         if 1 <= self.base_atk <= 12:
@@ -67,7 +78,6 @@ class ComCreature:
 
         # raw damage will vary per turn
         raw_damage = self.base_atk + additional_random
-
         total_power = raw_damage
 
         # add attack bonus stats from equipment
@@ -81,49 +91,56 @@ class ComCreature:
 
     @property
     def defence(self):
-        """A property that calculates and returns the current total defence of the creature.
+        """int: Calculates and returns the current total defence of the creature.
 
-        Adds base_def and all defence bonuses currently available to the creature (equipped items, etc.) to its
-        total defence.
-
-        Returns:
-            total_defence (int): The current total defence of the creature (including base and bonuses)
+        Takes into account the base defence of the creature as well as any equipment/item/spell bonuses.
 
         """
         total_defence = self.base_def
 
         if self.owner.container:
-            equipment_defence_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_items]
+            equipment_def_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_items]
 
-            for def_bonus in equipment_defence_bonuses:
+            for def_bonus in equipment_def_bonuses:
                 total_defence += def_bonus
 
         return total_defence
 
-    def move(self, dx, dy):
-        """Moves the creature object on the map.
+    @property
+    def hp_percent(self):
+        """float: Returns the percentage of total health the creature still currently has."""
+        return self.current_hp / self.max_hp
 
-        Args:
-            dx (int): Distance in tile map coordinates to move object along the x-axis.
-            dy (int): Distance in tile map coordinates to move object along the y-axis.
+    def move(self, dx, dy):
+        """Moves the creature object one tile on the map, stopping at walls and attacking when appropriate.
+
+        Parameters
+        ----------
+        dx : int
+            The distance/direction to move the object along the x-axis relative to the map grid. Usually [-1, 1].
+        dy : int
+            The distance/direction to move the object along the y-axis relative to the map grid. Usually [-1, 1].
+
+        Returns
+        -------
+        None
 
         """
         self.was_hit = False
-        # boolean to check if a tile is a wall
-        tile_is_wall = (globalvars.GAME.current_map[self.owner.x + dx][self.owner.y + dy].block_path is True)
+        tile_is_wall = globalvars.GAME.current_map[self.owner.x + dx][self.owner.y + dy].block_path
 
-        target = map.creature_at_coords(self.owner.x + dx, self.owner.y + dy, exclude=self.owner)
+        creature_there = map.creature_at_coords(self.owner.x + dx, self.owner.y + dy, exclude=self.owner)
 
-        if target:
-            # player or a confused creature (not normal ai)can hurt anyone
+        if creature_there is not None:
             if self.owner is globalvars.PLAYER or self.owner.ai.hurt_kin is True:
-                self.attack(target)
+                self.attack(creature_there)
 
-            # creatures can only harm the player and not their kin
-            elif self.owner is not globalvars.PLAYER and target is globalvars.PLAYER:
+            # creatures can only harm the PLAYER
+            elif self.owner is not globalvars.PLAYER and creature_there is globalvars.PLAYER:
                 self.attack(globalvars.PLAYER)
 
-        if not tile_is_wall and target is None:
+        # move the creature in the specified direction if not a wall there
+        if not tile_is_wall and creature_there is None:
             self.owner.x += dx
             self.owner.y += dy
 
@@ -132,20 +149,21 @@ class ComCreature:
                     objActor.creature.was_hit = False
 
     def move_towards(self, target):
-        """Moves this actor object closer towards another object.
+        """Moves this creature one tile closer towards `target`.
 
-            Used in the AiChase to chase after a specified actor object.
-            Uses the move() method in the ComCreature component class.
+        Parameters
+        ----------
+        target : ObjActor
+            The target object to move towards.
 
-        Args:
-            target (ObjActor): Target actor object to move towards
+        Returns
+        -------
+        None
 
         """
-
         dx = target.x - self.owner.x
         dy = target.y - self.owner.y
 
-        # shortest distance to another actor object in tile number measurements
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
         dx = round(dx / distance)
@@ -153,6 +171,7 @@ class ComCreature:
 
         # check for wall in the direction it was supposed to move
         if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
+
             # move towards target in the x-direction if blocked in the y-direction
             if dx == 0:
                 if target.x > self.owner.x:
@@ -171,21 +190,21 @@ class ComCreature:
 
         self.move(dx, dy)
 
-    def move_away(self, away_from_target):
-        """Moves this actor object away from another object.
+    def move_away(self, target):
+        """Moves this creature away from `target`.
 
-            Used in the AiFlee to get away from a specified actor object.
-            Uses the move() method in the ComCreature component class.
+        Parameters
+        ----------
+        target : ObjActor
+            The target object to move away from.
 
-        Args:
-            away_from_target (ObjActor): Target actor object to move towards
+        Returns
+        -------
+        None
 
         """
-
-        dx = self.owner.x - away_from_target.x
-        dy = self.owner.y - away_from_target.y
-
-        # shortest distance to another actor object in tile number measurements
+        dx = self.owner.x - target.x
+        dy = self.owner.y - target.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
         dx = round(dx / distance)
@@ -193,10 +212,11 @@ class ComCreature:
 
         rand_int = tcod.random_get_int(0, 0, 100)
         percent_chance = 6
+
         # have a small chance of not always moving strictly away in the opposite direction of Player
         if rand_int < percent_chance:
-            # move towards direction that is not blocked by walls 2 tiles or closer away
 
+            # move towards direction that is not blocked by walls 2 tiles or closer away
             if dx == 0:
                 if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 1, self.owner.y) or \
                       map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 2, self.owner.y):
@@ -208,7 +228,6 @@ class ComCreature:
                     dx = random.choice((-1, 1))
 
                 dy = 0
-
             elif dy == 0:
                 if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 1) or \
                       map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 2):
@@ -228,7 +247,6 @@ class ComCreature:
             if dx == 0:
                 dx = random.choice((-1, 1))
                 dy = 0
-
             # move randomly to either up or down if blocked in the x-direction
             elif dy == 0:
                 dy = random.choice((-1, 1))
@@ -242,140 +260,119 @@ class ComCreature:
         self.move(dx, dy)
 
     def attack(self, target):
-        """Attacks another "target" ObjActor object.
+        """Attacks the `target` object.
 
-        Uses the take_damage() method in this ComCreature class to implement harming of target. Will display a game
-        message indicating how much damage the creature did to the target. The damage dealt to the target is influenced
-        by the power and defence properties.
+        Amount of damage dealt depends on this creature's power property value as well as the defence property of the
+        `target` creature.
 
-        Args:
-            target (ObjActor): Target actor object (that also contains a creature component)to be attacked and harmed.
+        Parameters
+        ----------
+        target : ObjActor
+            The target object to attack and take health points away from.
 
-        Returns:
+        Returns
+        -------
+        None
 
         """
+        dmg_dealt = max(self.power - target.creature.defence, 0)
 
-        damage_dealt = self.power - target.creature.defence
-        if damage_dealt <= 0:
-            damage_dealt = 0
-
-        # naming convention for attack message
-        # (PLAYER will only display nickname, creatures display nickname and creature type)
-        if target is globalvars.PLAYER:
-            victim_name = target.creature.name_instance
-        else:
-            victim_name = target.display_name
+        victim_name = target.display_name
+        attacker_name = self.owner.display_name
 
         if self.owner is globalvars.PLAYER:
-            attacker_name = self.name_instance
-        else:
-            attacker_name = self.owner.display_name
-
-        if damage_dealt >= 0 and self.owner is globalvars.PLAYER:
             pygame.mixer.Sound.play(random.choice(globalvars.ASSETS.sfx_hit_punch_list))
 
-        # attack message
-        attack_msg = "{} attacks {} for {} damage!".format(attacker_name, victim_name, damage_dealt)
-        game.game_message(attack_msg, constants.COLOR_WHITE)
+        game.game_message(f"{attacker_name} attacks {victim_name} for {dmg_dealt} damage!", constants.COLOR_WHITE)
 
-        # target creature takes damage
-        target.creature.take_damage(damage_dealt)
+        target.creature.take_damage(dmg_dealt)
 
     def take_damage(self, damage):
-        """Applies damage amount to current_hp.
+        """Applies `damage` value to this creature's current health and executes its death function if health <= 0.
 
-        Decreases current_hp of self and displays a game message indicating how much health remains. The name displayed
-        is different for PLAYER and other creatures. Runs death_function specified in the initialization of the creature
-        object when health falls to 0 or below.
+        Parameters
+        ----------
+        damage : int
+            Amount of damage to be taken away from current_hp.
 
-        Args:
-            damage (int): Amount of damage to be taken away from current_hp of self.
+        Returns
+        -------
+        None
 
         """
         self.was_hit = True
         self.dmg_received = damage
-        self.current_hp -= damage
+        self.current_hp = max(self.current_hp - damage, 0)
 
-        if self.owner is not globalvars.PLAYER:
+        if self.owner is globalvars.PLAYER:
+            msg_color = constants.COLOR_RED
+        else:
             msg_color = constants.COLOR_ORANGE
 
-            if self.current_hp < 0:
-                damage_taken = "{}'s health is 0/{}".format(self.owner.display_name, self.maxHp)
-            else:
-                damage_taken = "{}'s health is {}/{}".format(self.owner.display_name, self.current_hp, self.maxHp)
-
-        elif self.owner is globalvars.PLAYER:
-            msg_color = constants.COLOR_RED
-
-            if self.current_hp < 0:
-                damage_taken = "{}'s health is 0/{}".format(self.name_instance, self.maxHp)
-            else:
-                damage_taken = "{}'s health is {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
-
+        damage_taken = f"{self.owner.display_name}'s health is {self.current_hp}/{self.max_hp}"
         game.game_message(damage_taken, msg_color)
 
-        if self.current_hp <= 0:
-            if self.death_function is not None:
-                self.death_function(self.owner)
-
-    def get_health_percentage(self):
-        return self.current_hp / self.maxHp
+        if self.current_hp <= 0 and self.death_function is not None:
+            self.death_function(self.owner)
 
     def heal(self, amount):
-        """Applies health to creature's current_hp.
+        """Adds  `amount` of health to creature's current health value.
 
-        Increases current_hp of self and displays a game message indicating the amount healed and another game message
-        indicating the current health of the creature. Makes sure that the current_hp of creature does not go past its
-        maximum health.
+        Parameters
+        ----------
+        amount : int
+            Amount of health points to add to this creature's current_hp.
 
-        Args:
-            amount (int): Amount of health to be regained.
+        Returns
+        -------
+        None
 
         """
-
         hp_before_heal = self.current_hp
         self.current_hp += amount
 
-        if self.current_hp <= self.maxHp:
-            healed_amt_msg = "{} healed for {}".format(self.name_instance, amount)
-            curr_hp_msg = "{}'s health is now {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
+        if self.current_hp > self.max_hp:
+            actual_healed_amt = self.max_hp - hp_before_heal
+            self.current_hp = self.max_hp
+        else:
+            actual_healed_amt = amount
 
-            game.game_message(healed_amt_msg, constants.COLOR_GREEN)
-            game.game_message(curr_hp_msg, constants.COLOR_WHITE)
+        healed_amt_msg = f"{self.owner.display_name} healed for {actual_healed_amt}"
+        curr_hp_msg = f"{self.owner.display_name}'s health is now {self.current_hp}/{self.max_hp}"
 
-        # when healing gave creature more hp than max hp
-        elif self.current_hp > self.maxHp:
-            actual_healed_amt = self.maxHp - hp_before_heal
-            self.current_hp = self.maxHp
-
-            healed_amt_msg = "{} healed for {}".format(self.name_instance, actual_healed_amt)
-            curr_hp_msg = "{}'s health is now {}/{}".format(self.name_instance, self.current_hp, self.maxHp)
-
-            game.game_message(healed_amt_msg, constants.COLOR_GREEN)
-            game.game_message(curr_hp_msg, constants.COLOR_WHITE)
+        game.game_message(healed_amt_msg, constants.COLOR_GREEN)
+        game.game_message(curr_hp_msg, constants.COLOR_WHITE)
 
     def draw_health(self):
+        """Draws a small health bar indicator on top or below creature when taking damage.
+
+        Indicator will fade away after a few seconds of the creature not being damaged.
+
+        Returns
+        -------
+        None
+
+        """
         bar_width = 38
         bar_height = 8
         surface = globalvars.SURFACE_MAP
-        health_percentage = self.get_health_percentage()
 
-        if health_percentage > 0.6:
+        if self.hp_percent > 0.6:
             color = constants.COLOR_GRASS_GREEN
-        elif health_percentage > 0.3:
+        elif self.hp_percent > 0.3:
             color = constants.COLOR_HP_YELLOW
         else:
             color = constants.COLOR_RED
 
-        healthy_width = health_percentage * bar_width
+        healthy_width = self.hp_percent * bar_width
 
         current_time = pygame.time.get_ticks()
 
         # draw health bar only if taken damage
-        if self.current_hp < self.maxHp or self.dmg_received is not None:
+        if self.current_hp < self.max_hp or self.dmg_received is not None:
 
-            # start fading after 5000 milliseconds (5 secs)
-            if current_time - self.internal_timer >= 5000:
+            # start fading after 3 secs
+            if current_time - self.internal_timer >= 3000:
                 self.health_bar_alpha = max(self.health_bar_alpha - 3, 0)
 
             pos_x = self.owner.x * constants.CELL_WIDTH - 4
@@ -389,20 +386,27 @@ class ComCreature:
             healthy_surface.fill(color)
 
             back_surface = pygame.Surface((bar_width, bar_height))
-            back_surface.fill((0, 0, 0, 100))    # fill background with slightly translucent black
+            back_surface.fill((0, 0, 0, 100))
 
             alpha_surface = pygame.Surface(back_surface.get_size(), pygame.SRCALPHA)
             alpha_surface.fill((255, 255, 255, self.health_bar_alpha))
 
             outline_rect = pygame.Rect(0, 0, bar_width, bar_height)
 
-            back_surface.blit(healthy_surface, (0, 0))      # draw healthy portion on top of background
-            pygame.draw.rect(back_surface, constants.COLOR_BLACK, outline_rect, 1)      # draw border of health bar
-            back_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)      # for fading
+            back_surface.blit(healthy_surface, (0, 0))
+            pygame.draw.rect(back_surface, constants.COLOR_BLACK, outline_rect, 1)
+            back_surface.blit(alpha_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
             surface.blit(back_surface, (pos_x, pos_y))
 
     def draw_damage_taken(self):
+        """Draws a number indicator of the damage taken by this creature.
+
+        Returns
+        -------
+        None
+
+        """
         is_below = (globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1)
 
         start_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
@@ -414,14 +418,13 @@ class ComCreature:
         display_coords = (self.owner.dmg_taken_posx, self.owner.dmg_taken_posy)
 
         if self.dmg_alpha > 250:
-
             self.owner.dmg_taken_posx = start_x
             self.owner.dmg_taken_posy = start_y
         else:
             if (start_y - self.owner.dmg_taken_posy) < 32:
                 self.owner.dmg_taken_posy -= 1
 
-        if self.current_hp < self.maxHp or self.dmg_received is not None:
+        if self.current_hp < self.max_hp or self.dmg_received is not None:
             font = constants.FONT_VIGA
             text_color = pygame.Color('red3')
             dmg_text = str(self.dmg_received)
@@ -433,5 +436,5 @@ class ComCreature:
                 text_color = pygame.Color('royalblue3')
 
             self.dmg_alpha = text.draw_fading_text(globalvars.SURFACE_MAP, dmg_text, font, display_coords,
-                                                    text_color, self.dmg_alpha, center=True)
+                                                   text_color, self.dmg_alpha, center=True)
 

@@ -139,17 +139,22 @@ class ObjActor:
         Adds the "[E]" indicator for equipped items.
         """
 
-        if self.creature:
-            name_to_display = "{} the {}".format(self.creature.name_instance, self.object_name)
-            return name_to_display
+        if self.creature is not None:
+            name_to_display = f"{self.creature.personal_name} the {self.object_name}"
 
-        if self.item:
+            if self is globalvars.PLAYER:
+                name_to_display = self.creature.personal_name
+
+        elif self.item is not None:
             if self.equipment and self.equipment.equipped is True:
-                name_to_display = "{} [E]".format(self.object_name)
-                return name_to_display
+                name_to_display = f"{self.object_name} [E]"
             else:
                 name_to_display = self.object_name
-                return name_to_display
+
+        else:
+            name_to_display = self.object_name
+
+        return name_to_display
 
     @property
     def is_visible(self):

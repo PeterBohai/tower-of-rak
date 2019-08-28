@@ -33,10 +33,13 @@ def death_player(player):
                                 (button_width, button_height))
 
     # create a legacy file and delete any game save files
-    file_name = "legacy_{}_{}.txt".format(player.creature.name_instance,
-                                          datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
-    with open("data/saves/{}".format(file_name), 'a+') as legacy_file:
-        legacy_file.write("************* {}'s LEGACY FILE ************* \n\n".format(player.creature.name_instance))
+    death_time = datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S")
+    file_name = f"legacy_{player.display_name}_{death_time}.txt"
+
+    with open(f"data/saves/{file_name}", 'a+') as legacy_file:
+        file_title = f"************* {player.display_name}'s LEGACY FILE ************* \n\n"
+
+        legacy_file.write(file_title)
         for (message, color) in globalvars.GAME.message_history:
             legacy_file.write(message + '\n')
 

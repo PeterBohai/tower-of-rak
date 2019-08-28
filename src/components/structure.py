@@ -7,11 +7,14 @@ from src import constants, globalvars, gui, text
 
 
 class ComStairs:
-    """Stairs component that is defaulted to lead the player up to the next floor.
+    """Stairs component class that gives the actor object properties and functionality of stairs.
 
-    Attributes:
-        upwards (arg, bool): Specifies whether it should take the player up/to the next map. Default set to True.
-                             False would mean stairs lead down and to the previous map.
+    Leads PLAYER up a floor (default) or down a floor.
+
+    Attributes
+    ----------
+    upwards : bool
+        True if the user (PLAYER) will go up a floor, False if down a floor.
 
     """
 
@@ -19,57 +22,72 @@ class ComStairs:
         self.upwards = upwards
 
     def use(self):
-        """Implements map transitioning when called.
+        """Transitions the PLAYER up or down a floor.
 
-        When only upwards attribute is set to True, the player progresses to the next map. Otherwise, the player goes
-        to the previous map.
-
-        TODO:  Possibly implement "locking" the player in until a task is done (rendering stairs unusable).
-
-        Returns:
-            None
+        Returns
+        -------
+        None
 
         """
-
+        # TODO:  Possibly implement "locking" the player in until a task is done (rendering stairs unusable).
         if self.upwards:
             globalvars.GAME.map_transition_next()
-
         else:
             globalvars.GAME.map_transition_prev()
 
 
 class ComPortal:
+    """Portal component class that gives the actor object properties and functionality of a portal.
+
+    Attributes
+    ----------
+    open_animation : str
+        String that corresponds to an animation dictionary key in ASSETS indicating the portal is open.
+    closed_animation : str
+        String that corresponds to an animation dictionary key in ASSETS indicating the portal is closed.
+
+    """
     def __init__(self):
         self.open_animation = "A_PORTAL_OPEN"
         self.closed_animation = "S_PORTAL_CLOSED"
 
     def update(self):
-        # flag intialization
-        found_lamp = False
+        """Updates the status of the portal object as well as its animation depending on if the PLAYER has the relic.
 
-        portal_is_open = (self.owner.status == "STATUS_OPEN")
+        Returns
+        -------
+        None
+
+        """
+        found_relic = False
 
         for obj in globalvars.PLAYER.container.inventory:
             if obj.object_name == "MAGIC ROCK":
-                found_lamp = True
+                found_relic = True
 
-        # open the portal if player has lamp in their inventory
-        if found_lamp and not portal_is_open:
+        # open the portal if player has relic in their inventory
+        if found_relic and self.owner.status != "STATUS_OPEN":
             self.owner.status = "STATUS_OPEN"
             self.owner.animation_key = self.open_animation
             self.owner.animation_init()
 
-        # close the portal if player does not have the lamp (or somehow decided to drop it)
-        if not found_lamp and portal_is_open:
+        # close the portal if player does not have the relic (or somehow decided to drop it)
+        if not found_relic and self.owner.status == "STATUS_OPEN":
             self.owner.status = "STATUS_CLOSED"
             self.owner.animation_key = self.closed_animation
             self.owner.animation_init()
 
     def use(self):
+        """Enters the portal if its open and upon entering, wins the game!
+
+        Returns
+        -------
+        None
+
+        """
 
         if self.owner.status == "STATUS_OPEN":
             globalvars.PLAYER.status = "STATUS_WIN"
-
             center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
 
             # button variables
@@ -83,12 +101,14 @@ class ComPortal:
                                         (button_width, button_height))
 
             # make a legacy file
-            file_name = "win_{}_{}.txt".format(globalvars.PLAYER.creature.name_instance,
-                                               datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S"))
+            winner_name = globalvars.PLAYER.creature.personal_name
+            win_time = datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S")
+            file_name = f"win_{winner_name}_{win_time}.txt"
 
-            with open("data/saves/{}".format(file_name), 'a+') as win_file:
-                file_title = "************* {}'s WIN RECORD ************* \n\n"
-                win_file.write(file_title.format(globalvars.PLAYER.creature.name_instance))
+            with open(f"data/saves/{file_name}", 'a+') as win_file:
+                file_title = f"************* {winner_name}'s WIN RECORD ************* \n\n"
+
+                win_file.write(file_title)
                 for (message, color) in globalvars.GAME.message_history:
                     win_file.write(message + '\n')
 

@@ -21,11 +21,11 @@ def cast_heal(target, value):
         True if the heal was successful, False otherwise.
 
     """
-    if target.creature.current_hp < target.creature.maxHp:
+    if target.creature.current_hp < target.creature.max_hp:
         target.creature.heal(value)
         return True
     else:
-        full_hp_msg = f"{target.creature.name_instance} is already at full health!"
+        full_hp_msg = f"{target.creature.personal_name} is already at full health!"
         game.game_message(full_hp_msg, constants.COLOR_BLUE)
         return False
 
@@ -70,7 +70,7 @@ def cast_lightening(caster, dmg_and_range):
                 game.game_message("Watch out! Aim away from yourself please.", constants.COLOR_WHITE)
                 return False
 
-        game.game_message(f"{caster.creature.name_instance} casts lightening", constants.COLOR_WHITE)
+        game.game_message(f"{caster.creature.personal_name} casts lightening", constants.COLOR_WHITE)
         if not damaged_something:
             game.game_message("Nothing was hit, what a waste.", constants.COLOR_WHITE)
 
@@ -104,7 +104,7 @@ def cast_fireball(caster, dmg_range_radius):
                                                         wall_pen=False,
                                                         creature_pen=False)
     if selected_tile_address:
-        game.game_message(f"{caster.creature.name_instance} casts fireball", constants.COLOR_WHITE)
+        game.game_message(f"{caster.creature.personal_name} casts fireball", constants.COLOR_WHITE)
 
         list_of_tiles_to_damage = map.tiles_in_radius(selected_tile_address, spell_radius)
 
@@ -149,7 +149,7 @@ def cast_confusion(caster, effect_length):
         target_creature = map.creature_at_coords(target_tile_x, target_tile_y)
 
         if target_creature:
-            game.game_message(f"{caster.creature.name_instance} casts confusion on {target_creature.display_name}",
+            game.game_message(f"{caster.creature.personal_name} casts confusion on {target_creature.display_name}",
                               constants.COLOR_WHITE)
             normal_ai = target_creature.ai
 

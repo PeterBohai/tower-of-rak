@@ -26,7 +26,7 @@ def draw_player_health(surface, coords, percentage):
     bar_width = 260
     bar_height = 20
     bg_color = constants.COLOR_DARK_GREY
-    health_text = f"hp:  {globalvars.PLAYER.creature.current_hp}/{globalvars.PLAYER.creature.maxHp}"
+    health_text = f"hp:  {globalvars.PLAYER.creature.current_hp}/{globalvars.PLAYER.creature.max_hp}"
     text_coords = (int(bar_width / 2), int(bar_height / 2))
 
     if percentage > 0.6:

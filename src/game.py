@@ -100,7 +100,7 @@ class ObjGame:
 
             del self.maps_next[-1]
 
-        game_message("{} moved up a floor!".format(globalvars.PLAYER.creature.name_instance), constants.COLOR_BLUE)
+        game_message(f"{globalvars.PLAYER.display_name} moved up a floor!", constants.COLOR_BLUE)
 
     def map_transition_prev(self):
         """Transitions the PLAYER to a lower floor map when using stairs that go downwards.
@@ -130,7 +130,7 @@ class ObjGame:
 
             del self.maps_prev[-1]
 
-        game_message("{} moved down a floor!".format(globalvars.PLAYER.creature.name_instance), constants.COLOR_BLUE)
+        game_message(f"{globalvars.PLAYER.display_name} moved down a floor!", constants.COLOR_BLUE)
         self.cur_floor -= 1
 
 

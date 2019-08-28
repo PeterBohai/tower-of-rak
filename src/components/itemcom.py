@@ -2,61 +2,70 @@ from src import constants, globalvars, game
 
 
 class ComItem:
-    """Item component gives actor objects the property of being picked up and used.
+    """Item component class that gives actor objects item-like properties and functionality like pick up and use.
 
-    Attributes:
-        weight (arg, float): The weight of the object with precision of one decimal point.
-        volume (arg, float): The volume of the object with precision of one decimal point.
-        use_function (arg, func): Optional argument that specifies the function to be executed when an item object is
-                                  used. These use functions have the form use_function(target/caster, value).
-        value (arg, int or tuple): Optional argument that gives the value to be passed into the use_function.
+    Attributes
+    ----------
+    weight : int
+        The weight value in wu (weight units) of the item.
+    item_type : str
+        Type of item (gold, consumable, magic, equipment, etc.)
+    use_function : function
+        Function that's executed when item is used.
+    value : int
+        Value of the item if it holds one (gold, exp etc.).
+    container : ComContainer
+        The specific container object the item resides in. Initialized to None.
 
     """
-
-    def __init__(self, weight=0.0,
-                 volume=0.0,
-                 type_item=None,                         # consumable, magic, gold, equipment
+    def __init__(self, weight=0,
+                 item_type=None,
                  use_function=None,
                  value=0):
 
         self.weight = weight
-        self.volume = volume
-        self.value = value      # gold amount or exp
-        self.type_item = type_item
+        self.item_type = item_type
         self.use_function = use_function
+        self.value = value
         self.container = None
-        # self.owner = self.owner
 
     def pick_up(self, actor):
-        """Picks up the item object and places it into specified actor's container inventory.
+        """Picks up the item and either places it into the `actor`'s inventory, or directly used upon picking up.
 
-        Appends item to actor's inventory (list) in its container component and removes the items from the list of
-        current_objects in GAME (ObjGame). Displays appropriate messages indicating whether the item can be picked up.
-        This method is linked to the keyboard shortcut key "g".
+        Parameters
+        ----------
+        actor : ObjActor
+            The actor object (usually PLAYER) that will hold the item after pick up.
 
-        Args:
-            actor (ObjActor): The actor that is picking up the item (the actor object with a container component
-                              that the item will append itself).
+        Returns
+        -------
+        None
 
         """
-        if self.type_item == "gold":
+        if self.item_type == "gold":
             globalvars.ASSETS.sfx_coin_pickup.play()
             actor.gold += self.value
+
             self.owner.animation_del()
             globalvars.GAME.current_objects.remove(self.owner)
+
             game.game_message(f"Gained {self.value} gold.", constants.COLOR_YELLOW)
             game.game_message(f"Player now has {actor.gold} gold total.", constants.COLOR_WHITE)
             return
-        elif self.type_item == "Red Soul":
+
+        elif self.item_type == "Red Soul":
             globalvars.ASSETS.sfx_soul_consume.play()
             actor.exp += self.value
+
+            self.owner.animation_del()
             globalvars.GAME.current_objects.remove(self.owner)
+
             game.game_message(f"Gained {self.value} experience points.", constants.COLOR_BLUE3)
             game.game_message(f"Player now has {actor.exp} experience total.", constants.COLOR_WHITE)
             return
 
         if actor.container:
-            if self.type_item == "Pure Soul":
+            if self.item_type == "Pure Soul":
                 globalvars.ASSETS.sfx_pure_soul_consume.play()
                 actor.container.inventory.append(self.owner)
                 self.container = actor.container
@@ -64,31 +73,31 @@ class ComItem:
                 globalvars.GAME.current_objects.remove(self.owner)
                 return
 
-            if actor.container.volume + self.volume > actor.container.max_volume:
+            if actor.container.weight + self.weight > actor.container.max_weight:
                 game.game_message("Not enough room to pick up", constants.COLOR_WHITE)
 
             else:
-                game.game_message("Picking up [{}]".format(self.owner.object_name))
+                game.game_message(f"Picked up [{self.owner.display_name}]")
                 actor.container.inventory.append(self.owner)
 
                 self.owner.animation_del()
-
-                # remove from global map and list of objects in the game
                 globalvars.GAME.current_objects.remove(self.owner)
+
                 self.container = actor.container
 
     def drop(self, new_x, new_y):
-        """Drops the item object onto the ground specified by the coordinate arguments.
+        """Drops this item object onto the ground specified by the (`new_x`,`new_y`) map-grid coordinates.
 
-        Removes the item object from the actor's inventory that the item is being contained in and places it into the
-        GAME's current_object list. Displays a game message indicating which object has been dropped.
+        Parameters
+        ----------
+        new_x : int
+            The map-grid x-coord to drop the item (usually PLAYER's current position).
+        new_y : int
+            The map-grid y-coord to drop the item (usually PLAYER's current position).
 
-        Args:
-            new_x (int): The x-coord on the map to drop the item (usually PLAYER's current position).
-            new_y (int): The y-coord on the map to drop the item (usually PLAYER's current position).
-
-        Returns:
-            A game message that says the item is dropped.
+        Returns
+        -------
+        None
 
         """
 
@@ -104,52 +113,47 @@ class ComItem:
         self.owner.animation_init()
 
         self.container.inventory.remove(self.owner)
-        self.owner.x = new_x
-        self.owner.y = new_y
-        game.game_message("Dropped [{}]".format(self.owner.object_name))
+        self.owner.x, self.owner.y = new_x, new_y
+        game.game_message(f"Dropped [{self.owner.display_name}]")
 
     def use(self):
         """Uses the item to produce an effect and removes it from the inventory.
 
-        Passes in the caster (the creature/actor using the item) and the value associated with the use_function.
-        Removes the used item from the inventory that it was held in. Prints error message to console if an error
-        occurred when executing the use_function.
+        Passes in the caster (the creature/actor using the item) and any value associated to the use_function.
+
+        Returns
+        -------
+        None
 
         """
-
         if self.owner.equipment:
             self.owner.equipment.toggle_equip()
             return
 
         if self.use_function:
-
-            # self.owner would be the item itself.
-            # However, self.container, which was initialized in the pick_up(actor) method, is related to the actor
-            # holding the item.
-
             used = self.use_function(self.container.owner, self.value)
             if used:
                 self.container.inventory.remove(self.owner)
-            elif self.type_item == "Pure Soul":
+            elif self.item_type == "Pure Soul":
                 self.container.inventory.remove(self.owner)
 
 
 class ComEquipment:
-    """Equipment component gives actor objects item component properties as well as extra combat bonuses and statuses.
+    """Equipment component class that gives item objects extra combat bonuses and statuses.
 
-    Equipments are a component of actor objects, but also contain the item component (see ObjActor initialization).
-
-    Attributes:
-        attack_bonus (arg, int): Optional argument that specifies the attack bonus of the equipment. Default value is
-                                 initialized to 0.
-        defence_bonus (arg, int): Optional argument that specifies the defence bonus of the equipment. Default value is
-                                  initialized to 0.
-        slot (arg, str): Indicates the slot that the equipment should occupy
-                        (currently only "Right Hand" and "Left Hand").
+    Attributes
+    ----------
+    attack_bonus : int
+        Value of additional damage a wielder will gain when equipped.
+    defence_bonus : int
+        Value of additional defence a wielder will gain when equipped.
+    slot : str
+        The slot that the equipment will occupy (Right, Left, Body, Legs, Feet, Head).
+    equipped : bool
+        True if the item is equipped.
 
     """
-
-    def __init__(self, attack_bonus=0, defence_bonus=0, slot=None):   # might need to delete None initialization of slot
+    def __init__(self, attack_bonus=0, defence_bonus=0, slot=None):
 
         self.attack_bonus = attack_bonus
         self.defence_bonus = defence_bonus
@@ -158,10 +162,13 @@ class ComEquipment:
         self.equipped = False
 
     def toggle_equip(self):
-        """Toggles and sets equipment's status attribute "equipped".
+        """Toggles the equipment on and off.
+
+        Returns
+        -------
+        None
 
         """
-
         if self.equipped:
             self.unequip()
         else:
@@ -170,35 +177,32 @@ class ComEquipment:
     def equip(self):
         """Equips the item and sets the equipped attribute to True.
 
-        Checks the slot of the equipment to see if that particular slot is already occupied. Display appropriate game
-        messages to PLAYER. If the slot is empty, set equipped attribute to true.
+        Checks the slot of the equipment to see if that particular slot is already occupied.
+        If the slot is empty, set equipped attribute to true.
 
-        Returns:
-            A game message indicating player of equipment status of the object or any problems when attempting to equip.
+        Returns
+        -------
+        None
 
         """
-
-        # check for equipment in the corresponding slot
         all_equipped_items = self.owner.item.container.equipped_items
 
-        if all_equipped_items:  # do check only if there are equipped items on already, if not, equip as normal
+        if len(all_equipped_items) > 0:
             for equipped_item in all_equipped_items:
                 if equipped_item.equipment.slot == self.slot:
-                    game.game_message("There is already an item in the {} slot!".format(self.slot), constants.COLOR_WHITE)
+                    game.game_message(f"There is already an item in the {self.slot} slot!", constants.COLOR_WHITE)
                     return
 
         self.equipped = True
-        game.game_message("Equipped [{}] in the {} slot".format(self.owner.object_name, self.slot))
+        game.game_message(f"Equipped [{self.owner.object_name}] in the {self.slot} slot")
 
     def unequip(self):
         """Unequips the item and sets the equipped attribute to False.
 
-        Display a game messages to PLAYER indicating the equipment has been unequipped.
-
-        Returns:
-            A game message indicating the equipment has been unequipped.
+        Returns
+        -------
+        None
 
         """
         self.equipped = False
-
-        game.game_message("Unequipped [{}]".format(self.owner.object_name))
+        game.game_message(f"Unequipped [{self.owner.display_name}]")

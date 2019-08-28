@@ -283,7 +283,7 @@ def gen_defence_shield_rune(tup_coords):
 def gen_coins(tup_coords, amount):
     x, y = tup_coords
 
-    item_com = itemcom.ComItem(type_item="gold", value=amount)
+    item_com = itemcom.ComItem(item_type="gold", value=amount)
     obj = actor.ObjActor(x, y, "Gold", "S_GOLD", item=item_com)
 
     return obj
