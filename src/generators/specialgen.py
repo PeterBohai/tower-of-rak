@@ -2,52 +2,64 @@ from src import globalvars, actor
 from src.components import itemcom, structure
 
 
-def gen_stairs(tup_coords, up=True):
-    """ Generates a set of stairs going up or down a level/map.
+def gen_stairs(coord, up=True):
+    """Generates a set of stairs going up or down a floor,
 
-    Args:
-        tup_coords (tuple): The map tile coordinates the stairs will be placed.
-        up (bool): Specifies if the stairs will lead up or down. Default is set to True, which means stairs going up.
+    Parameters
+    ----------
+    coord : tuple
+        The map-grid coordinate to place the stairs.
+    up : bool
+        True if the stairs lead up, False if the stairs lead down.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
 
     """
-
-    x, y = tup_coords
-
     if up:
         stairs_com = structure.ComStairs()
-        stairs_obj = actor.ObjActor(x, y, "Upwards stairs",
-                                    "S_STAIRS_UP",
-                                    stairs=stairs_com)
+        stairs_obj = actor.ObjActor(*coord, "Upwards stairs", "S_STAIRS_UP", stairs=stairs_com)
     else:
         stairs_com = structure.ComStairs(upwards=False)
-        stairs_obj = actor.ObjActor(x, y, "Upwards stairs",
-                                    "S_STAIRS_DOWN",
-                                    stairs=stairs_com)
+        stairs_obj = actor.ObjActor(*coord, "Downwards stairs", "S_STAIRS_DOWN", stairs=stairs_com)
 
     globalvars.GAME.current_objects.insert(0, stairs_obj)
 
 
-def gen_magic_rock(tup_coords):
-    x, y = tup_coords
+def gen_magic_rock(coord):
+    """Generates the magic stone relic that triggers then end portals to open.
 
+    Parameters
+    ----------
+    coord : tuple
+        The map-grid coordinate to place the relic.
+
+    Returns
+    -------
+    None
+
+    """
     item_com = itemcom.ComItem()
-    rock_obj = actor.ObjActor(x, y, "MAGIC ROCK",
-                              "S_MAGIC_ROCK",
-                              item=item_com)
+    rock_obj = actor.ObjActor(*coord, "MAGIC ROCK", "S_MAGIC_ROCK", item=item_com)
 
     globalvars.GAME.current_objects.insert(0, rock_obj)
 
 
-def gen_portal(tup_coords):
+def gen_portal(coord):
+    """Generates the portal that leads to winning the game.
 
-    x, y = tup_coords
+    Parameters
+    ----------
+    coord : tuple
+        The map-grid coordinate to place the portal.
 
+    Returns
+    -------
+    None
+
+    """
     portal_com = structure.ComPortal()
-    portal_obj = actor.ObjActor(x, y, "Portal",
-                                "S_PORTAL_CLOSED",
-                                portal=portal_com)
+    portal_obj = actor.ObjActor(*coord, "Portal", "S_PORTAL_CLOSED", portal=portal_com)
 
     globalvars.GAME.current_objects.insert(0, portal_obj)

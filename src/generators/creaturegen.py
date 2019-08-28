@@ -5,40 +5,24 @@ from src import globalvars, actor, death, magic
 from src.components import creature, ai, itemcom
 
 
-"""
-Note the speed performance of generating random integers varies quite drastically between different methods
-
-import timeit
-t1 = timeit.timeit("n=random.randint(0, 2)", setup="import random", number=1000000)
-t2 = timeit.timeit("n=random.choice((0, 1, 2))", setup="import random", number=1000000)
-t3 = timeit.timeit("n=random.choice(ar)", setup="import random; ar = (0, 1, 2)", number=1000000)
-t4 = timeit.timeit("n=random.randrange(0, 3)", setup="import random", number=1000000)
-t5 = timeit.timeit("n=tcod.random_get_int(0, 0, 2)", setup="import tcod", number=1000000)
-t6 = timeit.timeit("n=numpy.random.randint(0, 3)", setup="import numpy", number=1000000)
-
-[print(f't{i+1}:   {t}') for i, t in enumerate([t1, t2, t3, t4, t5, t6])]
-t1:   1.5368656630000714
-t2:   0.9390302479999946
-t3:   0.9536893929999906
-t4:   1.2985620769999286
-t5:   0.5123831550000659
-t6:   1.7503905009999698
-
-"""
-
-
 def gen_enemy(room_range_x, room_range_y, floor_num):
     """Generates random enemies at random positions in a room.
 
     Inserts a randomly generated enemy creature object at the end of the GAME.current_objects list.
 
-    Args:
-        room_range_x (tuple): The (min, max) x-coordinates of the current room to be populated.
-        room_range_y (tuple): The (min, max) y-coordinates of the current room to be populated.
-        floor_num (int): The current floor number that the room is on.
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room to be populated.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room to be populated.
+    floor_num : int
+        The current floor number that the room is on.
 
-    Returns:
-         None
+    Returns
+    -------
+    None
+
     """
     coord_range = (room_range_x, room_range_y)
 
@@ -93,27 +77,47 @@ def gen_friendly_mob(room_range_x, room_range_y, floor_num):
 
     Inserts a randomly generated enemy creature object at the end of the GAME.current_objects list.
 
-    Args:
-        room_range_x (tuple): The (min, max) x-coordinates of the current room to be populated.
-        room_range_y (tuple): The (min, max) y-coordinates of the current room to be populated.
-        floor_num (int): The current floor number that the room is on.
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room to be populated.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room to be populated.
+    floor_num : int
+        The current floor number that the room is on.
 
-    Returns:
-         None
+    Returns
+    -------
+    None
+
     """
-
     choice_num = tcod.random_get_int(0, 1, 100)
 
     if choice_num <= 80:
         new_healer = gen_healer_slime(room_range_x, room_range_y)
         globalvars.GAME.current_objects.insert(-1, new_healer)
 
-        # ---------------------------------------- #
-        # ------ Specific mob generators --------- #
-        # ---------------------------------------- #
 
+# ---------------------------------------- #
+# ------ Specific mob generators --------- #
+# ---------------------------------------- #
 
 def gen_dungo(room_range_x, room_range_y):
+    """Generates a Dungo mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a Dungo mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
@@ -136,6 +140,21 @@ def gen_dungo(room_range_x, room_range_y):
 
 
 def gen_darksoot(room_range_x, room_range_y):
+    """Generates a DarkSoot mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a DarkSoot mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
@@ -158,6 +177,21 @@ def gen_darksoot(room_range_x, room_range_y):
 
 
 def gen_blazeo(room_range_x, room_range_y):
+    """Generates a Blazeo mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a Blazeo mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
@@ -180,6 +214,21 @@ def gen_blazeo(room_range_x, room_range_y):
 
 
 def gen_shelk(room_range_x, room_range_y):
+    """Generates a Shelk mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a Shelk mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
@@ -202,6 +251,21 @@ def gen_shelk(room_range_x, room_range_y):
 
 
 def gen_kelpclopse(room_range_x, room_range_y):
+    """Generates a KelpClopse mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a KelpClopse mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
@@ -226,11 +290,26 @@ def gen_kelpclopse(room_range_x, room_range_y):
 # ----- FRIENDLY MOBS ----- #
 
 def gen_healer_slime(room_range_x, room_range_y):
+    """Generates a friendly IceSlime mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+
+    Parameters
+    ----------
+    room_range_x : tuple
+        The (min, max) x-coordinates of the current room.
+    room_range_y : tuple
+        The (min, max) y-coordinates of the current room.
+
+    Returns
+    -------
+    ObjActor
+        An actor object with a creature component having all the stats and abilities of a IceSlime mob.
+
+    """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
 
-    creature_name = "Healer Slime"
-    creature_sprite = "A_HEALER_SLIME"
+    creature_name = "IceSplime"
+    creature_sprite = "A_ICESLIME"
     personal_name = tcod.namegen_generate("Fantasy female")
 
     base_attack = 0

@@ -158,7 +158,7 @@ class ObjAssets:
         self.A_SHELK = self.slime.get_animation('e', 2, 2)
 
         # friendly mobs
-        self.A_HEALER_SLIME = self.slime.get_animation('A', 0, 2)
+        self.A_ICESLIME = self.slime.get_animation('A', 0, 2)
 
         # Soul sprites
         self.A_DEATH_RED = self.death.get_animation('A', 0, 9)
@@ -395,7 +395,7 @@ class ObjAssets:
             "A_BLAZEO": self.A_BLAZEO,
             "A_KELPCLOPSE": self.A_KELPCLOPSE,
             "A_SHELK": self.A_SHELK,
-            "A_HEALER_SLIME": self.A_HEALER_SLIME,
+            "A_ICESLIME": self.A_ICESLIME,
             "A_DEATH_RED": self.A_DEATH_RED,
             "A_DEATH_BLUE": self.A_DEATH_BLUE,
             "S_SCROLL_YELLOW": self.S_SCROLL_YELLOW,
