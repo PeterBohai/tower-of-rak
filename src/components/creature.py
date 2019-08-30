@@ -111,6 +111,16 @@ class ComCreature:
         """float: Returns the percentage of total health the creature still currently has."""
         return self.current_hp / self.max_hp
 
+    def level_up(self):
+        self.owner.level += 1
+        self.base_def += 1
+        self.base_atk += 1
+        game.game_message(
+            f"Player is now level {self.owner.level}, def is now {self.base_def}, and atk is {self.base_atk}",
+            constants.COLOR_YELLOW)
+        if self.owner.level == constants.PLAYER_MAX_LV:
+            game.game_message("Player is now at max level! NICE!", constants.COLOR_RED)
+
     def move(self, dx, dy):
         """Moves the creature object one tile on the map, stopping at walls and attacking when appropriate.
 

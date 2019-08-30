@@ -59,9 +59,6 @@ class ComItem:
 
             self.owner.animation_del()
             globalvars.GAME.current_objects.remove(self.owner)
-
-            game.game_message(f"Gained {self.value} experience points.", constants.COLOR_BLUE3)
-            game.game_message(f"Player now has {actor.exp} experience total.", constants.COLOR_WHITE)
             return
 
         if actor.container:

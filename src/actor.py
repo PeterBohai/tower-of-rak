@@ -2,7 +2,7 @@ import math
 
 import tcod
 
-from src import constants, globalvars
+from src import constants, globalvars, game
 from src.components import itemcom
 
 
@@ -76,7 +76,9 @@ class ObjActor:
 
         self.status = status
         self.gold = gold
-        self.exp = exp
+        self._exp = exp
+        self.exp_to_next = 9
+        self._level = 1
 
         # components
         self.creature = creature
@@ -160,6 +162,33 @@ class ObjActor:
     def is_visible(self):
         """bool: Returns True if this object is in the field of view of the PLAYER, False otherwise."""
         return tcod.map_is_in_fov(globalvars.FOV_MAP, self.x, self.y)
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, new_level):
+        self._level = new_level
+        self.exp_to_next = 9 * self._level
+        print(f"level {self._level}: exp to next level - {self.exp_to_next}")
+
+    @property
+    def exp(self):
+        return self._exp
+
+    @exp.setter
+    def exp(self, new_exp):
+        gained = new_exp - self._exp
+        if self._level != constants.PLAYER_MAX_LV:
+            self._exp = new_exp
+            game.game_message(f"Gained {gained} experience points.", constants.COLOR_BLUE3)
+        else:
+            game.game_message(f"Already at max level, no exp was gained", constants.COLOR_RED)
+
+        game.game_message(f"Player has {self.exp} experience total.", constants.COLOR_WHITE)
+        if self._exp >= self.exp_to_next:
+            self.creature.level_up()
 
     def draw(self):
         """Draws the actor object to the screen.
