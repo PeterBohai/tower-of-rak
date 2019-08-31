@@ -23,10 +23,10 @@ def popup_menu(msg):
     menu_y = (constants.CAMERA_HEIGHT/2) - (text_height/2)
 
     start_time = pygame.time.get_ticks()
-    while not menu_close:
 
+    while not menu_close:
         elapsed_time = pygame.time.get_ticks() - start_time
-        if elapsed_time >= 1700:
+        if elapsed_time >= 1300:
             break
 
         event_list = pygame.event.get()

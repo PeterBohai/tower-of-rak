@@ -147,6 +147,9 @@ class ObjAssets:
         # ---> Player
         self.A_PLAYER_LEFT = self.player.get_animation('A', 5, 4)
         self.A_PLAYER_RIGHT = self.player.get_animation('A', 4, 4)
+        self.S_PLAYER_PFP = pygame.image.load(os.path.join("data", "graphics", "menu", "pfp.png")).convert()
+        self.S_PLAYER_LVL = pygame.image.load(os.path.join("data", "graphics", "menu", "player_level.png")).convert()
+
 
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))

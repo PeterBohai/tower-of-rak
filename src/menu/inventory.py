@@ -26,6 +26,7 @@ def menu_inventory():
 
     inventory_surface = pygame.Surface((menu_width, menu_height))
 
+    pygame.mouse.set_cursor(*pygame.cursors.tri_left)
     menu_close = False
     while not menu_close:
 

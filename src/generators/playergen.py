@@ -16,7 +16,7 @@ def gen_player(coord):
 
     """
     container_com = container.ComContainer()
-    creature_com = creature.ComCreature("Rak", max_hp=25, base_atk=1, base_def=3, death_function=death.death_player)
+    creature_com = creature.ComCreature("Rak", max_hp=25, base_atk=1, base_def=2, death_function=death.death_player)
 
     globalvars.PLAYER = actor.ObjActor(*coord, "PLAYER", "A_PLAYER_LEFT", animation_speed=0.8,
                                        creature=creature_com,

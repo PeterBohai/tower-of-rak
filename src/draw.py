@@ -148,8 +148,10 @@ def draw_window_ui():
     text.draw_text(globalvars.SURFACE_MAIN, floor_text,
                    floor_font, (floor_x, 0), pygame.Color('aquamarine1'))
 
-    # draw PLAYER health bar
-    hud.draw_player_health(globalvars.SURFACE_MAIN, (10, 10), globalvars.PLAYER.creature.hp_percent)
+    # draw PLAYER health bar, pfp, and level
+    hud.draw_player_health(globalvars.SURFACE_MAIN, (68, 0), globalvars.PLAYER.creature.hp_percent)
+    hud.pfp(globalvars.SURFACE_MAIN, (0, 0))
+    hud.level_sign(globalvars.SURFACE_MAIN, (0, 66))
 
     # draw PLAYER messages
     hud.draw_messages()
@@ -160,7 +162,7 @@ def draw_one_tile(display_surface, tile_coords, color, alpha=150, mark=False):
 
     Parameters
     ----------
-    display_surface : pygame Surface
+    display_surface : pygame Surface obj
         The surface the color tint will be displayed on.
     tile_coords : tuple
         The (x, y) map grid coordinates of the tile to be colored.

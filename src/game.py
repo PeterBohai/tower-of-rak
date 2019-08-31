@@ -37,6 +37,9 @@ class ObjGame:
         The alpha value [0, 255], that is used to fade out the floor title text when entering a new floor.
     from_main_menu : bool
         Tracks if the PLAYER has just started a game from the main menu.
+    hover_sound_played : bool
+        True if the hover audio has already played once when cursor is hovering over the player pfp.
+        (check hud.update_pfp)
 
     """
     def __init__(self):
@@ -49,6 +52,7 @@ class ObjGame:
         self.max_floor_reached = 1
         self.floor_transition_alpha = 0
         self.from_main_menu = True
+        self.hover_sound_played = False
 
     def map_transition_next(self):
         """Transitions the PLAYER to a higher floor map when using stairs that go upwards.
@@ -221,7 +225,13 @@ def game_handle_keys():
 
     # get player input
     events_list = pygame.event.get()
+    mouse_pos = pygame.mouse.get_pos()
     pressed_key_list = pygame.key.get_pressed()
+
+    # check if player clicked on profile
+    player_input = (events_list, mouse_pos)
+    if hud.update_pfp(globalvars.ASSETS.S_PLAYER_PFP, player_input):
+        inventory.menu_inventory()
 
     # load in keybindings from preferences (note this is not a copy of the keybindings dict, just a reference/alias)
     keys = globalvars.PREFERENCES.keybindings

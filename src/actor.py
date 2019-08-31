@@ -29,10 +29,14 @@ class ObjActor:
         The current index of the animation sequence list to be displayed (a single still sprite).
     animation_speed : float, optional
         Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
-    exp : int, optional
-        Total experience points of the actor object (mainly for creatures).
     gold : int, optional
         Total gold value the actor object currently contains/owns.
+    _exp : int, optional
+        Total experience points of the actor object (mainly for creatures).
+    exp_to_next : int
+        Number of total exp points needed to reach the next level.
+    _level : int
+        Current level of actor (usually PLAYER).
     status : str, optional
         The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
     creature: object, optional
@@ -77,7 +81,7 @@ class ObjActor:
         self.status = status
         self.gold = gold
         self._exp = exp
-        self.exp_to_next = 9
+        self.exp_to_next = 7
         self._level = 1
 
         # components
