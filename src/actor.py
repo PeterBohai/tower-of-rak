@@ -29,16 +29,18 @@ class ObjActor:
         The current index of the animation sequence list to be displayed (a single still sprite).
     animation_speed : float, optional
         Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
-    gold : int, optional
-        Total gold value the actor object currently contains/owns.
+    sprite_time_elapsed : float
+        Time in seconds the current sprite has been displayed for.
     _exp : int, optional
         Total experience points of the actor object (mainly for creatures).
+    gold : int, optional
+        Total gold value the actor object currently contains/owns.
+    status : str, optional
+        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
     exp_to_next : int
         Number of total exp points needed to reach the next level.
     _level : int
         Current level of actor (usually PLAYER).
-    status : str, optional
-        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
     creature: object, optional
         A component class (ComCreature) that gives the object creature-specific attributes and functionality.
     ai: object, optional
@@ -78,9 +80,9 @@ class ObjActor:
         self.animation_speed = animation_speed
         self.sprite_time_elapsed = 0.0
 
-        self.status = status
-        self.gold = gold
         self._exp = exp
+        self.gold = gold
+        self.status = status
         self.exp_to_next = 7
         self._level = 1
 
@@ -194,7 +196,7 @@ class ObjActor:
         if self._exp >= self.exp_to_next:
             self.creature.level_up()
 
-    def draw(self):
+    def draw(self, surface):
         """Draws the actor object to the screen.
 
         Draws the actor object to the map screen if it appears within the PLAYER's fov. If the object has multiple
@@ -202,11 +204,23 @@ class ObjActor:
         display the next image in the list. This will give off an "idle" animation look, where creatures usually bob up
         and down.
 
+        Parameters
+        ----------
+        surface : pygame Surface obj
+            The surface that the button will be drawn on.
+
         Returns
         -------
         None
 
         """
+
+        if surface is globalvars.SURFACE_MAP:
+            blit_x = self.x * constants.CELL_WIDTH
+            blit_y = self.y * constants.CELL_HEIGHT
+        else:
+            blit_x = self.x
+            blit_y = self.y
 
         if self.is_visible:
             if len(self._animation_seq) == 1:
@@ -224,8 +238,7 @@ class ObjActor:
                     else:
                         self.animation_index += 1
 
-            globalvars.SURFACE_MAP.blit(self._animation_seq[self.animation_index],
-                                        (self.x * constants.CELL_WIDTH, self.y * constants.CELL_HEIGHT))
+            surface.blit(self._animation_seq[self.animation_index], (blit_x, blit_y))
 
     def distance_to(self, other):
         """Calculates the relative distance of this object to another (other).

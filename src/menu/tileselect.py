@@ -101,7 +101,7 @@ def menu_tile_select(coords_origin=None,
 
         # draw the character
         for obj in globalvars.GAME.current_objects:
-            obj.draw()
+            obj.draw(globalvars.SURFACE_MAP)
 
         # Draw line of selection
         for (tile_x, tile_y) in list_of_tiles:

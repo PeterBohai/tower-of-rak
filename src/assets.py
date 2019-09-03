@@ -150,7 +150,6 @@ class ObjAssets:
         self.S_PLAYER_PFP = pygame.image.load(os.path.join("data", "graphics", "menu", "pfp.png")).convert()
         self.S_PLAYER_LVL = pygame.image.load(os.path.join("data", "graphics", "menu", "player_level.png")).convert()
 
-
         # ---> Enemy creatures
         self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
         self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
@@ -347,6 +346,8 @@ class ObjAssets:
 
         self.S_MAIN_MENU = pygame.image.load(os.path.join("data", "graphics", "landscape.png")).convert()
         self.S_MAIN_MENU = pygame.transform.scale(self.S_MAIN_MENU, (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+
+        self.S_INVENTORY = pygame.image.load(os.path.join("data", "graphics", "menu", "inventory.png")).convert()
 
         self.S_TOP_L_MENU_LIGHT = self.menugui.get_image('b1', 8, 16, 16, (32, 32))[0]
         self.S_TOP_R_MENU_LIGHT = self.menugui.get_image('e1', 8, 16, 16, (32, 32))[0]

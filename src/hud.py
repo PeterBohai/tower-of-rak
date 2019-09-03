@@ -1,6 +1,6 @@
 import pygame
 
-from src import constants, text, globalvars
+from src import constants, text, globalvars, gui
 
 
 def draw_player_health(surface, coords, percentage):
@@ -123,7 +123,6 @@ def update_pfp(surface, player_input):
 
     """
     surface_rect = surface.get_rect()
-    button_clicked = False
     mouse_clicked = False
     events_list, mouse_pos = player_input
 
@@ -136,21 +135,7 @@ def update_pfp(surface, player_input):
     mouse_hover = (surface_rect.left <= mouse_x <= surface_rect.right and
                    surface_rect.top <= mouse_y <= surface_rect.bottom)
 
-    if mouse_hover:
-        pygame.mouse.set_cursor(*pygame.cursors.diamond)
-
-        if not globalvars.GAME.hover_sound_played:
-            globalvars.ASSETS.sfx_rollover.play()
-            globalvars.GAME.hover_sound_played = True
-
-        if mouse_clicked:
-            globalvars.ASSETS.sfx_click1.play()
-            button_clicked = True
-
-    else:
-        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-        globalvars.ASSETS.sfx_rollover.fadeout(60)
-        globalvars.GAME.hover_sound_played = False
+    button_clicked = gui.hovered_clickable_element(mouse_hover, mouse_clicked)
 
     return button_clicked
 

@@ -237,3 +237,40 @@ class GuiSlider:
         pygame.draw.rect(self.surface, self.color_slider_bg, self.slider_rect)
         pygame.draw.rect(self.surface, self.color_slider_fg, self.fg_rect)
         self.surface.blit(globalvars.ASSETS.S_SLIDER_BUTTON, (self.grab_button_x, self.grab_button_y))
+
+
+def hovered_clickable_element(mouse_hovered, mouse_clicked):
+    """Give visual and audio feedback when mouse is hovering over or clicked a clickable element.
+
+    Parameters
+    ----------
+    mouse_hovered : bool
+        True if the mouse position is within the boundaries of the element.
+    mouse_clicked : bool
+        True if the mouse clicked (left mouse button down and up).
+
+    Returns
+    -------
+    bool
+        True if the mouse clicked within the element
+
+    """
+    element_clicked = False
+    if mouse_hovered:
+        pygame.mouse.set_cursor(*pygame.cursors.diamond)
+
+        if not globalvars.GAME.hover_sound_played:
+            globalvars.ASSETS.sfx_rollover.play()
+            globalvars.GAME.hover_sound_played = True
+
+        if mouse_clicked:
+            globalvars.ASSETS.sfx_click1.play()
+            print("played click sound")
+            element_clicked = True
+
+    else:
+        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+        globalvars.ASSETS.sfx_rollover.fadeout(60)
+        globalvars.GAME.hover_sound_played = False
+
+    return element_clicked

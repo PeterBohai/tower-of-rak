@@ -109,7 +109,7 @@ def draw_map(target_map):
 
     # draw all objects onto the map
     for obj in globalvars.GAME.current_objects:
-        obj.draw()
+        obj.draw(globalvars.SURFACE_MAP)
 
     # draw little health bar ui and damage taken values on visible mobs
     for objActor in globalvars.GAME.current_objects:
