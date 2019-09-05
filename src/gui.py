@@ -1,3 +1,5 @@
+import math
+
 import pygame
 import numpy
 
@@ -13,9 +15,9 @@ class GuiButton:
         The surface that the button will be drawn on.
     text : str
         The text that is displayed onto the button.
-    coords_center : tuple
+    _coords_center : tuple
         The center coordinate position (in pixels) of the button.
-    size : tuple
+    _size : tuple
         The (width, height) of the button.
     color_button_hovered : tuple, optional
         The background color of the button when the cursor is hovered over it.
@@ -45,8 +47,8 @@ class GuiButton:
 
         self.surface = surface
         self.text = text
-        self.coords_center = coords_center
-        self.size = size
+        self._coords_center = coords_center
+        self._size = size
         self.color_button_hovered = color_button_hovered
         self.color_button_default = color_button_default
         self.color_text_hovered = color_text_hovered
@@ -55,10 +57,29 @@ class GuiButton:
         self.color_button_current = color_button_default
         self.color_text_current = color_text_default
 
-        self.button_rect = pygame.Rect((0, 0), self.size)
+        self.button_rect = pygame.Rect((0, 0), self._size)
         self.button_rect.center = self.coords_center
         self.mouse_hover = False
         self.hover_sfx_played = False
+
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, value):
+        self._size = value
+        self.button_rect = pygame.Rect((0, 0), self._size)
+        self.button_rect.center = self._coords_center
+
+    @property
+    def coords_center(self):
+        return self._coords_center
+
+    @coords_center.setter
+    def coords_center(self, value):
+        self._coords_center = value
+        self.button_rect.center = self._coords_center
 
     def update(self, player_input):
         """Updates the button color and all other actions when the button is hovered over or clicked on.
@@ -115,12 +136,12 @@ class GuiButton:
         None
 
         """
-        button_surf = pygame.Surface(self.size)
+        button_surf = pygame.Surface(self._size)
 
         # placement for button assets (all blit from their top left corner)
         left_coord = (0, 0)
-        right_coord = (self.size[0] - 32, 0)
-        num_middle_tiles = int(self.size[0] / 32) - 2
+        right_coord = (self._size[0] - 32, 0)
+        num_middle_tiles = math.ceil(self._size[0] / 32 - 2)
 
         left_tile = globalvars.ASSETS.S_SIDE_L_BUTTON_BLUE
         right_tile = globalvars.ASSETS.S_SIDE_R_BUTTON_BLUE
@@ -141,7 +162,7 @@ class GuiButton:
             button_surf.blit(mid_tile, tuple(numpy.add(left_coord, (32 * w, 0))))
 
         self.surface.blit(button_surf, self.button_rect.topleft)
-        text.draw_text(self.surface, self.text, constants.FONT_BEST, self.coords_center,
+        text.draw_text(self.surface, self.text, constants.FONT_BEST, self._coords_center,
                        self.color_text_current, self.color_button_current, center=True)
 
 
@@ -239,7 +260,7 @@ class GuiSlider:
         self.surface.blit(globalvars.ASSETS.S_SLIDER_BUTTON, (self.grab_button_x, self.grab_button_y))
 
 
-def hovered_clickable_element(mouse_hovered, mouse_clicked):
+def hovered_clickable_element(mouse_hovered, mouse_clicked, hover_sound, change_cursor=True):
     """Give visual and audio feedback when mouse is hovering over or clicked a clickable element.
 
     Parameters
@@ -257,20 +278,21 @@ def hovered_clickable_element(mouse_hovered, mouse_clicked):
     """
     element_clicked = False
     if mouse_hovered:
-        pygame.mouse.set_cursor(*pygame.cursors.diamond)
+        if change_cursor:
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
-        if not globalvars.GAME.hover_sound_played:
+        if not hover_sound:
             globalvars.ASSETS.sfx_rollover.play()
-            globalvars.GAME.hover_sound_played = True
+            hover_sound = True
 
         if mouse_clicked:
             globalvars.ASSETS.sfx_click1.play()
-            print("played click sound")
             element_clicked = True
 
     else:
-        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+        if change_cursor:
+            pygame.mouse.set_cursor(*pygame.cursors.tri_left)
         globalvars.ASSETS.sfx_rollover.fadeout(60)
-        globalvars.GAME.hover_sound_played = False
+        hover_sound = False
 
-    return element_clicked
+    return element_clicked, hover_sound

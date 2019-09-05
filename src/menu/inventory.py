@@ -1,6 +1,11 @@
 import pygame
+import textwrap
 
 from src import constants, globalvars, text, draw, game, gui
+
+# initialize potential buttons
+use_btn = gui.GuiButton(globalvars.SURFACE_MAIN, "", (0, 0), (0, 0))
+drop_btn = gui.GuiButton(globalvars.SURFACE_MAIN, "", (0, 0), (0, 0))
 
 
 def menu_inventory():
@@ -28,8 +33,8 @@ def menu_inventory():
     inventory_surface = pygame.Surface((menu_width, menu_height))
 
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-    item_selected = None
     menu_close = False
+    globalvars.PLAYER.container.currently_displayed_item_info = None
     while not menu_close:
 
         draw.draw_game()
@@ -41,6 +46,7 @@ def menu_inventory():
 
         mouse_clicked = False
         event_list = pygame.event.get()
+
         for event in event_list:
             if event.type == pygame.QUIT:
                 game.game_exit()
@@ -53,7 +59,15 @@ def menu_inventory():
                 if event.button == 1:
                     mouse_clicked = True
 
+        # exit menu if mouse clicks outside its boundaries
+        if mouse_clicked and \
+                (mouse_rel_y < 0 or mouse_rel_x < 0 or mouse_rel_x > menu_width or mouse_rel_y > menu_height):
+            menu_close = True
+
+        player_input = ((mouse_rel_x, mouse_rel_y), mouse_clicked, event_list)
         inventory_surface.blit(globalvars.ASSETS.S_INVENTORY, (0, 0))
+
+        obj_selected = None
 
         # display items icons onto inventory surface
         for num, item in enumerate(globalvars.PLAYER.container.inventory):
@@ -64,25 +78,204 @@ def menu_inventory():
 
             mouse_hover = (item_x < mouse_rel_x < item_x + 32 and item_y < mouse_rel_y < item_y + 32)
 
+            item_clicked, item.item.hover_sound_played = gui.hovered_clickable_element(mouse_hover, mouse_clicked,
+                                                                                       item.item.hover_sound_played,
+                                                                                       change_cursor=False)
             if mouse_hover:
-                item_selected = num
-            else:
-                item_selected = None
+                inventory_surface.blit(globalvars.ASSETS.S_INVENTORY_SELECT, (item_x - 2, item_y - 2))
 
-            gui.hovered_clickable_element(mouse_hover, mouse_clicked)
+            if item_clicked:
+                obj_selected = item
+
+            # transfer equipment items to the equipment menu if equipped
+            if item.equipment is not None and item.equipment.equipped:
+                globalvars.PLAYER.container.equipped_inventory.append(item)
+                globalvars.PLAYER.container.inventory.remove(item)
+                break
+
             inventory_surface.blit(globalvars.ASSETS.animation_dict[item.animation_key][0], (item_x, item_y))
+
+        equipment_menu(inventory_surface, player_input)
+
+        # display item information in the info side menu
+        if obj_selected is not None:
+            globalvars.PLAYER.container.currently_displayed_item_info = obj_selected
+        if globalvars.PLAYER.container.currently_displayed_item_info is not None:
+            obj_state = display_item_info(inventory_surface,
+                                          globalvars.PLAYER.container.currently_displayed_item_info, player_input)
+
+            if globalvars.PLAYER.container.currently_displayed_item_info is not None and \
+                    globalvars.PLAYER.container.currently_displayed_item_info.equipment is None and obj_state == "used":
+                menu_close = True
+        if menu_close:
+            break
 
         globalvars.SURFACE_MAIN.blit(inventory_surface, (menu_x, menu_y))
         globalvars.CLOCK.tick(constants.GAME_FPS)
         pygame.display.flip()
 
-        if mouse_clicked and item_selected is not None:
-            # stay inside inventory menu if putting on equipment
-            if not globalvars.PLAYER.container.inventory[item_selected].equipment:
-                menu_close = True
 
-            # use or equip the item
-            globalvars.PLAYER.container.inventory[item_selected].item.use()
+def equipment_menu(surface, player_input):
+    """Displays the equipment menu to the left of the inventory and monitors any interaction inside the menu.
+
+    Parameters
+    ----------
+    surface : pygame Surface obj
+        Surface to display the item icons on (normally inventory_surface).
+    player_input : tuple
+        Tuple that contains ((mouse_rel_x, mouse_rel_y), mouse_clicked, event_list)
+
+    Returns
+    -------
+    None
+
+    """
+
+    mouse_rel_x, mouse_rel_y = player_input[0]
+    mouse_clicked = player_input[1]
+
+    equipment_selected = None
+
+    for equipped_item in globalvars.PLAYER.container.equipped_inventory:
+
+        if equipped_item.equipment.slot == "weapon":
+            item_x, item_y = 165, 163
+        elif equipped_item.equipment.slot == "shield":
+            item_x, item_y = 31, 163
+        elif equipped_item.equipment.slot == "head":
+            item_x, item_y = 98, 85
+        elif equipped_item.equipment.slot == "boots":
+            item_x, item_y = 98, 228
+        else:
+            item_x, item_y = 0, 0
+
+        mouse_hover = (item_x < mouse_rel_x < item_x + 32 and item_y < mouse_rel_y < item_y + 32)
+
+        item_clicked, equipped_item.item.hover_sound_played = \
+            gui.hovered_clickable_element(mouse_hover, mouse_clicked,
+                                          equipped_item.item.hover_sound_played,
+                                          change_cursor=False)
+
+        if mouse_hover:
+            surface.blit(globalvars.ASSETS.S_INVENTORY_SELECT, (item_x - 2, item_y - 2))
+
+        if item_clicked:
+            equipment_selected = equipped_item
+
+        # transfer equipment item to inventory if unequipped
+        if not equipped_item.equipment.equipped:
+            globalvars.PLAYER.container.inventory.append(equipped_item)
+            globalvars.PLAYER.container.equipped_inventory.remove(equipped_item)
+            break
+
+        surface.blit(globalvars.ASSETS.animation_dict[equipped_item.animation_key][0], (item_x, item_y))
+
+    if equipment_selected is not None:
+        globalvars.PLAYER.container.currently_displayed_item_info = equipment_selected
+
+
+def display_item_info(surface, target_item, player_input):
+    """Displays all information about the `target_item` and provides options to use or drop the item.
+
+    Parameters
+    ----------
+    surface : pygame Surface obj
+        Surface to display the item icons on (normally inventory_surface).
+    target_item : ComItem obj
+        The item to have its info displayed.
+    player_input : tuple
+        Tuple that contains ((mouse_rel_x, mouse_rel_y), mouse_clicked, event_list)
+
+    Returns
+    -------
+    None or str
+        A string "used" is returned if the item was used, otherwise None is returned.
+
+    """
+    info_width, info_height = 212, 269
+    info_x, info_y = 557, 73
+    info_surface = pygame.Surface((info_width, info_height))
+    info_center = (info_width // 2, info_height // 2)
+
+    mouse_info_x = player_input[0][0] - info_x
+    mouse_info_y = player_input[0][1] - info_y
+    event_and_mouse = (player_input[2], (mouse_info_x, mouse_info_y))
+
+    # draw item title
+    title_y = 16
+    title_x = info_center[0]
+    text.draw_text(info_surface, target_item.display_name, constants.FONT_BEST, (title_x, title_y),
+                   constants.COLOR_BLACK, center=True)
+
+    # draw item description
+    item_desc = target_item.item.item_desc
+
+    text_height = text.get_text_height(constants.FONT_BEST)
+    text_x = 10
+    start_y = title_y + text_height // 2 + 16
+    last_y = start_y
+
+    new_msg_lines = textwrap.wrap(item_desc, 24)
+    for i, text_line in enumerate(new_msg_lines):
+        last_y = start_y + (i * text_height)
+        text.draw_text(info_surface, text_line, constants.FONT_BEST, (text_x, last_y),
+                       constants.COLOR_BLACK)
+
+    # draw any bonus attributes
+    if target_item.equipment is not None:
+        atk_bonus = target_item.equipment.attack_bonus
+        def_bonus = target_item.equipment.defence_bonus
+
+        if target_item.equipment.equipped:
+            use_btn_text = "Unequip"
+        else:
+            use_btn_text = "Equip"
+
+        bonus_y = last_y + (2 * text_height)
+
+        if atk_bonus > 0:
+            text.draw_text(info_surface, f"+{atk_bonus}   Attack", constants.FONT_BEST, (text_x, bonus_y),
+                           constants.COLOR_GRASS_GREEN)
+            bonus_y += text_height + 10
+
+        if def_bonus > 0:
+            text.draw_text(info_surface, f"+{def_bonus}   Defence", constants.FONT_BEST, (text_x, bonus_y),
+                           constants.COLOR_GRASS_GREEN)
+
+    else:
+        use_btn_text = "Use"
+
+    # draw use/drop button equip/unequip button
+    btn_width = 80
+    btn_height = 32
+
+    use_btn_x = info_center[0] - (btn_width // 2) - 8
+    use_btn_y = info_height - btn_height - 10
+
+    use_btn.surface = info_surface
+    use_btn.text = use_btn_text
+    use_btn.coords_center = (use_btn_x, use_btn_y)
+    use_btn.size = (btn_width, btn_height)
+
+    drop_btn_x = info_center[0] + (btn_width // 2) + 8
+    drop_btn_y = info_height - btn_height - 10
+    drop_btn.surface = info_surface
+    drop_btn.text = "Drop"
+    drop_btn.coords_center = (drop_btn_x, drop_btn_y)
+    drop_btn.size = (btn_width, btn_height)
+
+    if use_btn.update(event_and_mouse):
+        target_item.item.use()
+        return "used"
+
+    if drop_btn.update(event_and_mouse):
+        target_item.item.drop(globalvars.PLAYER.x, globalvars.PLAYER.y)
+        globalvars.PLAYER.container.currently_displayed_item_info = None
+
+    use_btn.draw()
+    drop_btn.draw()
+
+    surface.blit(info_surface, (info_x, info_y))
 
 
 

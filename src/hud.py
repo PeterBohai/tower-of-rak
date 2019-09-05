@@ -135,7 +135,7 @@ def update_pfp(surface, player_input):
     mouse_hover = (surface_rect.left <= mouse_x <= surface_rect.right and
                    surface_rect.top <= mouse_y <= surface_rect.bottom)
 
-    button_clicked = gui.hovered_clickable_element(mouse_hover, mouse_clicked)
+    button_clicked, globalvars.GAME.hover_sound_played = gui.hovered_clickable_element(mouse_hover, mouse_clicked, globalvars.GAME.hover_sound_played)
 
     return button_clicked
 

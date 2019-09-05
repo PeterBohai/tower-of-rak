@@ -111,10 +111,6 @@ class ObjActor:
         if self.equipment:
             self.equipment.owner = self
 
-            # automatically give item component to equipment actor object
-            self.item = itemcom.ComItem()
-            self.item.owner = self
-
         self.stairs = stairs
         if self.stairs:
             self.stairs.owner = self
@@ -143,21 +139,13 @@ class ObjActor:
 
     @property
     def display_name(self):
-        """str: Gets the combined creature names and their object (type) name.
-        Adds the "[E]" indicator for equipped items.
-        """
+        """str: Gets the combined creature names and their object (type) name."""
 
         if self.creature is not None:
             name_to_display = f"{self.creature.personal_name} the {self.object_name}"
 
             if self is globalvars.PLAYER:
                 name_to_display = self.creature.personal_name
-
-        elif self.item is not None:
-            if self.equipment and self.equipment.equipped is True:
-                name_to_display = f"{self.object_name} [E]"
-            else:
-                name_to_display = self.object_name
 
         else:
             name_to_display = self.object_name

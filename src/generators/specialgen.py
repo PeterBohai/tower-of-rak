@@ -40,7 +40,7 @@ def gen_magic_rock(coord):
     None
 
     """
-    item_com = itemcom.ComItem()
+    item_com = itemcom.ComItem("A mysterious ancient relic.")
     rock_obj = actor.ObjActor(*coord, "MAGIC ROCK", "S_MAGIC_ROCK", item=item_com)
 
     globalvars.GAME.current_objects.insert(0, rock_obj)

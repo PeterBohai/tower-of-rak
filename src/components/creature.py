@@ -82,7 +82,7 @@ class ComCreature:
 
         # add attack bonus stats from equipment
         if self.owner.container:
-            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_items]
+            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_inventory]
 
             for power_bonus in equipment_power_bonuses:
                 total_power += power_bonus
@@ -99,7 +99,7 @@ class ComCreature:
         total_defence = self.base_def
 
         if self.owner.container:
-            equipment_def_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_items]
+            equipment_def_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_inventory]
 
             for def_bonus in equipment_def_bonuses:
                 total_defence += def_bonus

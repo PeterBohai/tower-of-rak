@@ -109,8 +109,9 @@ def gen_scroll_lightening(coord):
 
     damage = tcod.random_get_int(0, 3, 5)
     max_r = tcod.random_get_int(0, 7, 8)
+    description = "Casts a lightening spell at enemies."
 
-    item_com = itemcom.ComItem(use_function=magic.cast_lightening, value=(damage, max_r))
+    item_com = itemcom.ComItem(description, use_function=magic.cast_lightening, value=(damage, max_r))
     lightening_scroll_obj = actor.ObjActor(x, y, "Lightening Scroll", "S_SCROLL_YELLOW", item=item_com)
 
     return lightening_scroll_obj
@@ -135,8 +136,9 @@ def gen_scroll_fireball(coord):
     damage = tcod.random_get_int(0, 2, 4)
     max_r = tcod.random_get_int(0, 7, 8)
     radius = 1
+    description = "Casts a fireball spell at enemies."
 
-    item_com = itemcom.ComItem(use_function=magic.cast_fireball, value=(damage, max_r, radius))
+    item_com = itemcom.ComItem(description, use_function=magic.cast_fireball, value=(damage, max_r, radius))
     fireball_scroll_obj = actor.ObjActor(x, y, "Fireball Scroll", "S_SCROLL_RED", item=item_com)
 
     return fireball_scroll_obj
@@ -159,8 +161,9 @@ def gen_scroll_confusion(coord):
     x, y = coord
 
     effect_len = tcod.random_get_int(0, 5, 7)
+    description = "Casts a confusion spell at enemies...or yourself, but why."
 
-    item_com = itemcom.ComItem(use_function=magic.cast_confusion, value=effect_len)
+    item_com = itemcom.ComItem(description, use_function=magic.cast_confusion, value=effect_len)
     confusion_scroll_obj = actor.ObjActor(x, y, "Confusion Scroll", "S_SCROLL_MULTI", item=item_com)
 
     return confusion_scroll_obj
@@ -184,9 +187,11 @@ def gen_weapon_sword_bronze(coord):
     x, y = coord
 
     bonus = 1
+    description = "A relatively weak sword made of bronze but still as sharp as a knife so watch your fingers."
 
-    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="Right Hand")
-    sword_obj = actor.ObjActor(x, y, "Bronze Sword", "S_SWORD_BRONZE", equipment=equipment_com)
+    item_com = itemcom.ComItem(description)
+    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
+    sword_obj = actor.ObjActor(x, y, "Bronze Sword", "S_SWORD_BRONZE", item=item_com, equipment=equipment_com)
 
     return sword_obj
 
@@ -208,9 +213,11 @@ def gen_weapon_sword_iron(coord):
     x, y = coord
 
     bonus = 2
+    description = "A sturdy sword made of iron that can definitely cut your fingers, so watch out."
 
-    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="Right Hand")
-    sword_obj = actor.ObjActor(x, y, "Iron Sword", "S_SWORD_IRON", equipment=equipment_com)
+    item_com = itemcom.ComItem(description)
+    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
+    sword_obj = actor.ObjActor(x, y, "Iron Sword", "S_SWORD_IRON", item=item_com, equipment=equipment_com)
     return sword_obj
 
 
@@ -231,9 +238,11 @@ def gen_weapon_sword_steel(coord):
     x, y = coord
 
     bonus = 3
+    description = "A shiny sword made of steel that can easily cut through most things, including your fingers!"
 
-    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="Right Hand")
-    sword_obj = actor.ObjActor(x, y, "Steel Sword", "S_SWORD_STEEL", equipment=equipment_com)
+    item_com = itemcom.ComItem(description)
+    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
+    sword_obj = actor.ObjActor(x, y, "Steel Sword", "S_SWORD_STEEL", item=item_com, equipment=equipment_com)
 
     return sword_obj
 
@@ -256,7 +265,7 @@ def gen_weapon_sword_black(coord):
 
     bonus = 5
 
-    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="Right Hand")
+    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
     sword_obj = actor.ObjActor(x, y, "Black Sword", "S_SWORD_BLACK", equipment=equipment_com)
 
     return sword_obj
@@ -280,7 +289,7 @@ def gen_weapon_sword_rune(coord):
 
     bonus = 7
 
-    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="Right Hand")
+    equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
     sword_obj = actor.ObjActor(x, y, "Rune Sword", "S_SWORD_RUNE", equipment=equipment_com)
 
     return sword_obj
@@ -304,9 +313,12 @@ def gen_defence_shield_wooden(coord):
     x, y = coord
 
     bonus = 1
+    description = "The goddamn weakest shield one can pick up. But hey, it's better than " \
+                  "blocking with your scrawny elbows right?"
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
-    shield_obj = actor.ObjActor(x, y, "Wooden Shield", "S_SHIELD_WOODEN", equipment=equipment_com)
+    item_com = itemcom.ComItem(description)
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
+    shield_obj = actor.ObjActor(x, y, "Wooden Shield", "S_SHIELD_WOODEN", item=item_com, equipment=equipment_com)
 
     return shield_obj
 
@@ -328,9 +340,11 @@ def gen_defence_shield_bronze(coord):
     x, y = coord
 
     bonus = 2
+    description = "A slightly better shield than the wooden one but not much better."
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
-    shield_obj = actor.ObjActor(x, y, "Bronze Shield", "S_SHIELD_BRONZE", equipment=equipment_com)
+    item_com = itemcom.ComItem(description)
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
+    shield_obj = actor.ObjActor(x, y, "Bronze Shield", "S_SHIELD_BRONZE", item=item_com, equipment=equipment_com)
 
     return shield_obj
 
@@ -353,7 +367,7 @@ def gen_defence_shield_iron(coord):
 
     bonus = 3
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
     shield_obj = actor.ObjActor(x, y, "Iron Shield", "S_SHIELD_IRON", equipment=equipment_com)
 
     return shield_obj
@@ -377,7 +391,7 @@ def gen_defence_shield_steel(coord):
 
     bonus = 4
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
     shield_obj = actor.ObjActor(x, y, "Steel Shield", "S_SHIELD_STEEL", equipment=equipment_com)
 
     return shield_obj
@@ -401,7 +415,7 @@ def gen_defence_shield_black(coord):
 
     bonus = 6
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
     shield_obj = actor.ObjActor(x, y, "Black Shield", "S_SHIELD_BLACK", equipment=equipment_com)
 
     return shield_obj
@@ -425,7 +439,7 @@ def gen_defence_shield_rune(coord):
 
     bonus = 8
 
-    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="Left Hand")
+    equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
     shield_obj = actor.ObjActor(x, y, "Rune Shield", "S_SHIELD_RUNE", equipment=equipment_com)
 
     return shield_obj
@@ -449,7 +463,7 @@ def gen_coins(coord, amount):
     """
     x, y = coord
 
-    item_com = itemcom.ComItem(item_type="gold", value=amount)
+    item_com = itemcom.ComItem("Gold coins that can be spent.", item_type="gold", value=amount)
     obj = actor.ObjActor(x, y, "Gold", "S_GOLD", item=item_com)
 
     return obj

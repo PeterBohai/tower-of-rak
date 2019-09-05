@@ -6,28 +6,32 @@ class ComItem:
 
     Attributes
     ----------
-    weight : int
+    item_desc : str
+        A description of the item.
+    weight : int, optional
         The weight value in wu (weight units) of the item.
-    item_type : str
+    item_type : str, optional
         Type of item (gold, consumable, magic, equipment, etc.)
-    use_function : function
+    use_function : function, optional
         Function that's executed when item is used.
-    value : int
+    value : int, optional
         Value of the item if it holds one (gold, exp etc.).
     container : ComContainer
         The specific container object the item resides in. Initialized to None.
 
     """
-    def __init__(self, weight=0,
+    def __init__(self, item_desc, weight=0,
                  item_type=None,
                  use_function=None,
                  value=0):
 
+        self.item_desc = item_desc
         self.weight = weight
         self.item_type = item_type
         self.use_function = use_function
         self.value = value
         self.container = None
+        self.hover_sound_played = False
 
     def pick_up(self, actor):
         """Picks up the item and either places it into the `actor`'s inventory, or directly used upon picking up.
@@ -109,7 +113,11 @@ class ComItem:
 
         self.owner.animation_init()
 
-        self.container.inventory.remove(self.owner)
+        if self.owner in self.container.inventory:
+            self.container.inventory.remove(self.owner)
+        elif self.owner in self.container.equipped_inventory:
+            self.container.equipped_inventory.remove(self.owner)
+
         self.owner.x, self.owner.y = new_x, new_y
         game.game_message(f"Dropped [{self.owner.display_name}]")
 
@@ -182,12 +190,13 @@ class ComEquipment:
         None
 
         """
-        all_equipped_items = self.owner.item.container.equipped_items
+        all_equipped_items = self.owner.item.container.equipped_inventory
 
         if len(all_equipped_items) > 0:
             for equipped_item in all_equipped_items:
                 if equipped_item.equipment.slot == self.slot:
                     game.game_message(f"There is already an item in the {self.slot} slot!", constants.COLOR_WHITE)
+                    self.equipped = False
                     return
 
         self.equipped = True
