@@ -59,7 +59,7 @@ class ComItem:
 
         elif self.item_type == "Red Soul":
             globalvars.ASSETS.sfx_soul_consume.play()
-            actor.exp += self.value
+            actor.exp_total += self.value
 
             self.owner.animation_del()
             globalvars.GAME.current_objects.remove(self.owner)

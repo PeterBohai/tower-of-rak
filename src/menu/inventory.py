@@ -95,7 +95,17 @@ def menu_inventory():
 
             inventory_surface.blit(globalvars.ASSETS.animation_dict[item.animation_key][0], (item_x, item_y))
 
+        # display equipment menu
         equipment_menu(inventory_surface, player_input)
+
+        # display PLAYER stats
+        display_stats(inventory_surface)
+
+        # display PLAYER total gold
+        gold_value = f"{globalvars.PLAYER.gold}"
+
+        gold_coords = (346 - text.get_text_width(constants.FONT_BEST, gold_value), 327)
+        text.draw_text(inventory_surface, gold_value, constants.FONT_BEST, gold_coords, (255, 229, 26))
 
         # display item information in the info side menu
         if obj_selected is not None:
@@ -278,4 +288,36 @@ def display_item_info(surface, target_item, player_input):
     surface.blit(info_surface, (info_x, info_y))
 
 
+def display_stats(surface):
+    stats_surface_width, stats_surface_height = 170, 66
+    stats_x, stats_y = 29, 280
+    stats_surface = pygame.Surface((stats_surface_width, stats_surface_height))
+    stats_font = constants.FONT_BEST
+    text_height = text.get_text_height(stats_font)
+
+    atk_text = "Attack:"
+    def_text = "Defence:"
+    atk_value = f"{globalvars.PLAYER.creature.attack_points}"
+    def_value = f"{globalvars.PLAYER.creature.defence}"
+
+    exp_text = "Total Exp:"
+    exp_value = f"{globalvars.PLAYER.exp_total}"
+
+    atk_text_coords = (6, 6)
+    atk_value_coords = (stats_surface_width - text.get_text_width(stats_font, atk_value) - 6, 6)
+    def_text_coords = (6, 6 + text_height + 2)
+    def_value_coords = (stats_surface_width - text.get_text_width(stats_font, def_value) - 6, 6 + text_height + 2)
+    exp_text_coords = (6, def_text_coords[1] + text_height + 2)
+    exp_value_coords = (stats_surface_width - text.get_text_width(stats_font, exp_value) - 6,
+                        def_text_coords[1] + text_height + 2)
+
+    text.draw_text(stats_surface, atk_text, stats_font, atk_text_coords, pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, atk_value, stats_font, atk_value_coords, pygame.Color("#3f72af"))
+    text.draw_text(stats_surface, def_text, stats_font, def_text_coords, pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, def_value, stats_font, def_value_coords, pygame.Color("#3f72af"))
+
+    text.draw_text(stats_surface, exp_text, stats_font, exp_text_coords, pygame.Color("#521262"))
+    text.draw_text(stats_surface, exp_value, stats_font, exp_value_coords, pygame.Color("#6639a6"))
+
+    surface.blit(stats_surface, (stats_x, stats_y))
 

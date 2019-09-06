@@ -25,9 +25,10 @@ def draw_player_health(surface, coords, percentage):
 
     bar_width = 260
     bar_height = 26
-    bg_color = (219, 219, 219, 180)
-    health_text = f"hp {globalvars.PLAYER.creature.current_hp}/{globalvars.PLAYER.creature.max_hp}"
-    text_coords = (int(bar_width / 2), int(bar_height / 2))
+    bg_color = (71, 84, 97, 170)
+    health_text = f"hp   {globalvars.PLAYER.creature.current_hp}/{globalvars.PLAYER.creature.max_hp}"
+    font = constants.FONT_BEST
+    text_coords = (10 + (text.get_text_width(font, health_text) // 2), bar_height // 2)
 
     if percentage > 0.6:
         health_color = (235, 27, 35)
@@ -49,7 +50,51 @@ def draw_player_health(surface, coords, percentage):
     # draw the health, outline, and text on to back_surface
     back_surface.blit(healthy_surface, (0, 0))
     pygame.draw.rect(back_surface, constants.COLOR_BLACK, outline_rect, 2)
-    text.draw_text(back_surface, health_text, constants.FONT_BEST, text_coords, (201, 214, 223), center=True)
+    text.draw_text(back_surface, health_text, font, text_coords, (247, 247, 247), center=True)
+
+    surface.blit(back_surface, coords)
+
+
+def draw_player_exp(surface, coords):
+    """Displays the player's exp progress onto the screen.
+
+    Parameters
+    ----------
+    surface : pygame Surface obj
+        The surface that the progress bar will be drawn on.
+    coords : tuple
+        The pixel topleft-aligned coordinates of where the progress bar will be drawn.
+
+    Returns
+    -------
+    None
+
+    """
+    percentage = globalvars.PLAYER.exp / globalvars.PLAYER.exp_to_next
+
+    bar_width = 190
+    bar_height = 18
+    bg_color = (71, 84, 97, 170)
+    exp_text = f"exp  {globalvars.PLAYER.exp}/{globalvars.PLAYER.exp_to_next}"
+    font = constants.FONT_BEST
+    text_coords = (10 + (text.get_text_width(font, exp_text) // 2), bar_height // 2)
+
+    fill_color = (242, 162, 0)
+
+    # initiate outline surface, progress surface and back surface
+    outline_rect = pygame.Rect(0, 0, bar_width, bar_height)
+
+    progress_width = percentage * bar_width
+    progress_surface = pygame.Surface((progress_width, bar_height))
+    progress_surface.fill(fill_color)
+
+    back_surface = pygame.Surface((bar_width, bar_height))
+    back_surface.fill(bg_color)
+
+    # draw the health, outline, and text on to back_surface
+    back_surface.blit(progress_surface, (0, 0))
+    pygame.draw.rect(back_surface, constants.COLOR_BLACK, outline_rect, 2)
+    text.draw_text(back_surface, exp_text, font, text_coords, (247, 247, 247), center=True)
 
     surface.blit(back_surface, coords)
 

@@ -150,6 +150,7 @@ def draw_window_ui():
 
     # draw PLAYER health bar, pfp, and level
     hud.draw_player_health(globalvars.SURFACE_MAIN, (68, 0), globalvars.PLAYER.creature.hp_percent)
+    hud.draw_player_exp(globalvars.SURFACE_MAIN, (68, 27))
     hud.pfp(globalvars.SURFACE_MAIN, (0, 0))
     hud.level_sign(globalvars.SURFACE_MAIN, (0, 66))
 

@@ -118,7 +118,6 @@ class ObjAssets:
         # ========================== SPRITE SHEETS ========================== #
 
         # ---> Character folder
-        self.reptile = ObjSpriteSheet("Characters", "Reptile.png")
         self.player = ObjSpriteSheet("Characters", "Player.png")
         self.slime = ObjSpriteSheet("Characters", "Slime.png")
         self.death = ObjSpriteSheet("Characters", "Death.png")
@@ -151,8 +150,6 @@ class ObjAssets:
         self.S_PLAYER_LVL = pygame.image.load(os.path.join("data", "graphics", "menu", "player_level.png")).convert()
 
         # ---> Enemy creatures
-        self.A_COBRA = self.reptile.get_animation('k', 5, 2, 16, 16, (32, 32))
-        self.A_GIANT_BOA = self.reptile.get_animation('e', 5, 2, 16, 16, (32, 32))
         self.A_DUNGO = self.slime.get_animation('A', 1, 2)
         self.A_DARKSOOT = self.slime.get_animation('A', 2, 2)
         self.A_BLAZEO = self.slime.get_animation('e', 0, 2)
@@ -394,8 +391,6 @@ class ObjAssets:
         self.animation_dict = {
             "A_PLAYER_LEFT": self.A_PLAYER_LEFT,
             "A_PLAYER_RIGHT": self.A_PLAYER_RIGHT,
-            "A_COBRA": self.A_COBRA,
-            "A_GIANT_BOA": self.A_GIANT_BOA,
             "A_DUNGO": self.A_DUNGO,
             "A_DARKSOOT": self.A_DARKSOOT,
             "A_BLAZEO": self.A_BLAZEO,

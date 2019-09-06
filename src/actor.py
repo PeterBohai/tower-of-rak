@@ -3,7 +3,6 @@ import math
 import tcod
 
 from src import constants, globalvars, game
-from src.components import itemcom
 
 
 class ObjActor:
@@ -37,10 +36,10 @@ class ObjActor:
         Total gold value the actor object currently contains/owns.
     status : str, optional
         The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
-    exp_to_next : int
-        Number of total exp points needed to reach the next level.
     _level : int
         Current level of actor (usually PLAYER).
+    exp_to_next : int
+        Number of total exp points needed to reach the next level.
     creature: object, optional
         A component class (ComCreature) that gives the object creature-specific attributes and functionality.
     ai: object, optional
@@ -60,7 +59,7 @@ class ObjActor:
 
     def __init__(self, x, y, object_name,
                  animation_key, animation_speed=0.5,
-                 exp=0, gold=0,
+                 exp_total=0, gold=0,
                  status=None,
                  creature=None,
                  ai=None,
@@ -80,11 +79,11 @@ class ObjActor:
         self.animation_speed = animation_speed
         self.sprite_time_elapsed = 0.0
 
-        self._exp = exp
+        self._exp_total = exp_total
         self.gold = gold
         self.status = status
-        self.exp_to_next = 7
         self._level = 1
+        self.exp_to_next_total = exp_chart[self._level]
 
         # components
         self.creature = creature
@@ -164,25 +163,32 @@ class ObjActor:
     @level.setter
     def level(self, new_level):
         self._level = new_level
-        self.exp_to_next = 9 * self._level
-        print(f"level {self._level}: exp to next level - {self.exp_to_next}")
+        self.exp_to_next_total = exp_chart[self._level]
 
     @property
-    def exp(self):
-        return self._exp
+    def exp_total(self):
+        return self._exp_total
 
-    @exp.setter
-    def exp(self, new_exp):
-        gained = new_exp - self._exp
+    @exp_total.setter
+    def exp_total(self, new_exp):
+        gained = new_exp - self._exp_total
         if self._level != constants.PLAYER_MAX_LV:
-            self._exp = new_exp
+            self._exp_total = new_exp
             game.game_message(f"Gained {gained} experience points.", constants.COLOR_BLUE3)
         else:
             game.game_message(f"Already at max level, no exp was gained", constants.COLOR_RED)
 
-        game.game_message(f"Player has {self.exp} experience total.", constants.COLOR_WHITE)
-        if self._exp >= self.exp_to_next:
+        game.game_message(f"Player has {self._exp_total} experience total.", constants.COLOR_WHITE)
+        if self._exp_total >= self.exp_to_next_total:
             self.creature.level_up()
+
+    @property
+    def exp(self):
+        return self._exp_total - exp_chart[self._level - 1]
+
+    @property
+    def exp_to_next(self):
+        return self.exp_to_next_total - exp_chart[self._level - 1]
 
     def draw(self, surface):
         """Draws the actor object to the screen.
@@ -274,3 +280,27 @@ class ObjActor:
 
         self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]
 
+
+# Total exp to get to before reaching the next level
+exp_chart = {
+    0: 0,
+    1: 10,
+    2: 30,
+    3: 70,
+    4: 130,
+    5: 220,
+    6: 355,
+    7: 557,
+    8: 860,
+    9: 1315,
+    10: 1998,
+    11: 3022,
+    12: 4302,
+    13: 5902,
+    14: 7902,
+    15: 10402,
+    16: 13527,
+    17: 17433,
+    18: 22315,
+    19: 27807
+}

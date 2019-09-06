@@ -27,8 +27,8 @@ def gen_item(floor_num, coord):
     item_dict = {
         #  chance between items  |    the different items
         1: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
-            (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
-             gen_scroll_confusion(coord), gen_weapon_sword_bronze(coord), gen_defence_shield_wooden(coord))),
+            (gen_none_item(), gen_weapon_sword_bronze(coord), gen_weapon_sword_bronze(coord),
+             gen_weapon_sword_bronze(coord), gen_weapon_sword_bronze(coord), gen_defence_shield_wooden(coord))),
 
         2: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
             (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
@@ -53,23 +53,23 @@ def gen_item(floor_num, coord):
 
         7: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
             (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
-             gen_scroll_confusion(coord), gen_weapon_sword_steel(coord),
-             gen_defence_shield_steel(coord))),
+             gen_scroll_confusion(coord), gen_weapon_sword_black(coord),
+             gen_defence_shield_black(coord))),
 
         8: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
             (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
-             gen_scroll_confusion(coord), gen_weapon_sword_steel(coord),
-             gen_defence_shield_steel(coord))),
+             gen_scroll_confusion(coord), gen_weapon_sword_black(coord),
+             gen_defence_shield_black(coord))),
 
         9: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
             (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
-             gen_scroll_confusion(coord), gen_weapon_sword_steel(coord),
-             gen_defence_shield_steel(coord))),
+             gen_scroll_confusion(coord), gen_weapon_sword_rune(coord),
+             gen_defence_shield_rune(coord))),
 
         10: ((0.15, 0.25, 0.25, 0.15, 0.1, 0.1),
              (gen_none_item(), gen_scroll_lightening(coord), gen_scroll_fireball(coord),
-              gen_scroll_confusion(coord), gen_weapon_sword_steel(coord),
-              gen_defence_shield_steel(coord))),
+              gen_scroll_confusion(coord), gen_weapon_sword_rune(coord),
+              gen_defence_shield_rune(coord))),
     }
 
     # choose one of the items according to their spawn probability
@@ -264,9 +264,11 @@ def gen_weapon_sword_black(coord):
     x, y = coord
 
     bonus = 5
+    description = "A dark sword made of a mysterious black metal. Looks evil, can definitely cut down evil as well."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
-    sword_obj = actor.ObjActor(x, y, "Black Sword", "S_SWORD_BLACK", equipment=equipment_com)
+    sword_obj = actor.ObjActor(x, y, "Black Sword", "S_SWORD_BLACK", item=item_com, equipment=equipment_com)
 
     return sword_obj
 
@@ -288,9 +290,11 @@ def gen_weapon_sword_rune(coord):
     x, y = coord
 
     bonus = 7
+    description = "A beautiful sword made of a rune, the strongest metal known to exist."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(attack_bonus=bonus, slot="weapon")
-    sword_obj = actor.ObjActor(x, y, "Rune Sword", "S_SWORD_RUNE", equipment=equipment_com)
+    sword_obj = actor.ObjActor(x, y, "Rune Sword", "S_SWORD_RUNE", item=item_com, equipment=equipment_com)
 
     return sword_obj
 
@@ -366,9 +370,11 @@ def gen_defence_shield_iron(coord):
     x, y = coord
 
     bonus = 3
+    description = "A shield made of iron, kind of crudely made but will do its job nicely."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
-    shield_obj = actor.ObjActor(x, y, "Iron Shield", "S_SHIELD_IRON", equipment=equipment_com)
+    shield_obj = actor.ObjActor(x, y, "Iron Shield", "S_SHIELD_IRON", item=item_com, equipment=equipment_com)
 
     return shield_obj
 
@@ -390,9 +396,11 @@ def gen_defence_shield_steel(coord):
     x, y = coord
 
     bonus = 4
+    description = "A shiny steel shield. This chunk of metal will serve you well in defending yourself."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
-    shield_obj = actor.ObjActor(x, y, "Steel Shield", "S_SHIELD_STEEL", equipment=equipment_com)
+    shield_obj = actor.ObjActor(x, y, "Steel Shield", "S_SHIELD_STEEL", item=item_com, equipment=equipment_com)
 
     return shield_obj
 
@@ -414,9 +422,12 @@ def gen_defence_shield_black(coord):
     x, y = coord
 
     bonus = 6
+    description = "A shield made of a mysterious black metal. " \
+                  "Rumored to be second only to the legendary rune shield."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
-    shield_obj = actor.ObjActor(x, y, "Black Shield", "S_SHIELD_BLACK", equipment=equipment_com)
+    shield_obj = actor.ObjActor(x, y, "Black Shield", "S_SHIELD_BLACK", item=item_com, equipment=equipment_com)
 
     return shield_obj
 
@@ -438,9 +449,11 @@ def gen_defence_shield_rune(coord):
     x, y = coord
 
     bonus = 8
+    description = "A shield made of the strongest metal known to exist, rune. No more explanation needed. Use it."
 
+    item_com = itemcom.ComItem(description)
     equipment_com = itemcom.ComEquipment(defence_bonus=bonus, slot="shield")
-    shield_obj = actor.ObjActor(x, y, "Rune Shield", "S_SHIELD_RUNE", equipment=equipment_com)
+    shield_obj = actor.ObjActor(x, y, "Rune Shield", "S_SHIELD_RUNE", item=item_com, equipment=equipment_com)
 
     return shield_obj
 

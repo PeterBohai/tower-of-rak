@@ -61,7 +61,7 @@ class ComCreature:
     def power(self):
         """int: Calculates and returns the current total power of the creature.
 
-        Takes into account the creature's raw damage amount (base attack + randomness) and any equipment/item/spell
+        Takes into account the creature's attack points (base attack + bonuses) and any equipment/item/spell
         bonuses.
 
         """
@@ -76,16 +76,7 @@ class ComCreature:
         elif self.base_atk > 40:
             additional_random = tcod.random_get_int(0, 0, 5)
 
-        # raw damage will vary per turn
-        raw_damage = self.base_atk + additional_random
-        total_power = raw_damage
-
-        # add attack bonus stats from equipment
-        if self.owner.container:
-            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_inventory]
-
-            for power_bonus in equipment_power_bonuses:
-                total_power += power_bonus
+        total_power = self.attack_points + additional_random
 
         return total_power
 
@@ -110,6 +101,18 @@ class ComCreature:
     def hp_percent(self):
         """float: Returns the percentage of total health the creature still currently has."""
         return self.current_hp / self.max_hp
+
+    @property
+    def attack_points(self):
+        """int: Calculates and returns the raw attack points of the PLAYER (base stat plus weapon bonuses)"""
+        raw_damage = self.base_atk
+        if self.owner.container:
+            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_inventory]
+
+            for power_bonus in equipment_power_bonuses:
+                raw_damage += power_bonus
+
+        return raw_damage
 
     def level_up(self):
         self.owner.level += 1
