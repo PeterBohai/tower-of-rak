@@ -10,3 +10,8 @@ hit_punch_5.wav
 Credit "Kenney.nl" or "www.kenney.nl", this is not mandatory.
 -------------------------
 click3.wav
+
+
+"Level up sound effects" by Bart Kelsey. Commissioned by Will Corwin for OpenGameArt.org (http://opengameart.org)
+----------------------------------------------------
+glassbell_levelup

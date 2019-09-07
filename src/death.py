@@ -54,6 +54,7 @@ def death_player(player):
     # deinitialize pygame Surface objects (animation sprites)
     for obj in globalvars.GAME.current_objects:
         obj.animation_del()
+    globalvars.GAME.current_objects.clear()
 
     # popup menu displaying a "You Died!" message and a quit to main menu button
     death_popup = True

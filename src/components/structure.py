@@ -124,6 +124,7 @@ class ComPortal:
             # deinitialize pygame Surface objects (animation sprites)
             for obj in globalvars.GAME.current_objects:
                 obj.animation_del()
+            globalvars.GAME.current_objects.clear()
 
             # For exiting out of the game
             win_popup = True

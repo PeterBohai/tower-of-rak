@@ -16,8 +16,8 @@ class ComContainer:
 
     """
 
-    def __init__(self, weight=0, max_weight=20, inventory=[]):
-        self.inventory = inventory
+    def __init__(self, weight=0, max_weight=20):
+        self.inventory = []
         self.equipped_inventory = []
         self.weight = weight
         self.max_weight = max_weight

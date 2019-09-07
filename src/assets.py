@@ -562,6 +562,8 @@ class ObjAssets:
         self.sfx_coin_pickup = self.sfx_add("coin_pickup.wav")
         self.sfx_soul_consume = self.sfx_add("soul_consume.wav")
         self.sfx_pure_soul_consume = self.sfx_add("pure_soul_consume.wav")
+        self.sfx_item_pickup = self.sfx_add("item_pickup.wav")
+        self.sfx_level_up = self.sfx_add("glassbell_levelup.wav")
 
         # sfx list for hitting creature
         self.sfx_hit_punch_list = [self.sfx_hit_punch1,

@@ -5,6 +5,7 @@ import pygame
 import tcod
 
 from src import constants, globalvars, game, map, text
+from src.menu import popup
 
 
 class ComCreature:
@@ -115,6 +116,8 @@ class ComCreature:
         return raw_damage
 
     def level_up(self):
+        globalvars.ASSETS.sfx_level_up.play()
+        popup.popup_menu("LEVEL UP!")
         self.owner.level += 1
         self.base_def += 1
         self.base_atk += 1

@@ -78,6 +78,7 @@ class ComItem:
                 game.game_message("Not enough room to pick up", constants.COLOR_WHITE)
 
             else:
+                globalvars.ASSETS.sfx_item_pickup.play()
                 game.game_message(f"Picked up [{self.owner.display_name}]")
                 actor.container.inventory.append(self.owner)
 
