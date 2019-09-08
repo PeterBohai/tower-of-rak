@@ -6,7 +6,7 @@ import textwrap
 import pygame
 
 from src import constants, globalvars, map, draw, actions, hud
-from src.menu import inventory, options
+from src.menu import inventory, options, popup
 from src.generators import playergen
 
 
@@ -138,7 +138,7 @@ class ObjGame:
         self.cur_floor -= 1
 
 
-def game_main_loop():
+def game_main_loop(new_game=True):
     """Main game loop.
 
     Draws the game, takes care of any keyboard or mouse events from the player, keeps track of time/turns, and
@@ -164,6 +164,10 @@ def game_main_loop():
         player_action = game_handle_keys()
         if player_action == "QUIT":
             game_exit()
+
+        if new_game:
+            popup.game_story_popup()
+            new_game = False
 
         for objActor in globalvars.GAME.current_objects:
             if objActor.is_visible and objActor.creature is not None:
@@ -523,12 +527,15 @@ def game_start(new=True):
     """
     if new:
         game_new()
+        new = True
     else:
         try:
             game_load()
+            new = False
 
         except FileNotFoundError:
             # TODO indicate that a new game was initiated instead (pop up notice)
             game_new()
+            new = True
 
-    game_main_loop()
+    game_main_loop(new_game=new)

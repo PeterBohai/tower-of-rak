@@ -347,6 +347,7 @@ class ObjAssets:
         self.S_INVENTORY = pygame.image.load(os.path.join("data", "graphics", "menu", "inventory.png")).convert()
         self.S_INVENTORY_SELECT = \
             pygame.image.load(os.path.join("data", "graphics", "menu", "inventory_selected.png")).convert()
+        self.S_GRAY_POPUP = pygame.image.load(os.path.join("data", "graphics", "menu", "gray_popup.png")).convert()
 
         self.S_TOP_L_MENU_LIGHT = self.menugui.get_image('b1', 8, 16, 16, (32, 32))[0]
         self.S_TOP_R_MENU_LIGHT = self.menugui.get_image('e1', 8, 16, 16, (32, 32))[0]
