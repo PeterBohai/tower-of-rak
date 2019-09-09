@@ -1,4 +1,5 @@
 import pygame
+import tcod
 
 from src import constants, text, globalvars, gui
 
@@ -260,3 +261,72 @@ def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT
         text.draw_fading_text(globalvars.SURFACE_MAIN, floor_text, font,
                               text_coords, text_color, alpha_val, speed=1, center=True)
 
+def draw_mini_map(target_map):
+    """Draws the mini map onto the the main display surface SURFACE_MAIN.
+
+    Parameters
+    ----------
+    target_map : list
+        Map (nested list) to be drawn onto SURFACE_MAP
+
+    Returns
+    -------
+    None
+
+    """
+    mini_cell_w, mini_cell_h = 2, 2
+    cam_grid_x, cam_grid_y = globalvars.CAMERA.map_address
+    back_color = (0, 0, 0, 150)
+
+    mini_cam_width, mini_cam_height = 180, 180
+    mini_cam_surface = pygame.Surface((mini_cam_width, mini_cam_height))
+    mini_cam_surface.fill(back_color)
+    mini_cam_rect = mini_cam_surface.get_rect()
+    mini_cam_rect.center = (cam_grid_x * mini_cell_w, cam_grid_y * mini_cell_h)
+
+    mini_surface = pygame.Surface((constants.MAP_WIDTH * mini_cell_w, constants.MAP_HEIGHT * mini_cell_h))
+    mini_surface.fill(back_color)
+
+    cam_grid_width = mini_cam_width // mini_cell_w
+    cam_grid_height = mini_cam_height // mini_cell_h
+
+    render_min_x = max(0, cam_grid_x - (cam_grid_width // 2))
+    render_min_y = max(0, cam_grid_y - (cam_grid_height // 2))
+
+    render_max_x = min(constants.MAP_WIDTH, cam_grid_x + (cam_grid_width // 2))
+    render_max_y = min(constants.MAP_HEIGHT, cam_grid_y + (cam_grid_height // 2))
+
+    fps_msg_height = text.get_text_height(constants.FONT_BEST)
+
+    # draw floor and walls
+    for x in range(render_min_x, render_max_x):
+        for y in range(render_min_y, render_max_y):
+
+            is_visible = tcod.map_is_in_fov(globalvars.FOV_MAP, x, y)
+            if is_visible:
+                target_map[x][y].explored = True
+
+                if target_map[x][y].block_path is True:
+                    mini_surface.blit(globalvars.ASSETS.S_MINI_WALL, (x * 2, y * 2))
+
+                else:
+                    mini_surface.blit(globalvars.ASSETS.S_MINI_FLOOR, (x * 2, y * 2))
+
+            else:
+                if target_map[x][y].explored:
+
+                    if target_map[x][y].block_path is True:
+                        mini_surface.blit(globalvars.ASSETS.S_MINI_WALL_EXPLORED, (x * 2, y * 2))
+
+                    else:
+                        mini_surface.blit(globalvars.ASSETS.S_MINI_FLOOR_EXPLORED, (x * 2, y * 2))
+
+    for obj in globalvars.GAME.current_objects:
+        if obj.stairs is not None and target_map[obj.x][obj.y].explored:
+            mini_surface.blit(globalvars.ASSETS.S_MINI_STAIRS, (obj.x * 2, obj.y * 2))
+
+        if obj.portal is not None and target_map[obj.x][obj.y].explored:
+            mini_surface.blit(globalvars.ASSETS.S_MINI_PORTAL, (obj.x * 2, obj.y * 2))
+
+    mini_cam_surface.blit(mini_surface, (0, 0), mini_cam_rect)
+    globalvars.SURFACE_MAIN.blit(mini_cam_surface, (constants.CAMERA_WIDTH - mini_cam_width, fps_msg_height))

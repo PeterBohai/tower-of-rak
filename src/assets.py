@@ -349,6 +349,21 @@ class ObjAssets:
             pygame.image.load(os.path.join("data", "graphics", "menu", "inventory_selected.png")).convert()
         self.S_GRAY_POPUP = pygame.image.load(os.path.join("data", "graphics", "menu", "gray_popup.png")).convert()
 
+        self.S_MINI_WALL = pygame.Surface((2, 2))
+        self.S_MINI_WALL.fill(pygame.Color("#d6871a"))
+        self.S_MINI_WALL_EXPLORED = pygame.Surface((2, 2))
+        self.S_MINI_WALL_EXPLORED.fill(pygame.Color("#6e4b1f"))
+
+        self.S_MINI_FLOOR = pygame.Surface((2, 2))
+        self.S_MINI_FLOOR.fill(pygame.Color("#fffef5"))
+        self.S_MINI_FLOOR_EXPLORED = pygame.Surface((2, 2))
+        self.S_MINI_FLOOR_EXPLORED.fill(pygame.Color("#abaa9f"))
+
+        self.S_MINI_STAIRS = pygame.Surface((2, 2))
+        self.S_MINI_STAIRS.fill(constants.COLOR_GREEN)
+        self.S_MINI_PORTAL = pygame.Surface((2, 2))
+        self.S_MINI_PORTAL.fill(pygame.Color("#64c4ed"))
+
         self.S_TOP_L_MENU_LIGHT = self.menugui.get_image('b1', 8, 16, 16, (32, 32))[0]
         self.S_TOP_R_MENU_LIGHT = self.menugui.get_image('e1', 8, 16, 16, (32, 32))[0]
         self.S_TOP_MENU_LIGHT = self.menugui.get_image('c1', 8, 16, 16, (32, 32))[0]

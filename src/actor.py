@@ -30,7 +30,7 @@ class ObjActor:
         Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
     sprite_time_elapsed : float
         Time in seconds the current sprite has been displayed for.
-    _exp : int, optional
+    _exp_total : int, optional
         Total experience points of the actor object (mainly for creatures).
     gold : int, optional
         Total gold value the actor object currently contains/owns.
@@ -38,7 +38,7 @@ class ObjActor:
         The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
     _level : int
         Current level of actor (usually PLAYER).
-    exp_to_next : int
+    exp_to_next_total : int
         Number of total exp points needed to reach the next level.
     creature: object, optional
         A component class (ComCreature) that gives the object creature-specific attributes and functionality.

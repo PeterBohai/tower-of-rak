@@ -153,6 +153,7 @@ def draw_window_ui():
     hud.draw_player_exp(globalvars.SURFACE_MAIN, (68, 27))
     hud.pfp(globalvars.SURFACE_MAIN, (0, 0))
     hud.level_sign(globalvars.SURFACE_MAIN, (0, 66))
+    hud.draw_mini_map(globalvars.GAME.current_map)
 
     # draw PLAYER messages
     hud.draw_messages()
