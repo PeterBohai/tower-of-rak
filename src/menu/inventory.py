@@ -149,13 +149,13 @@ def equipment_menu(surface, player_input):
     for equipped_item in globalvars.PLAYER.container.equipped_inventory:
 
         if equipped_item.equipment.slot == "weapon":
-            item_x, item_y = 165, 163
+            item_x, item_y = 165, 149
         elif equipped_item.equipment.slot == "shield":
-            item_x, item_y = 31, 163
+            item_x, item_y = 31, 149
         elif equipped_item.equipment.slot == "head":
-            item_x, item_y = 98, 85
+            item_x, item_y = 98, 71
         elif equipped_item.equipment.slot == "boots":
-            item_x, item_y = 98, 228
+            item_x, item_y = 98, 214
         else:
             item_x, item_y = 0, 0
 
@@ -289,32 +289,54 @@ def display_item_info(surface, target_item, player_input):
 
 
 def display_stats(surface):
-    stats_surface_width, stats_surface_height = 170, 66
-    stats_x, stats_y = 29, 280
+    stats_surface_width, stats_surface_height = 170, 90
+    stats_x, stats_y = 29, 266
     stats_surface = pygame.Surface((stats_surface_width, stats_surface_height))
     stats_font = constants.FONT_BEST
     text_height = text.get_text_height(stats_font)
 
-    atk_text = "Attack:"
-    def_text = "Defence:"
+    atk_text = "Atk:"
+    def_text = "Def:"
     atk_value = f"{globalvars.PLAYER.creature.attack_points}"
     def_value = f"{globalvars.PLAYER.creature.defence}"
+    crit_chance_text = "Crit Chance:"
+    crit_dmg_text = "Crit Dmg:"
+    crit_chance_val = f"{globalvars.PLAYER.creature.crit_chance}%"
+    crit_dmg_val = f"{int(globalvars.PLAYER.creature.crit_dmg * 100)}%"
 
     exp_text = "Total Exp:"
     exp_value = f"{globalvars.PLAYER.exp_total}"
 
-    atk_text_coords = (6, 6)
-    atk_value_coords = (stats_surface_width - text.get_text_width(stats_font, atk_value) - 6, 6)
-    def_text_coords = (6, 6 + text_height + 2)
-    def_value_coords = (stats_surface_width - text.get_text_width(stats_font, def_value) - 6, 6 + text_height + 2)
-    exp_text_coords = (6, def_text_coords[1] + text_height + 2)
+    atk_text_coords = (6, 4)
+    atk_value_coords = (stats_surface_width - text.get_text_width(stats_font, atk_value) - 6, 4)
+
+    def_text_coords = (6, atk_text_coords[1] + text_height + 1)
+    def_value_coords = (stats_surface_width - text.get_text_width(stats_font, def_value) - 6,
+                        atk_text_coords[1] + text_height + 1)
+
+    crit_chance_text_coords = (6, def_text_coords[1] + text_height + 1)
+    crit_chance_value_coords = (stats_surface_width - text.get_text_width(stats_font, crit_chance_val) - 6,
+                                def_text_coords[1] + text_height + 1)
+
+    crit_dmg_text_coords = (6, crit_chance_text_coords[1] + text_height + 1)
+    crit_dmg_value_coords = (stats_surface_width - text.get_text_width(stats_font, crit_dmg_val) - 6,
+                             crit_chance_text_coords[1] + text_height + 1)
+
+    exp_text_coords = (6, crit_dmg_text_coords[1] + text_height + 1)
     exp_value_coords = (stats_surface_width - text.get_text_width(stats_font, exp_value) - 6,
-                        def_text_coords[1] + text_height + 2)
+                        crit_dmg_text_coords[1] + text_height + 1)
 
     text.draw_text(stats_surface, atk_text, stats_font, atk_text_coords, pygame.Color("#112d4e"))
     text.draw_text(stats_surface, atk_value, stats_font, atk_value_coords, pygame.Color("#3f72af"))
+
     text.draw_text(stats_surface, def_text, stats_font, def_text_coords, pygame.Color("#112d4e"))
     text.draw_text(stats_surface, def_value, stats_font, def_value_coords, pygame.Color("#3f72af"))
+
+    text.draw_text(stats_surface, crit_chance_text, stats_font, crit_chance_text_coords, pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, crit_chance_val, stats_font, crit_chance_value_coords, pygame.Color("#3f72af"))
+
+    text.draw_text(stats_surface, crit_dmg_text, stats_font, crit_dmg_text_coords, pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, crit_dmg_val, stats_font, crit_dmg_value_coords, pygame.Color("#3f72af"))
 
     text.draw_text(stats_surface, exp_text, stats_font, exp_text_coords, pygame.Color("#521262"))
     text.draw_text(stats_surface, exp_value, stats_font, exp_value_coords, pygame.Color("#6639a6"))

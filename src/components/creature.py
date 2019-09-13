@@ -21,6 +21,10 @@ class ComCreature:
         Max health points of the creature. Default is 10.
     base_atk : int
         Base attack points of the creature. Default is 2.
+    crit_chance : float
+        Chance in percentage of hitting a critical attack when attacking. Default is 5%.
+    crit_dmg: float
+        Percentage of normal attack a critical attack will do. Default is 150%
     base_def : int
         Base defence points of the creature. Default is 0.
     current_hp : int
@@ -49,6 +53,8 @@ class ComCreature:
         self.personal_name = personal_name
         self.max_hp = max_hp
         self.base_atk = base_atk
+        self.crit_chance = 5
+        self.crit_dmg = 1.5
         self.base_def = base_def
         self.current_hp = max_hp
         self.death_function = death_function
@@ -66,18 +72,7 @@ class ComCreature:
         bonuses.
 
         """
-        additional_random = 0
-
-        if 1 <= self.base_atk <= 12:
-            additional_random = tcod.random_get_int(0, 0, 1)
-        elif 13 <= self.base_atk <= 24:
-            additional_random = tcod.random_get_int(0, 0, 2)
-        elif 25 <= self.base_atk <= 40:
-            additional_random = tcod.random_get_int(0, 0, 3)
-        elif self.base_atk > 40:
-            additional_random = tcod.random_get_int(0, 0, 5)
-
-        total_power = self.attack_points + additional_random
+        total_power = self.attack_points
 
         return total_power
 
@@ -291,7 +286,15 @@ class ComCreature:
         None
 
         """
-        dmg_dealt = max(self.power - target.creature.defence, 0)
+        if tcod.random_get_int(0, 0, 100) < self.crit_chance:
+            dmg = math.floor((self.crit_dmg * self.power) + 0.5)
+        else:
+            dmg = self.power
+
+        if self.owner is globalvars.PLAYER:
+            print(dmg)
+
+        dmg_dealt = max(dmg - target.creature.defence, 0)
 
         victim_name = target.display_name
         attacker_name = self.owner.display_name
