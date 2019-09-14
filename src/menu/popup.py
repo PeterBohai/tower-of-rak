@@ -1,8 +1,9 @@
 import textwrap
 
 import pygame
+import numpy
 
-from src import constants, globalvars, text, draw, game
+from src import constants, globalvars, text, draw, game, gui
 
 
 def popup_menu(msg):
@@ -77,7 +78,6 @@ def game_story_popup():
 
     begin_text = "Your adventure begins now, as you finally managed to find and enter the Tower of Rak. Good luck!"
 
-
     menu_close = False
     while not menu_close:
 
@@ -130,3 +130,130 @@ def game_story_popup():
         globalvars.SURFACE_MAIN.blit(pop_surface, (menu_x, menu_y))
         globalvars.CLOCK.tick(constants.GAME_FPS)
         pygame.display.flip()
+
+
+def confirmation_popup():
+    """Displays a confirmation popup menu.
+
+    Returns
+    -------
+    None
+
+    """
+    menu_width = 448
+    menu_height = 160
+
+    center_x = constants.CAMERA_WIDTH / 2
+    center_y = constants.CAMERA_HEIGHT / 2
+
+    # =============== options menu init =============== #
+    surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+    menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
+    menu_rect.center = (center_x, center_y)
+
+    # ================= button variables ================ #
+    # buttons
+    button_width = 64
+    button_height = 32
+
+    menu_button_x = center_x
+    menu_button_y = menu_rect.bottom - 30
+    menu_button_text = "Exit"
+
+    # message vars
+    font = constants.FONT_BEST
+    text_height = text.get_text_height(font)
+    text_offset = text_height + 6
+    text_x = menu_rect.centerx
+    text_y = menu_rect.top + (menu_button_y - menu_rect.top) // 2 - text_offset // 2
+
+    # ====================== button section ===================== #
+    menu_button = gui.GuiButton(surface_menu, menu_button_text,
+                                (menu_button_x, menu_button_y),
+                                (button_width, button_height))
+
+    # background tile positions
+    topL = menu_rect.topleft
+    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+
+    # ====================== MENU LOOP ===================== #
+    menu_close = False
+    while not menu_close:
+
+        # get player input
+        mouse_pos = pygame.mouse.get_pos()
+        events_list = pygame.event.get()
+
+        mouse_rel_x = mouse_pos[0] - menu_rect.left
+        mouse_rel_y = mouse_pos[1] - menu_rect.top
+
+        player_events = (events_list, mouse_pos)
+        mouse_clicked = False
+        # process player input
+        for event in events_list:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    menu_close = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # left-click is 1, right is 3, scroll up is 4 and down is 5
+                if event.button == 1:
+                    mouse_clicked = True
+
+        if mouse_clicked and \
+                (mouse_rel_y < 0 or mouse_rel_x < 0 or mouse_rel_x > menu_width or mouse_rel_y > menu_height):
+            menu_close = True
+
+        if menu_button.update(player_events):
+            game.game_exit()
+            menu_close = True
+
+        if menu_button.mouse_hover:
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
+        else:
+            pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+
+        # draw functions
+        text.draw_text(surface_menu, "Exit game?",
+                       font,
+                       (text_x, text_y),
+                       constants.COLOR_BLACK, center=True)
+
+        text.draw_text(surface_menu, "Remember to go to the options menu to save the game.",
+                       font,
+                       (text_x, text_y + text_offset),
+                       constants.COLOR_BLACK, center=True)
+
+        menu_button.draw()
+
+        globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
+
+        # blit the corners
+        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
+        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
+        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
+        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
+
+        # blit the top and bottom
+        num_tiles_width = int(menu_width / 32) - 2
+        num_tiles_height = int(menu_height / 32) - 2
+
+        for w in range(1, num_tiles_width + 1):
+            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
+            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
+
+        # blit the left and right sides
+        for h in range(1, num_tiles_height + 1):
+            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
+            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
+
+        # blit the middle pieces
+        for r in range(1, num_tiles_height + 1):
+            for c in range(1, num_tiles_width + 1):
+                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
+
+        globalvars.CLOCK.tick(constants.GAME_FPS)
+        pygame.display.flip()
+

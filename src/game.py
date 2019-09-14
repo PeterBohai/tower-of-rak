@@ -163,7 +163,8 @@ def game_main_loop(new_game=True):
 
         player_action = game_handle_keys()
         if player_action == "QUIT":
-            game_exit()
+            popup.confirmation_popup()
+            # game_exit()
 
         if new_game:
             popup.game_story_popup()
@@ -200,7 +201,7 @@ def game_main_loop(new_game=True):
         # creatures takes their turn
         for obj in globalvars.GAME.current_objects:
             if obj.ai is not None:
-                if player_action != "no-action":
+                if player_action != "no-action" and player_action != "QUIT":
                     obj.ai.take_turn()
 
             if obj.is_visible and obj.creature is not None and obj is not globalvars.PLAYER:
