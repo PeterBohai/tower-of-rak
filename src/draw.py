@@ -1,5 +1,6 @@
 import pygame
 import tcod
+import numpy
 
 from src import constants, globalvars, text, hud
 
@@ -228,3 +229,52 @@ def fade_to_solid(width, height, redraw_func, redraw_args, color=pygame.Color('b
 
         globalvars.SURFACE_MAIN.blit(fade_surface, (0, 0))
         pygame.display.update()
+
+
+def draw_button_update_cursor(buttons):
+    pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+    for button in buttons:
+        button.draw()
+        if button.mouse_hover:
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
+
+
+def draw_menu_background(surface, menu_wh, top_l, top_r, bot_l, bot_r, assets=None):
+
+    # default menu background tiles
+    top_l_tile = globalvars.ASSETS.S_TOP_L_MENU_BROWN
+    top_r_tile = globalvars.ASSETS.S_TOP_R_MENU_BROWN
+    bot_l_tile = globalvars.ASSETS.S_BOT_L_MENU_BROWN
+    bot_r_tile = globalvars.ASSETS.S_BOT_R_MENU_BROWN
+    top_tile = globalvars.ASSETS.S_TOP_MENU_BROWN
+    bot_tile = globalvars.ASSETS.S_BOT_MENU_BROWN
+    side_l_tile = globalvars.ASSETS.S_SIDE_L_MENU_BROWN
+    side_r_tile = globalvars.ASSETS.S_SIDE_R_MENU_BROWN
+    mid_tile = globalvars.ASSETS.S_MID_MENU_BROWN
+
+    if assets:
+        top_l_tile, top_r_tile, bot_l_tile, bot_r_tile, top_tile, bot_tile, side_l_tile, side_r_tile, mid_tile = assets
+
+    # blit the corners
+    surface.blit(top_l_tile, top_l)
+    surface.blit(top_r_tile, top_r)
+    surface.blit(bot_l_tile, bot_l)
+    surface.blit(bot_r_tile, bot_r)
+
+    # blit the top and bottom
+    num_tiles_width = menu_wh[0] // 32 - 2
+    num_tiles_height = menu_wh[1] // 32 - 2
+
+    for w in range(1, num_tiles_width + 1):
+        surface.blit(top_tile, tuple(numpy.add(top_l, (32 * w, 0))))
+        surface.blit(bot_tile, tuple(numpy.add(bot_l, (32 * w, 0))))
+
+    # blit the left and right sides
+    for h in range(1, num_tiles_height + 1):
+        surface.blit(side_l_tile, tuple(numpy.add(top_l, (0, 32 * h))))
+        surface.blit(side_r_tile, tuple(numpy.add(top_r, (0, 32 * h))))
+
+    # blit the middle pieces
+    for r in range(1, num_tiles_height + 1):
+        for c in range(1, num_tiles_width + 1):
+            surface.blit(mid_tile, tuple(numpy.add(top_l, (32 * c, 32 * r))))

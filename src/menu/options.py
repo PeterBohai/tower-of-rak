@@ -4,7 +4,7 @@ import numpy
 import pygame
 
 from src import constants, globalvars, text, gui, game, draw
-from src.menu import popup
+from src.menu import popup, mainmenu
 
 
 def main_options_menu(in_game=False):
@@ -18,16 +18,15 @@ def main_options_menu(in_game=False):
     Returns
     -------
     None
-
     """
-    # ============== options menu dimensions ============== #
-    menu_width = 448
-    menu_height = 256
+
+    # ----- menu specs ----- #
+    menu_width, menu_height = 448, 256
 
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # =============== options menu surface init =============== #
+    # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
@@ -35,21 +34,19 @@ def main_options_menu(in_game=False):
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= button variables ================ #
-    button_list = []
-
-    button_width = 64
+    # ----- button specs -----#
+    button_width = 96 if in_game else 64
     button_height = 32
     button_offset = button_height + 12
     long_button_width = 160
 
-    save_button_x = center_x
-    save_button_y = menu_rect.bottom - 30
-    save_button_text = "SAVE"
-
     back_button_x = center_x
     back_button_y = menu_rect.bottom - 30
     back_button_text = "BACK"
+
+    save_button_x = back_button_x - (button_width + button_offset) if in_game else center_x
+    save_button_y = menu_rect.bottom - 30
+    save_button_text = "Save game" if in_game else "SAVE"
 
     audio_button_x = center_x
     audio_button_y = menu_rect.top + 80
@@ -63,15 +60,30 @@ def main_options_menu(in_game=False):
     display_button_y = controls_button_y + button_offset
     display_button_text = "Display Settings"
 
-    # ================== Options menu is in-game =================== #
+    # ----- create buttons ----- #
+    save_button = gui.GuiButton(surface_menu, save_button_text,
+                                (save_button_x, save_button_y),
+                                (button_width, button_height))
+
+    back_button = gui.GuiButton(surface_menu, back_button_text,
+                                (back_button_x, back_button_y),
+                                (button_width, button_height))
+
+    audio_button = gui.GuiButton(surface_menu, audio_button_text,
+                                 (audio_button_x, audio_button_y),
+                                 (long_button_width, button_height))
+
+    controls_button = gui.GuiButton(surface_menu, controls_button_text,
+                                    (controls_button_x, controls_button_y),
+                                    (long_button_width, button_height))
+
+    display_button = gui.GuiButton(surface_menu, display_button_text,
+                                   (display_button_x, display_button_y),
+                                   (long_button_width, button_height))
+
+    button_list = [back_button, audio_button, controls_button, display_button]
+
     if in_game:
-        button_width = 96
-
-        save_button_text = "Save game"
-
-        back_button_x = center_x
-        save_button_x = back_button_x - (button_width + button_offset)
-
         mm_button_x = back_button_x + (button_width + button_offset)
         mm_button_y = menu_rect.bottom - 30
 
@@ -79,57 +91,31 @@ def main_options_menu(in_game=False):
                                          (mm_button_x, mm_button_y),
                                          (button_width, button_height))
         button_list.append(main_menu_button)
-
-    # ====================== button section ===================== #
-
-    save_button = gui.GuiButton(surface_menu, save_button_text,
-                                (save_button_x, save_button_y),
-                                (button_width, button_height))
-    button_list.append(save_button)
-
-    back_button = gui.GuiButton(surface_menu, back_button_text,
-                                (back_button_x, back_button_y),
-                                (button_width, button_height))
-    button_list.append(back_button)
-
-    audio_button = gui.GuiButton(surface_menu, audio_button_text,
-                                 (audio_button_x, audio_button_y),
-                                 (long_button_width, button_height))
-    button_list.append(audio_button)
-
-    controls_button = gui.GuiButton(surface_menu, controls_button_text,
-                                    (controls_button_x, controls_button_y),
-                                    (long_button_width, button_height))
-    button_list.append(controls_button)
-
-    display_button = gui.GuiButton(surface_menu, display_button_text,
-                                   (display_button_x, display_button_y),
-                                   (long_button_width, button_height))
-    button_list.append(display_button)
+        button_list.append(save_button)
 
     # menu background tile positions
-    topL = menu_rect.topleft
-    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
 
-    # ====================== menu LOOP ===================== #
+    # ==================== MENU LOOP ==================== #
     menu_close = False
     while not menu_close:
-
-        # get player input
+        # ---- retrieve user input and events ----- #
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
-
         player_events = (events_list, mouse_pos)
 
-        # process player input
+        # ----- event listeners (user keyboard input) ----- #
         for event in events_list:
+            if event.type == pygame.QUIT:
+                mainmenu.perform_exit_sequence()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menu_close = True
 
-        # >>> button actions <<<
+        # ----- button event listeners ----- #
         if back_button.update(player_events):
             menu_close = True
         if audio_button.update(player_events):
@@ -148,24 +134,6 @@ def main_options_menu(in_game=False):
         if display_button.update(player_events):
             display_options_menu()
 
-        # Change cursor when hovering over a button
-        for i, button in enumerate(button_list):
-            if button.mouse_hover:
-                pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                break
-            if i == len(button_list) - 1:
-                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-
-        # draw functions
-        text.draw_text(surface_menu, "Options", constants.FONT_MENU_TITLE,
-                       (title_x, title_y),
-                       constants.COLOR_BLACK,
-                       center=True)
-        back_button.draw()
-        audio_button.draw()
-        controls_button.draw()
-        display_button.draw()
-
         if in_game:
             if main_menu_button.update(player_events):
                 globalvars.GAME_QUIT = True
@@ -175,37 +143,18 @@ def main_options_menu(in_game=False):
                 game.game_save(in_game=True)
                 popup.popup_menu("Saved game!")
 
-            main_menu_button.draw()
-            save_button.draw()
             globalvars.CLOCK.tick(constants.GAME_FPS)
 
-        # >>>>> update display <<<<<
+        # ----- display functions ----- #
+        text.draw_text(surface_menu, "Options", constants.FONT_MENU_TITLE,
+                       (title_x, title_y),
+                       constants.COLOR_BLACK,
+                       center=True)
+
+        draw.draw_button_update_cursor(button_list)
+        # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
         pygame.display.update()
 
 
@@ -215,17 +164,15 @@ def audio_options_menu():
     Returns
     -------
     None
-
     """
 
-    # ============== options menu dimensions ============== #
-    menu_width = 448
-    menu_height = 256
+    # ----- menu specs ----- #
+    menu_width, menu_height = 448, 256
 
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # =============== options menu surface init =============== #
+    # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
@@ -233,8 +180,7 @@ def audio_options_menu():
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= slider/button variables ================ #
-    button_list = []
+    # ----- slider and button specs ----- #
     slider_width = 170
     slider_height = 8
     slider_text_offset_y = 18
@@ -244,7 +190,6 @@ def audio_options_menu():
     sfx_slider_x = music_slider_x
     sfx_slider_y = music_slider_y + 45
 
-    # buttons
     button_width = 64
     button_height = 32
 
@@ -256,42 +201,43 @@ def audio_options_menu():
     back_button_y = menu_rect.bottom - 30
     back_button_text = "BACK"
 
-    # ============== volume slider initialization ============== #
-
-    music_slider = gui.GuiSlider(surface_menu,
-                                 (music_slider_x, music_slider_y),
+    # ----- create sliders and buttons ----- #
+    music_slider = gui.GuiSlider(surface_menu, (music_slider_x, music_slider_y),
                                  (slider_width, slider_height),
                                  globalvars.PREFERENCES.music_volume_val)
 
-    sfx_slider = gui.GuiSlider(surface_menu,
-                               (sfx_slider_x, sfx_slider_y),
+    sfx_slider = gui.GuiSlider(surface_menu, (sfx_slider_x, sfx_slider_y),
                                (slider_width, slider_height),
                                globalvars.PREFERENCES.sfx_volume_val)
-
-    # ====================== button section ===================== #
 
     save_button = gui.GuiButton(surface_menu, save_button_text,
                                 (save_button_x, save_button_y),
                                 (button_width, button_height))
-    button_list.append(save_button)
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
                                 (button_width, button_height))
-    button_list.append(back_button)
 
-    # menu loop
+    button_slider_list = (save_button, back_button, music_slider, sfx_slider)
+
+    # menu background tile positions
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
+
+    # ==================== MENU LOOP ==================== #
     menu_close = False
     while not menu_close:
-
-        # get player input
+        # ---- retrieve user input and events ----- #
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
-
         player_events = (events_list, mouse_pos)
 
-        # process player input
+        # ----- event listeners (user keyboard input) ----- #
         for event in events_list:
+            if event.type == pygame.QUIT:
+                mainmenu.perform_exit_sequence()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menu_close = True
@@ -300,6 +246,7 @@ def audio_options_menu():
         current_music_vol = globalvars.PREFERENCES.music_volume_val
         current_sfx_vol = globalvars.PREFERENCES.sfx_volume_val
 
+        # ----- button and slider event listeners ----- #
         # Update slider when mouse is dragging over the sfx slider
         music_slider.update(player_events)
         sfx_slider.update(player_events)
@@ -319,67 +266,21 @@ def audio_options_menu():
         if back_button.update(player_events):
             menu_close = True
 
-        # Change cursor when hovering over a button
-        for i, buttons in enumerate(button_list):
-            if buttons.mouse_hover:
-                pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                break
-            if i == len(button_list) - 1:
-                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-
-        # draw functions
-        text.draw_text(surface_menu, "AUDIO", constants.FONT_MENU_TITLE,
-                       (title_x, title_y),
-                       constants.COLOR_BLACK,
-                       center=True)
-
-        music_slider.draw()
+        # ----- display functions ----- #
+        text.draw_text(surface_menu, "AUDIO", constants.FONT_MENU_TITLE, (title_x, title_y),
+                       constants.COLOR_BLACK, center=True)
         text.draw_text(surface_menu, "Music Volume", constants.FONT_BEST,
                        (music_slider_x, music_slider_y - slider_text_offset_y),
                        constants.COLOR_BLACK, center=True)
-
-        sfx_slider.draw()
         text.draw_text(surface_menu, "SFX Volume", constants.FONT_BEST,
                        (sfx_slider_x, sfx_slider_y - slider_text_offset_y),
                        constants.COLOR_BLACK, center=True)
 
-        save_button.draw()
+        draw.draw_button_update_cursor(button_slider_list)
 
-        back_button.draw()
-
-        # background tile positions
-        topL = menu_rect.topleft
-        topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-        botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-        botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
-
-        # >>>>> update display <<<<<
+        # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
         pygame.display.update()
 
 
@@ -389,12 +290,10 @@ def controls_options_menu():
     Returns
     -------
     None
-
     """
 
-    # ============== options menu dimensions ============== #
-    menu_width = 448
-    menu_height = 416
+    # ----- menu specs -----#
+    menu_width, menu_height = 448, 416
 
     scroll_window_width = menu_width - (2 * constants.CELL_WIDTH)
     scroll_window_height = menu_height - 70 - 64
@@ -404,7 +303,7 @@ def controls_options_menu():
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # =============== options menu surface init =============== #
+    # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
@@ -417,14 +316,20 @@ def controls_options_menu():
     surface_controls.fill((184, 163, 143))
     scroll_y = 0
 
+    # ----- text specs ----- #
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= button variables ================ #
+    text_x = 0
+    text_y_first = 8
+    text_y_offset = text.get_text_height(constants.FONT_BEST) + 24
+    num_lines = 20
+    line_y = [text_y_first + line * text_y_offset for line in range(num_lines)]
 
-    # buttons
-    button_list = []
+    descriptions = ("Move Left", "Move Right", "Move Up", "Move Down", "Stay",
+                    "Grab Item", "Drop Item", "Inventory", "Next Floor", "Back/Exit")
 
+    # ----- button specs ----- #
     button_width = 64
     button_height = 32
     small_button_width = 50
@@ -443,40 +348,22 @@ def controls_options_menu():
     reset_button_y = menu_rect.bottom - 30
     reset_button_text = "RESET"
 
-    # ====================== button section ===================== #
+    keys_button_x = scroll_window_width // 2
+    keys_button_y = [y_pos + small_button_height // 2 - 8 for y_pos in line_y]
 
+    # ----- create buttons ----- #
     save_button = gui.GuiButton(surface_menu, save_button_text,
                                 (save_button_x, save_button_y),
                                 (button_width, button_height))
 
-    button_list.append(save_button)
-
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
                                 (button_width, button_height))
-    button_list.append(back_button)
 
-    reset_button = gui.GuiButton(surface_menu, reset_button_text,
-                                 (reset_button_x, reset_button_y),
+    reset_button = gui.GuiButton(surface_menu, reset_button_text, (reset_button_x, reset_button_y),
                                  (button_width, button_height))
-    button_list.append(reset_button)
 
-    # menu background tile positions
-    topL = menu_rect.topleft
-    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
-
-    # text positions
-    text_x = 0
-    text_y_offset = text.get_text_height(constants.FONT_BEST) + 24
-    line_y = [8]
-    for line in range(1, 20):
-        line_y.append(line_y[0] + line * text_y_offset)
-
-    keys_button_x = scroll_window_width/2
-    keys_button_y = list(map(lambda x: x + int(small_button_height/2) - 8, line_y[::]))
-
+    # in-game controls buttons
     previous_key_bindings = copy.deepcopy(globalvars.PREFERENCES.keybindings)
 
     left_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["left"][0],
@@ -519,11 +406,19 @@ def controls_options_menu():
                                (keys_button_x, keys_button_y[9]),
                                (small_button_width, small_button_height))
 
-    # ====================== Menu LOOP ===================== #
+    button_list = (save_button, back_button, reset_button, left_button, right_button, up_button, down_button,
+                   stay_button, grab_button, drop_button, inventory_button, next_button, esc_button)
+
+    # menu background tile positions
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
+
+    # ==================== MENU LOOP ==================== #
     menu_close = False
     saved = False
     while not menu_close:
-
         left_button.text = globalvars.PREFERENCES.keybindings["left"][0]
         right_button.text = globalvars.PREFERENCES.keybindings["right"][0]
         up_button.text = globalvars.PREFERENCES.keybindings["up"][0]
@@ -535,7 +430,7 @@ def controls_options_menu():
         next_button.text = globalvars.PREFERENCES.keybindings["next"][0]
         esc_button.text = globalvars.PREFERENCES.keybindings["back"][0]
 
-        # get player input
+        # ---- retrieve user input and events ----- #
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
 
@@ -550,37 +445,35 @@ def controls_options_menu():
         player_events = (events_list, mouse_pos)
         player_events_rel = (events_list, mouse_rel_pos)
 
-        # process player input
+        # ----- event listeners (user keyboard input) ----- #
         for event in events_list:
+            if event.type == pygame.QUIT:
+                mainmenu.perform_exit_sequence()
             if event.type == pygame.KEYDOWN:
-
                 if event.key == pygame.K_ESCAPE:
-
                     # will not save controls if exit without selecting "SAVE"
                     if not saved:
                         globalvars.PREFERENCES.keybindings = previous_key_bindings
                     menu_close = True
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     scroll_y = min(scroll_y + 15, 0)
                 if event.button == 5:
-                    scroll_y = max(scroll_y - 15, -(controls_height- scroll_window_height))
+                    scroll_y = max(scroll_y - 15, -(controls_height - scroll_window_height))
 
+        # ----- button click event listeners ----- #
         if save_button.update(player_events):
             saved = True
             game.preferences_save()
-
         if back_button.update(player_events):
             # will not save controls if exit without selecting "SAVE"
             if not saved:
                 globalvars.PREFERENCES.keybindings = previous_key_bindings
             menu_close = True
-
         if reset_button.update(player_events):
             globalvars.PREFERENCES.keybindings = copy.deepcopy(globalvars.PREFERENCES.default_keybindings)
 
-        # update control buttons
+        # game control buttons
         if left_button.update(player_events_rel):
             menu_change_controls("left")
             saved = False
@@ -621,85 +514,19 @@ def controls_options_menu():
             menu_change_controls("back")
             saved = False
 
-        # Change cursor when hovering over a button
-        for i, button in enumerate(button_list):
-            if button.mouse_hover:
-                pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                break
-            if i == len(button_list) - 1:
-                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+        # ----- display functions ----- #
+        for i, desc in enumerate(descriptions):
+            text.draw_text(surface_controls, desc, constants.FONT_BEST, (text_x, line_y[i]), constants.COLOR_BLACK)
 
-        text.draw_text(surface_controls, "Move Left",
-                       constants.FONT_BEST, (text_x, line_y[0]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Move Right",
-                       constants.FONT_BEST, (text_x, line_y[1]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Move Up",
-                       constants.FONT_BEST, (text_x, line_y[2]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Move Down",
-                       constants.FONT_BEST, (text_x, line_y[3]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Stay",
-                       constants.FONT_BEST, (text_x, line_y[4]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Grab Item",
-                       constants.FONT_BEST, (text_x, line_y[5]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Drop Item",
-                       constants.FONT_BEST, (text_x, line_y[6]), constants.COLOR_BLACK)
-        text.draw_text(surface_controls, "Inventory",
-                       constants.FONT_BEST, (text_x, line_y[7]), constants.COLOR_BLACK)
-
-        text.draw_text(surface_controls, "Next Floor",
-                       constants.FONT_BEST, (text_x, line_y[8]), constants.COLOR_BLACK)
-
-        text.draw_text(surface_controls, "Back/Exit",
-                       constants.FONT_BEST, (text_x, line_y[9]), constants.COLOR_BLACK)
-
-        left_button.draw()
-        right_button.draw()
-        up_button.draw()
-        down_button.draw()
-        stay_button.draw()
-        grab_button.draw()
-        drop_button.draw()
-        inventory_button.draw()
-        next_button.draw()
-        esc_button.draw()
-
-        # >>>>> update display <<<<<
         surface_scroll_window.blit(surface_controls, (0, scroll_y))
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
+        draw.draw_button_update_cursor(button_list)
         # display scroll window
         surface_menu.blit(surface_scroll_window, scroll_window_pos)
-
         text.draw_text(surface_menu, "CONTROLS", constants.FONT_MENU_TITLE,
                        (title_x, title_y), constants.COLOR_BLACK, center=True)
-        save_button.draw()
-        back_button.draw()
-        reset_button.draw()
+        # update main display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
         pygame.display.update()
 
 
@@ -709,17 +536,15 @@ def menu_change_controls(action):
     Returns
     -------
     None
-
     """
 
-    # ============== options menu dimensions ============== #
-    menu_width = 352
-    menu_height = 128
+    # ----- menu specs -----#
+    menu_width, menu_height = 352, 128
 
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # =============== options menu surface init =============== #
+    # ----- initialize menu surface -----#
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
@@ -728,64 +553,67 @@ def menu_change_controls(action):
     message_y = center_y - text.get_text_height(constants.FONT_BEST) + 5
     text_y_offset = text.get_text_height(constants.FONT_BEST) + 10
 
-    # =============== Menu LOOP =============== #
+    # background tile positions
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
+
+    arrow_keys = {"up": "↑",
+                  "down": "↓",
+                  "left": "←",
+                  "right": "→",
+                  "space": "Spc"}
+    shift_chars = {pygame.K_PERIOD: ">",
+                   pygame.K_COMMA: "<",
+                   pygame.K_SLASH: "?",
+                   pygame.K_SEMICOLON: ":",
+                   pygame.K_QUOTE: "\"",
+                   pygame.K_LEFTBRACKET: "{",
+                   pygame.K_RIGHTBRACKET: "}",
+                   pygame.K_BACKSLASH: "|",
+                   pygame.K_MINUS: "_",
+                   pygame.K_EQUALS: "+",
+                   pygame.K_BACKQUOTE: "~",
+                   pygame.K_1: "!",
+                   pygame.K_2: "@",
+                   pygame.K_3: "#",
+                   pygame.K_4: "$",
+                   pygame.K_5: "%",
+                   pygame.K_6: "^",
+                   pygame.K_7: "&",
+                   pygame.K_8: "*",
+                   pygame.K_9: "(",
+                   pygame.K_0: ")"}
+
+    # ==================== MENU LOOP ==================== #
     menu_close = False
     is_duplicate = False
     is_invalid = False
 
     while not menu_close:
-
-        # get player input
-        events_list = pygame.event.get()
-        pressed_key_list = pygame.key.get_pressed()
-        shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])
-
+        text_1 = "Press any character to change."
+        text_2 = "Or press 'Esc' key to cancel."
         if is_duplicate:
             text_1 = "Already in use, please choose another."
         elif is_invalid:
             text_1 = "Please choose a valid character."
-        else:
-            text_1 = "Press any character to change."
 
-        text_2 = "Or press 'Esc' key to cancel."
+        # ---- retrieve user input and events ----- #
+        events_list = pygame.event.get()
+        pressed_key_list = pygame.key.get_pressed()
+        shift_pressed = (pressed_key_list[pygame.K_RSHIFT] or pressed_key_list[pygame.K_LSHIFT])
 
-        arrow_keys = {"up": "↑",
-                      "down": "↓",
-                      "left": "←",
-                      "right": "→",
-                      "space": "Spc"}
-
-        shift_chars = {pygame.K_PERIOD: ">",
-                       pygame.K_COMMA: "<",
-                       pygame.K_SLASH: "?",
-                       pygame.K_SEMICOLON: ":",
-                       pygame.K_QUOTE: "\"",
-                       pygame.K_LEFTBRACKET: "{",
-                       pygame.K_RIGHTBRACKET: "}",
-                       pygame.K_BACKSLASH: "|",
-                       pygame.K_MINUS: "_",
-                       pygame.K_EQUALS: "+",
-                       pygame.K_BACKQUOTE: "~",
-                       pygame.K_1: "!",
-                       pygame.K_2: "@",
-                       pygame.K_3: "#",
-                       pygame.K_4: "$",
-                       pygame.K_5: "%",
-                       pygame.K_6: "^",
-                       pygame.K_7: "&",
-                       pygame.K_8: "*",
-                       pygame.K_9: "(",
-                       pygame.K_0: ")"}
-
-        # process player input
+        # ----- event listeners (user keyboard input) ----- #
         for event in events_list:
+            if event.type == pygame.QUIT:
+                mainmenu.perform_exit_sequence()
             if event.type == pygame.KEYDOWN:
                 try:
                     if event.key == pygame.K_ESCAPE:
                         menu_close = True
 
                     elif not shift_pressed:
-
                         if len(pygame.key.name(event.key)) > 1:
                             key_char = arrow_keys[pygame.key.name(event.key)]
                         else:
@@ -808,7 +636,6 @@ def menu_change_controls(action):
 
                     elif event.key in shift_chars.keys() and shift_pressed:
                         key_char = shift_chars[event.key]
-
                         is_invalid = False
                         is_duplicate = False
 
@@ -828,47 +655,14 @@ def menu_change_controls(action):
                     is_invalid = True
                     break
 
-        text.draw_text(surface_menu, text_1, constants.FONT_BEST,
-                       (message_x, message_y),
+        # ----- display functions ----- #
+        text.draw_text(surface_menu, text_1, constants.FONT_BEST, (message_x, message_y),
                        constants.COLOR_BLACK, center=True)
-        text.draw_text(surface_menu, text_2, constants.FONT_BEST,
-                       (message_x, message_y + text_y_offset),
+        text.draw_text(surface_menu, text_2, constants.FONT_BEST, (message_x, message_y + text_y_offset),
                        constants.COLOR_BLACK, center=True)
-
-        # background tile positions
-        topL = menu_rect.topleft
-        topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-        botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-        botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
-
-
-        # >>>>> update display <<<<<
+        # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
         pygame.display.update()
 
 
@@ -878,26 +672,24 @@ def display_options_menu():
     Returns
     -------
     None
-
     """
-    # ============== options menu dimensions ============== #
-    menu_width = 448
-    menu_height = 256
+
+    # ------ menu specs ----- #
+    menu_width, menu_height = 448, 256
 
     center_x = constants.CAMERA_WIDTH / 2
     center_y = constants.CAMERA_HEIGHT / 2
 
-    # =============== options menu surface init =============== #
+    # ----- initialize menu surface -----#
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
     menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
     menu_rect.center = (center_x, center_y)
 
+    # ----- text specs ----- #
     title_x = center_x
     title_y = menu_rect.top + 30
 
-    # ================= button variables ================ #
-    button_list = []
-
+    # ----- button specs ----- #
     button_width = 64
     button_height = 32
     button_offset = button_height + 12
@@ -919,52 +711,48 @@ def display_options_menu():
     fullscreen_button_y = fill_button_y + button_offset
     fullscreen_button_text = "Fullscreen"
 
-    # ====================== button section ===================== #
-
+    # ----- create buttons ----- #
     back_button = gui.GuiButton(surface_menu, back_button_text,
                                 (back_button_x, back_button_y),
                                 (button_width, button_height))
-    button_list.append(back_button)
 
     default_button = gui.GuiButton(surface_menu, default_button_text,
                                    (default_button_x, default_button_y),
                                    (long_button_width, button_height))
-    button_list.append(default_button)
 
     fill_button = gui.GuiButton(surface_menu, fill_button_text,
                                 (fill_button_x, fill_button_y),
                                 (long_button_width, button_height))
-    button_list.append(fill_button)
 
     fullscreen_button = gui.GuiButton(surface_menu, fullscreen_button_text,
                                       (fullscreen_button_x, fullscreen_button_y),
                                       (long_button_width, button_height))
-    button_list.append(fullscreen_button)
+    button_list = (back_button, default_button, fill_button, fullscreen_button)
 
     # menu background tile positions
-    topL = menu_rect.topleft
-    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
 
-    # ====================== menu LOOP ===================== #
+    # ==================== MENU LOOP ==================== #
     menu_close = False
     while not menu_close:
-
-        # get player input
+        # ---- retrieve user input and events ----- #
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
-
         player_events = (events_list, mouse_pos)
 
-        # process player input
+        # ----- event listeners (user keyboard input) ----- #
         for event in events_list:
+            if event.type == pygame.QUIT:
+                mainmenu.perform_exit_sequence()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game.preferences_save()
                     menu_close = True
 
-        # >>> button actions <<<
+        # ----- button click event listeners ----- #
         if back_button.update(player_events):
             game.preferences_save()
             menu_close = True
@@ -974,71 +762,29 @@ def display_options_menu():
             constants.CAMERA_HEIGHT = constants.CAMERA_HEIGHT_DEFAULT
             globalvars.CAMERA.width = constants.CAMERA_WIDTH
             globalvars.CAMERA.height = constants.CAMERA_HEIGHT
-
             globalvars.PREFERENCES.display_window = "default"
-            globalvars.DISPLAY_CHANGE = True
 
         if fill_button.update(player_events):
             constants.CAMERA_WIDTH = constants.screen_width
             constants.CAMERA_HEIGHT = constants.screen_height - 45
             globalvars.CAMERA.width = constants.CAMERA_WIDTH
             globalvars.CAMERA.height = constants.CAMERA_HEIGHT
-
             globalvars.PREFERENCES.display_window = "fill"
-            globalvars.DISPLAY_CHANGE = True
 
         if fullscreen_button.update(player_events):
             constants.CAMERA_WIDTH = constants.screen_width
             constants.CAMERA_HEIGHT = constants.screen_height
             globalvars.CAMERA.width = constants.CAMERA_WIDTH
             globalvars.CAMERA.height = constants.CAMERA_HEIGHT
-
             globalvars.PREFERENCES.display_window = "fullscreen"
-            globalvars.DISPLAY_CHANGE = True
 
-        # Change cursor when hovering over a button
-        for i, button in enumerate(button_list):
-            if button.mouse_hover:
-                pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                break
-            if i == len(button_list) - 1:
-                pygame.mouse.set_cursor(*pygame.cursors.tri_left)
-
-        # draw functions
+        # ------- display functions ------- #
+        draw.draw_button_update_cursor(button_list)
         text.draw_text(surface_menu, "Display Settings", constants.FONT_MENU_TITLE,
                        (title_x, title_y),
                        constants.COLOR_BLACK,
                        center=True)
-        back_button.draw()
-        default_button.draw()
-        fill_button.draw()
-        fullscreen_button.draw()
-
-        # >>>>> update display <<<<<
+        # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width/32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
         pygame.display.update()

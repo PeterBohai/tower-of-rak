@@ -187,7 +187,6 @@ class GuiSlider:
             The Rect object that represents the moving foreground slider strip.
         grab_button : pygame Rect obj
             The Rect object that represents the slider button.
-
         """
     def __init__(self,
                  surface,
@@ -213,6 +212,7 @@ class GuiSlider:
         self.grab_button = pygame.Rect((0, 0), (20, self.slider_rect.height + 6))
         self.grab_button.center = (self.fg_rect.right, self.slider_rect.centery)
         self.grab_button_width, self.grab_button_height = globalvars.ASSETS.slider_button_size
+        self.mouse_hover = False
 
     @property
     def grab_button_x(self):
@@ -241,6 +241,9 @@ class GuiSlider:
 
         mouse_over_slider = (self.slider_rect.left <= mouse_x <= self.slider_rect.right and
                              self.grab_button_y <= mouse_y <= self.grab_button_y + self.grab_button_height)
+
+        self.mouse_hover = (self.grab_button.left <= mouse_x <= self.grab_button.right and
+                            self.grab_button.top <= mouse_y <= self.grab_button.bottom)
 
         if mouse_pressed and mouse_over_slider:
             self.slider_value = (mouse_x - self.slider_rect.left) / self.slider_rect.width

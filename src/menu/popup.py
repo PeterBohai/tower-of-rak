@@ -138,7 +138,6 @@ def confirmation_popup():
     Returns
     -------
     None
-
     """
     menu_width = 448
     menu_height = 160
@@ -172,16 +171,15 @@ def confirmation_popup():
                                 (menu_button_x, menu_button_y),
                                 (button_width, button_height))
 
-    # background tile positions
-    topL = menu_rect.topleft
-    topR = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
-    botL = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
-    botR = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    # menu background tile positions
+    top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
+    bot_l = tuple(numpy.subtract(menu_rect.bottomleft, (0, 32)))
+    bot_r = tuple(numpy.subtract(menu_rect.bottomright, (32, 32)))
+    corner_positions = (menu_rect.topleft, top_r, bot_l, bot_r)
 
     # ====================== MENU LOOP ===================== #
     menu_close = False
     while not menu_close:
-
         # get player input
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
@@ -220,40 +218,14 @@ def confirmation_popup():
                        font,
                        (text_x, text_y),
                        constants.COLOR_BLACK, center=True)
-
         text.draw_text(surface_menu, "Remember to go to the options menu to save the game.",
                        font,
                        (text_x, text_y + text_offset),
                        constants.COLOR_BLACK, center=True)
-
         menu_button.draw()
 
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-
-        # blit the corners
-        surface_menu.blit(globalvars.ASSETS.S_TOP_L_MENU_BROWN, topL)
-        surface_menu.blit(globalvars.ASSETS.S_TOP_R_MENU_BROWN, topR)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_L_MENU_BROWN, botL)
-        surface_menu.blit(globalvars.ASSETS.S_BOT_R_MENU_BROWN, botR)
-
-        # blit the top and bottom
-        num_tiles_width = int(menu_width / 32) - 2
-        num_tiles_height = int(menu_height / 32) - 2
-
-        for w in range(1, num_tiles_width + 1):
-            surface_menu.blit(globalvars.ASSETS.S_TOP_MENU_BROWN, tuple(numpy.add(topL, (32 * w, 0))))
-            surface_menu.blit(globalvars.ASSETS.S_BOT_MENU_BROWN, tuple(numpy.add(botL, (32 * w, 0))))
-
-        # blit the left and right sides
-        for h in range(1, num_tiles_height + 1):
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_L_MENU_BROWN, tuple(numpy.add(topL, (0, 32 * h))))
-            surface_menu.blit(globalvars.ASSETS.S_SIDE_R_MENU_BROWN, tuple(numpy.add(topR, (0, 32 * h))))
-
-        # blit the middle pieces
-        for r in range(1, num_tiles_height + 1):
-            for c in range(1, num_tiles_width + 1):
-                surface_menu.blit(globalvars.ASSETS.S_MID_MENU_BROWN, tuple(numpy.add(topL, (32 * c, 32 * r))))
-
+        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
         globalvars.CLOCK.tick(constants.GAME_FPS)
         pygame.display.flip()
 

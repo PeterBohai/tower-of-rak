@@ -6,7 +6,7 @@ import textwrap
 import pygame
 
 from src import constants, globalvars, map, draw, actions, hud
-from src.menu import inventory, options, popup
+from src.menu import inventory, options, popup, mainmenu
 from src.generators import playergen
 
 
@@ -440,10 +440,9 @@ def game_exit():
     None
 
     """
-    pygame.mixer.fadeout(10)
     game_save()
-    pygame.quit()
-    sys.exit()
+    mainmenu.perform_exit_sequence()
+
 
 
 def game_save(in_game=False):
