@@ -19,7 +19,6 @@ def cast_heal(target, value):
     -------
     bool
         True if the heal was successful, False otherwise.
-
     """
     if target.creature.current_hp < target.creature.max_hp:
         target.creature.heal(value)
@@ -31,7 +30,7 @@ def cast_heal(target, value):
 
 
 def cast_lightening(caster, dmg_and_range):
-    """Casts a spell that damages all targets in a line of tiles within a certain range of the `caster`.
+    """Casts a spell that damages all targets in a line of tiles within a range of the `caster`.
 
     Notifies the PLAYER that health is already full if currently at max hp.
 
@@ -46,15 +45,15 @@ def cast_lightening(caster, dmg_and_range):
     -------
     bool
         True if the spell was successful, False otherwise.
-
     """
     caster_location = (caster.x, caster.y)
     damage, max_r = dmg_and_range
     damaged_something = False
-    selected_tile_address = tileselect.menu_tile_select(coords_origin=caster_location, max_range=max_r,
-                                                        wall_pen=False, base_color=constants.COLOR_YELLOW)
+    selected_tile_address = tileselect.menu_tile_select(
+        coords_origin=caster_location, max_range=max_r,
+        wall_pen=False, base_color=constants.COLOR_YELLOW)
 
-    # continue with casting of spell only if caster did not cancel the spell (by using esc from menu_tile_select)
+    # Continue casting the spell only if caster did not cancel the spell (by using esc key)
     if selected_tile_address:
         tiles_affected = map.tiles_in_line(caster_location, selected_tile_address)
 
@@ -67,10 +66,12 @@ def cast_lightening(caster, dmg_and_range):
                 damaged_something = True
 
             if target_creature and len(tiles_affected) == 1:
-                game.game_message("Watch out! Aim away from yourself please.", constants.COLOR_WHITE)
+                game.game_message("Watch out! Aim away from yourself please.",
+                                  constants.COLOR_WHITE)
                 return False
 
-        game.game_message(f"{caster.creature.personal_name} casts lightening", constants.COLOR_WHITE)
+        game.game_message(f"{caster.creature.personal_name} casts lightening",
+                          constants.COLOR_WHITE)
         if not damaged_something:
             game.game_message("Nothing was hit, what a waste.", constants.COLOR_WHITE)
 
@@ -80,7 +81,7 @@ def cast_lightening(caster, dmg_and_range):
 
 
 def cast_fireball(caster, dmg_range_radius):
-    """Casts a spell that damages all targets in a radius of tiles within a certain range of the `caster`.
+    """Casts a spell that damages all targets in a radius of tiles within a range of the `caster`.
 
     Parameters
     ----------
@@ -93,7 +94,6 @@ def cast_fireball(caster, dmg_range_radius):
     -------
     bool
         True if the spell was successful, False otherwise.
-
     """
     damage, spell_range, spell_radius = dmg_range_radius
     caster_location = (caster.x, caster.y)
@@ -124,7 +124,7 @@ def cast_fireball(caster, dmg_range_radius):
 
 
 def cast_confusion(caster, effect_length):
-    """Casts a spell that confuses the selected target and forces them to move in uncontrollable, random directions.
+    """Casts a spell that confuses the selected target, forcing them to move in random directions.
 
     Parameters
     ----------
@@ -137,7 +137,6 @@ def cast_confusion(caster, effect_length):
     -------
     bool
         True if the spell was successful, False otherwise.
-
     """
     selected_tile_address = tileselect.menu_tile_select(wall_pen=False,
                                                         single_tile=True,
@@ -149,15 +148,17 @@ def cast_confusion(caster, effect_length):
         target_creature = map.creature_at_coords(target_tile_x, target_tile_y)
 
         if target_creature:
-            game.game_message(f"{caster.creature.personal_name} casts confusion on {target_creature.display_name}",
-                              constants.COLOR_WHITE)
+            game.game_message(
+                f"{caster.creature.personal_name} casts confusion on {target_creature.display_name}",
+                constants.COLOR_WHITE)
             normal_ai = target_creature.ai
 
             target_creature.ai = ai.AiConfuse(original_ai=normal_ai, num_turns=effect_length)
             target_creature.ai.owner = target_creature
 
-            game.game_message(f"{target_creature.display_name} is confused for {effect_length} turns!",
-                              constants.COLOR_GREEN)
+            game.game_message(
+                f"{target_creature.display_name} is confused for {effect_length} turns!",
+                constants.COLOR_GREEN)
 
         return True
     else:

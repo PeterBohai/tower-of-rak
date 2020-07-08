@@ -22,7 +22,6 @@ def gen_enemy(room_range_x, room_range_y, floor_num):
     Returns
     -------
     None
-
     """
     coord_range = (room_range_x, room_range_y)
 
@@ -89,7 +88,6 @@ def gen_friendly_mob(room_range_x, room_range_y, floor_num):
     Returns
     -------
     None
-
     """
     choice_num = tcod.random_get_int(0, 1, 100)
 
@@ -103,7 +101,7 @@ def gen_friendly_mob(room_range_x, room_range_y, floor_num):
 # ---------------------------------------- #
 
 def gen_dungo(room_range_x, room_range_y):
-    """Generates a Dungo mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a Dungo mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -115,8 +113,7 @@ def gen_dungo(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a Dungo mob.
-
+        An actor with a creature component having all the stats and abilities of a Dungo mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -130,9 +127,10 @@ def gen_dungo(room_range_x, room_range_y):
     base_defence = 0
     exp_pts = 4
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_enemy)
-    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul", value=exp_pts)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_enemy)
+    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul",
+                               value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -140,7 +138,7 @@ def gen_dungo(room_range_x, room_range_y):
 
 
 def gen_darksoot(room_range_x, room_range_y):
-    """Generates a DarkSoot mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a DarkSoot mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -152,8 +150,7 @@ def gen_darksoot(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a DarkSoot mob.
-
+        An actor with a creature component having all the stats and abilities of a DarkSoot mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -167,9 +164,10 @@ def gen_darksoot(room_range_x, room_range_y):
     base_attack = 3
     base_defence = 0
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_enemy)
-    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul", value=exp_pts)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_enemy)
+    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul",
+                               value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -177,7 +175,7 @@ def gen_darksoot(room_range_x, room_range_y):
 
 
 def gen_blazeo(room_range_x, room_range_y):
-    """Generates a Blazeo mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a Blazeo mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -189,8 +187,7 @@ def gen_blazeo(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a Blazeo mob.
-
+        An actor with a creature component having all the stats and abilities of a Blazeo mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -204,9 +201,10 @@ def gen_blazeo(room_range_x, room_range_y):
     base_defence = 0
     exp_pts = 8
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_enemy)
-    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul", value=exp_pts)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_enemy)
+    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul",
+                               value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -214,7 +212,7 @@ def gen_blazeo(room_range_x, room_range_y):
 
 
 def gen_shelk(room_range_x, room_range_y):
-    """Generates a Shelk mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a Shelk mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -226,8 +224,7 @@ def gen_shelk(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a Shelk mob.
-
+        An actor with a creature component having all the stats and abilities of a Shelk mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -241,9 +238,10 @@ def gen_shelk(room_range_x, room_range_y):
     base_defence = 3
     exp_pts = 9
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_enemy)
-    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul", value=exp_pts)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_enemy)
+    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul",
+                               value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -251,7 +249,7 @@ def gen_shelk(room_range_x, room_range_y):
 
 
 def gen_kelpclopse(room_range_x, room_range_y):
-    """Generates a KelpClopse mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a KelpClopse mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -263,8 +261,7 @@ def gen_kelpclopse(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a KelpClopse mob.
-
+        An actor with a creature component having all the stats and abilities of a KelpClopse mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -278,9 +275,10 @@ def gen_kelpclopse(room_range_x, room_range_y):
     base_defence = 1
     exp_pts = 12
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_enemy)
-    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul", value=exp_pts)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_enemy)
+    item_com = itemcom.ComItem("An evil soul that gives exp when consumed", item_type="Red Soul",
+                               value=exp_pts)
     ai_com = ai.AiChase()
     mob_obj = actor.ObjActor(x, y, creature_name, creature_sprite, animation_speed=1,
                              creature=creature_com, ai=ai_com, item=item_com)
@@ -290,7 +288,7 @@ def gen_kelpclopse(room_range_x, room_range_y):
 # ----- FRIENDLY MOBS ----- #
 
 def gen_healer_slime(room_range_x, room_range_y):
-    """Generates a friendly IceSlime mob on a random tile in the room specified by `room_range_x` and `room_range_y`.
+    """Generates a friendly IceSlime mob on a random tile in the room specified by the room range.
 
     Parameters
     ----------
@@ -302,8 +300,7 @@ def gen_healer_slime(room_range_x, room_range_y):
     Returns
     -------
     ObjActor
-        An actor object with a creature component having all the stats and abilities of a IceSlime mob.
-
+        An actor with a creature component having all the stats and abilities of a IceSlime mob.
     """
 
     x, y = (tcod.random_get_int(0, *room_range_x), tcod.random_get_int(0, *room_range_y))
@@ -316,8 +313,8 @@ def gen_healer_slime(room_range_x, room_range_y):
     base_defence = 0
     health = 5
 
-    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence, max_hp=health,
-                                        death_function=death.death_friendly)
+    creature_com = creature.ComCreature(personal_name, base_atk=base_attack, base_def=base_defence,
+                                        max_hp=health, death_function=death.death_friendly)
 
     item_com = itemcom.ComItem("A pure soul that gives health when consumed",
                                item_type="Pure Soul", use_function=magic.cast_heal, value=2)

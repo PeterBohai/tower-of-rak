@@ -21,39 +21,29 @@ def menu_main():
     # ----- button specs ----- #
 
     # button sizes (px)
-    button_width = 160
-    button_height = 32
-    button_offset_y = int(round(5/4 * button_height))
-
-    new_game_button_y = title_y + 100
-    cont_button_y = new_game_button_y + button_offset_y
-    options_button_y = cont_button_y + button_offset_y
-    credits_button_y = options_button_y + button_offset_y
-    quit_button_y = credits_button_y + button_offset_y
+    button_wh = (160, 32)
+    button_offset_y = int(round(5/4 * button_wh[1]))
+    button_y = [(title_y + 100) + button_offset_y * i for i in range(5)]
 
     # ------ create buttons ----- #
     new_game_button = gui.GuiButton(globalvars.SURFACE_MAIN, "New Game",
-                                    (center_x, new_game_button_y),
-                                    (button_width, button_height))
+                                    (center_x, button_y[0]), button_wh)
 
     cont_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Continue",
-                                (center_x, cont_button_y),
-                                (button_width, button_height))
+                                (center_x, button_y[1]), button_wh)
 
     options_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Options",
-                                   (center_x, options_button_y),
-                                   (button_width, button_height))
+                                   (center_x, button_y[2]), button_wh)
 
     credits_button = gui.GuiButton(globalvars.SURFACE_MAIN, "Credits",
-                                   (center_x, credits_button_y),
-                                   (button_width, button_height))
+                                   (center_x, button_y[3]), button_wh)
 
     quit_button = gui.GuiButton(globalvars.SURFACE_MAIN, "QUIT",
-                                (center_x, quit_button_y),
-                                (button_width, button_height))
+                                (center_x, button_y[4]), button_wh)
 
-    # all main menu buttons in vertical order (top to bottom) along with relevant coords as last element
-    menu_buttons_tup = (new_game_button, cont_button, options_button, credits_button, quit_button, (center_x, title_y))
+    # Main menu buttons in vertical order along with relevant coords as last element
+    menu_buttons_tup = (new_game_button, cont_button, options_button, credits_button, quit_button,
+                        (center_x, title_y))
 
     # play background music (on loop)
     pygame.mixer.music.load(globalvars.ASSETS.main_menu_music)
@@ -78,7 +68,8 @@ def menu_main():
         # start new game
         if new_game_button.update(player_events):
             pygame.mixer.music.fadeout(1500)
-            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT, draw_main_menu, menu_buttons_tup)
+            draw.fade_to_solid(constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT,
+                               draw_main_menu, menu_buttons_tup)
             game.game_start()
             menu_main()
 
@@ -108,12 +99,13 @@ def menu_main():
         pygame.display.update()
 
     if display_changed and globalvars.PREFERENCES.display_window == "fullscreen":
-        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
-                                                          flags=pygame.FULLSCREEN)
+        globalvars.SURFACE_MAIN = pygame.display.set_mode(
+            (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT), flags=pygame.FULLSCREEN)
         menu_main()
 
     elif display_changed:
-        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+        globalvars.SURFACE_MAIN = pygame.display.set_mode(
+            (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
         menu_main()
 
 

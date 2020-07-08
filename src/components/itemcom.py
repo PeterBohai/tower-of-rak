@@ -2,7 +2,7 @@ from src import constants, globalvars, game
 
 
 class ComItem:
-    """Item component class that gives actor objects item-like properties and functionality like pick up and use.
+    """Item component that gives actor objects item-like properties and functionality.
 
     Attributes
     ----------
@@ -18,7 +18,6 @@ class ComItem:
         Value of the item if it holds one (gold, exp etc.).
     container : ComContainer
         The specific container object the item resides in. Initialized to None.
-
     """
     def __init__(self, item_desc, weight=0,
                  item_type=None,
@@ -44,7 +43,6 @@ class ComItem:
         Returns
         -------
         None
-
         """
         if self.item_type == "gold":
             globalvars.ASSETS.sfx_coin_pickup.play()
@@ -88,7 +86,7 @@ class ComItem:
                 self.container = actor.container
 
     def drop(self, new_x, new_y):
-        """Drops this item object onto the ground specified by the (`new_x`,`new_y`) map-grid coordinates.
+        """Drops this item onto the ground specified by the (`new_x`,`new_y`) map-grid coordinates.
 
         Parameters
         ----------
@@ -100,7 +98,6 @@ class ComItem:
         Returns
         -------
         None
-
         """
 
         # inserting underneath any creature or PLAYER but above any objects already on that tile
@@ -125,12 +122,12 @@ class ComItem:
     def use(self):
         """Uses the item to produce an effect and removes it from the inventory.
 
-        Passes in the caster (the creature/actor using the item) and any value associated to the use_function.
+        Passes in the caster (the creature/actor using the item) and any value associated to the
+        use_function.
 
         Returns
         -------
         None
-
         """
         if self.owner.equipment:
             self.owner.equipment.toggle_equip()
@@ -157,7 +154,6 @@ class ComEquipment:
         The slot that the equipment will occupy (Right, Left, Body, Legs, Feet, Head).
     equipped : bool
         True if the item is equipped.
-
     """
     def __init__(self, attack_bonus=0, defence_bonus=0, slot=None):
 
@@ -173,7 +169,6 @@ class ComEquipment:
         Returns
         -------
         None
-
         """
         if self.equipped:
             self.unequip()
@@ -189,14 +184,14 @@ class ComEquipment:
         Returns
         -------
         None
-
         """
         all_equipped_items = self.owner.item.container.equipped_inventory
 
         if len(all_equipped_items) > 0:
             for equipped_item in all_equipped_items:
                 if equipped_item.equipment.slot == self.slot:
-                    game.game_message(f"There is already an item in the {self.slot} slot!", constants.COLOR_WHITE)
+                    game.game_message(f"There is already an item in the {self.slot} slot!",
+                                      constants.COLOR_WHITE)
                     self.equipped = False
                     return
 
@@ -209,7 +204,6 @@ class ComEquipment:
         Returns
         -------
         None
-
         """
         self.equipped = False
         game.game_message(f"Unequipped [{self.owner.display_name}]")

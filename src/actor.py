@@ -8,8 +8,8 @@ from src import constants, globalvars, game
 class ObjActor:
     """An actor object class that essentially represents every entity in the game.
 
-    This is an object that can be anything that appears in the game (except for walls and floors) and is differentiated
-    mainly through the components that make up and control the object.
+    This is an object that can be anything that appears in the game (except for walls and floors)
+    and is differentiated mainly through the components that make up and control the object.
     Note that this rouge-like game mainly uses the composition/component system over inheritance.
 
     Attributes
@@ -21,13 +21,13 @@ class ObjActor:
     object_name : str
         Name of the object.
     _animation_key :  str
-        The actor object's animation key to access its sprite sequence from the animation dictionary in the assets.
+        The actor's animation key to access its sprite sequence from the animation dictionary.
     _animation_seq : list
         The sequence of sprites to be cycled through that make up the animation of the object.
     animation_index : int
         The current index of the animation sequence list to be displayed (a single still sprite).
     animation_speed : float, optional
-        Time in seconds it takes to loop through one object animation iteration. Larger number means slower animation.
+        Time in seconds it takes to loop through one object animation iteration.
     sprite_time_elapsed : float
         Time in seconds the current sprite has been displayed for.
     _exp_total : int, optional
@@ -35,26 +35,25 @@ class ObjActor:
     gold : int, optional
         Total gold value the actor object currently contains/owns.
     status : str, optional
-        The status of the object that help initiate different behaviours for different statuses (eg. STATUS_OPEN)
+        The actor's status that dictates different behaviours (eg. STATUS_OPEN).
     _level : int
         Current level of actor (usually PLAYER).
     exp_to_next_total : int
         Number of total exp points needed to reach the next level.
     creature: object, optional
-        A component class (ComCreature) that gives the object creature-specific attributes and functionality.
+        A ComCreature component that gives the object creature attributes and functionality.
     ai: object, optional
         A component class that gives the object the ability to move and act on their own.
     container: object, optional
-        A component class (ComContainer) that gives the object an inventory (hold more than one item).
+        A ComContainer component that gives the object an inventory (hold more than one item).
     item: object, optional
-        A component class (ComItem) that gives the object attributes and functionality of items (pick/drop/use).
+        A ComItem component that gives the attributes and functionality of items (pick/drop/use).
     equipment: object, optional
-        A component class (ComEquipment) that gives the object equipment attributes (wear/bonuses).
+        A ComEquipment component that gives the object equipment attributes (wear/bonuses).
     stairs: object, optional
-        A structure component class (ComStairs) that gives the object staircase attributes (move up/down floors).
+        A ComStairs component that gives the object staircase attributes (move up/down floors).
     portal: object, optional
-        A structure component class (ComPortal) that gives the object portal attributes (enter/win the game).
-
+        A ComPortal component that gives the object portal attributes (enter/win the game).
     """
 
     def __init__(self, x, y, object_name,
@@ -120,7 +119,7 @@ class ObjActor:
 
     @property
     def animation_key(self):
-        """str: Gets the animation key that accesses the sprite sequence from the animation dictionary in the assets.
+        """str: Gets the animation key that accesses the sprite sequence.
 
         When the animation key is set, the animation sequence will also be reset accordingly.
         """
@@ -153,7 +152,7 @@ class ObjActor:
 
     @property
     def is_visible(self):
-        """bool: Returns True if this object is in the field of view of the PLAYER, False otherwise."""
+        """bool: Returns True if this object is in the field of view of the PLAYER."""
         return tcod.map_is_in_fov(globalvars.FOV_MAP, self.x, self.y)
 
     @property
@@ -193,10 +192,10 @@ class ObjActor:
     def draw(self, surface):
         """Draws the actor object to the screen.
 
-        Draws the actor object to the map screen if it appears within the PLAYER's fov. If the object has multiple
-        sprites in its animation list, it keeps track of the timing of the animations and triggers a transition to
-        display the next image in the list. This will give off an "idle" animation look, where creatures usually bob up
-        and down.
+        Draws the actor object to the map screen if it appears within the PLAYER's fov.
+        If the object has multiple sprites in its animation list, it keeps track of the timing of
+        the animations and triggers a transition to display the next image in the list.
+        This will give off an "idle" animation look, where creatures usually bob up and down.
 
         Parameters
         ----------
@@ -206,7 +205,6 @@ class ObjActor:
         Returns
         -------
         None
-
         """
 
         if surface is globalvars.SURFACE_MAP:
@@ -246,7 +244,6 @@ class ObjActor:
         -------
         float
             The direct (straight diagonal) distance to the other actor object.
-
         """
 
         dx = other.x - self.x
@@ -264,18 +261,17 @@ class ObjActor:
         Returns
         -------
         None
-
         """
 
         self._animation_seq = None
 
     def animation_init(self):
-        """Sets animation back to referencing animations from ASSETS (and not None after animation_del).
+        """Sets animation back to referencing animations from ASSETS.
 
+        Prevents being None after animation_del.
         Returns
         -------
         None
-
         """
 
         self._animation_seq = globalvars.ASSETS.animation_dict[self._animation_key]

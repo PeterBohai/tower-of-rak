@@ -9,7 +9,7 @@ from src.menu import popup
 
 
 class ComCreature:
-    """Creature component class which give actor objects creature-like properties and functionality.
+    """Creature component which give actor objects creature-like properties and functionality.
 
     These creatures contain health and the ability to move and attack, etc.
 
@@ -41,7 +41,6 @@ class ComCreature:
         Alpha value [0, 255] of the small health bar display on top of the creature when being hit.
     internal_timer : int
         The number of ticks (total since pygame init) at the moment this creature was hit.
-
     """
 
     def __init__(self, personal_name,
@@ -68,9 +67,8 @@ class ComCreature:
     def power(self):
         """int: Calculates and returns the current total power of the creature.
 
-        Takes into account the creature's attack points (base attack + bonuses) and any equipment/item/spell
-        bonuses.
-
+        Takes into account the creature's attack points (base attack + bonuses) and any
+        equipment/item/spell bonuses.
         """
         total_power = self.attack_points
 
@@ -80,14 +78,14 @@ class ComCreature:
     def defence(self):
         """int: Calculates and returns the current total defence of the creature.
 
-        Takes into account the base defence of the creature as well as any equipment/item/spell bonuses.
-
+        Takes into account the base defence of the creature as well as any equipment/item/spell
+        bonuses.
         """
         total_defence = self.base_def
 
         if self.owner.container:
-            equipment_def_bonuses = [obj.equipment.defence_bonus for obj in self.owner.container.equipped_inventory]
-
+            equipment_def_bonuses = [obj.equipment.defence_bonus
+                                     for obj in self.owner.container.equipped_inventory]
             for def_bonus in equipment_def_bonuses:
                 total_defence += def_bonus
 
@@ -100,11 +98,11 @@ class ComCreature:
 
     @property
     def attack_points(self):
-        """int: Calculates and returns the raw attack points of the PLAYER (base stat plus weapon bonuses)"""
+        """int: Returns the raw attack points of the PLAYER (base stat plus weapon bonuses)"""
         raw_damage = self.base_atk
         if self.owner.container:
-            equipment_power_bonuses = [obj.equipment.attack_bonus for obj in self.owner.container.equipped_inventory]
-
+            equipment_power_bonuses = [obj.equipment.attack_bonus
+                                       for obj in self.owner.container.equipped_inventory]
             for power_bonus in equipment_power_bonuses:
                 raw_damage += power_bonus
 
@@ -123,24 +121,26 @@ class ComCreature:
             game.game_message("Player is now at max level! NICE!", constants.COLOR_RED)
 
     def move(self, dx, dy):
-        """Moves the creature object one tile on the map, stopping at walls and attacking when appropriate.
+        """Moves the creature object one tile on the map, stopping and attacking when appropriate.
 
         Parameters
         ----------
         dx : int
-            The distance/direction to move the object along the x-axis relative to the map grid. Usually [-1, 1].
+            The distance/direction to move the object along the x-axis relative to the map grid.
+            Usually [-1, 1].
         dy : int
-            The distance/direction to move the object along the y-axis relative to the map grid. Usually [-1, 1].
+            The distance/direction to move the object along the y-axis relative to the map grid.
+            Usually [-1, 1].
 
         Returns
         -------
         None
-
         """
         self.was_hit = False
         tile_is_wall = globalvars.GAME.current_map[self.owner.x + dx][self.owner.y + dy].block_path
 
-        creature_there = map.creature_at_coords(self.owner.x + dx, self.owner.y + dy, exclude=self.owner)
+        creature_there = map.creature_at_coords(self.owner.x + dx, self.owner.y + dy,
+                                                exclude=self.owner)
 
         if creature_there is not None:
             if self.owner is globalvars.PLAYER or self.owner.ai.hurt_kin is True:
@@ -224,34 +224,41 @@ class ComCreature:
         rand_int = tcod.random_get_int(0, 0, 100)
         percent_chance = 6
 
-        # have a small chance of not always moving strictly away in the opposite direction of Player
+        # Has a small chance of not always moving strictly away in the opposite direction of Player
         if rand_int < percent_chance:
-
             # move towards direction that is not blocked by walls 2 tiles or closer away
             if dx == 0:
-                if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 1, self.owner.y) or \
-                      map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + 2, self.owner.y):
+                if map.wall_at_coords(globalvars.GAME.current_map,  self.owner.x + 1,
+                                      self.owner.y) or \
+                        map.wall_at_coords(globalvars.GAME.current_map,
+                                           self.owner.x + 2, self.owner.y):
                     dx = -1
-                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x - 1, self.owner.y) or \
-                        map.wall_at_coords(globalvars.GAME.current_map, self.owner.x - 2, self.owner.y):
+                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x - 1,
+                                        self.owner.y) or \
+                        map.wall_at_coords(globalvars.GAME.current_map,
+                                           self.owner.x - 2, self.owner.y):
                     dx = 1
                 else:
                     dx = random.choice((-1, 1))
 
                 dy = 0
             elif dy == 0:
-                if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 1) or \
-                      map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y + 2):
+                if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x,
+                                      self.owner.y + 1) or \
+                      map.wall_at_coords(globalvars.GAME.current_map,
+                                         self.owner.x, self.owner.y + 2):
                     dy = -1
-                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y - 1) or \
-                        map.wall_at_coords(globalvars.GAME.current_map, self.owner.x, self.owner.y - 2):
+                elif map.wall_at_coords(globalvars.GAME.current_map, self.owner.x,
+                                        self.owner.y - 1) or \
+                        map.wall_at_coords(globalvars.GAME.current_map,
+                                           self.owner.x, self.owner.y - 2):
                     dy = 1
                 else:
                     dy = random.choice((-1, 1))
 
                 dx = 0
 
-        # check for wall in the direction it was supposed to move
+        # Check for wall in the direction it was supposed to move
         if map.wall_at_coords(globalvars.GAME.current_map, self.owner.x + dx, self.owner.y + dy):
 
             # move randomly to either left or right if blocked in the y-direction
@@ -263,7 +270,7 @@ class ComCreature:
                 dy = random.choice((-1, 1))
                 dx = 0
 
-        # has a small chance to stay still for a turn
+        # Has a small chance to stay still for a turn
         rand_stay_chance = tcod.random_get_int(0, 1, 100)
         if rand_stay_chance < 6:
             dx, dy = (0, 0)
@@ -273,8 +280,8 @@ class ComCreature:
     def attack(self, target):
         """Attacks the `target` object.
 
-        Amount of damage dealt depends on this creature's power property value as well as the defence property of the
-        `target` creature.
+        Amount of damage dealt depends on this creature's power property value as well as the
+        defence property of the `target` creature.
 
         Parameters
         ----------
@@ -284,7 +291,6 @@ class ComCreature:
         Returns
         -------
         None
-
         """
         if tcod.random_get_int(0, 0, 100) < self.crit_chance:
             dmg = math.floor((self.crit_dmg * self.power) + 0.5)
@@ -302,12 +308,13 @@ class ComCreature:
         if self.owner is globalvars.PLAYER:
             pygame.mixer.Sound.play(random.choice(globalvars.ASSETS.sfx_hit_punch_list))
 
-        game.game_message(f"{attacker_name} attacks {victim_name} for {dmg_dealt} damage!", constants.COLOR_WHITE)
+        game.game_message(f"{attacker_name} attacks {victim_name} for {dmg_dealt} damage!",
+                          constants.COLOR_WHITE)
 
         target.creature.take_damage(dmg_dealt)
 
     def take_damage(self, damage):
-        """Applies `damage` value to this creature's current health and executes its death function if health <= 0.
+        """Applies `damage` amount to this creature's health and handles death when health <= 0.
 
         Parameters
         ----------
@@ -426,11 +433,13 @@ class ComCreature:
         None
 
         """
-        is_below = (globalvars.PLAYER.x == self.owner.x and globalvars.PLAYER.y == self.owner.y - 1)
+        is_below = (globalvars.PLAYER.x == self.owner.x
+                    and globalvars.PLAYER.y == self.owner.y - 1)
 
         start_x = self.owner.x * constants.CELL_WIDTH + int(constants.CELL_WIDTH / 2)
         if is_below:
-            start_y = self.owner.y * constants.CELL_HEIGHT + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH / 2))
+            start_y = self.owner.y * constants.CELL_HEIGHT \
+                      + (constants.CELL_HEIGHT + int(constants.CELL_WIDTH / 2))
         else:
             start_y = self.owner.y * constants.CELL_HEIGHT
 
@@ -454,6 +463,6 @@ class ComCreature:
             if self.dmg_received == 0:
                 text_color = pygame.Color('royalblue3')
 
-            self.dmg_alpha = text.draw_fading_text(globalvars.SURFACE_MAP, dmg_text, font, display_coords,
-                                                   text_color, self.dmg_alpha, center=True)
-
+            self.dmg_alpha = text.draw_fading_text(globalvars.SURFACE_MAP, dmg_text, font,
+                                                   display_coords, text_color, self.dmg_alpha,
+                                                   center=True)

@@ -438,7 +438,6 @@ def game_exit():
     Returns
     -------
     None
-
     """
     game_save()
     mainmenu.perform_exit_sequence()
@@ -446,12 +445,13 @@ def game_exit():
 
 
 def game_save(in_game=False):
-    """Saves the game into a compressed binary file. Reinitialize animations if saving in-game from options menu.
+    """Saves the game into a compressed binary file.
+
+    Reinitialize animations if saving in-game from options menu.
 
     Returns
     -------
     None
-
     """
     with gzip.open("data/saves/savegame", "wb") as save_file:
         try:
@@ -475,7 +475,6 @@ def game_load():
     Returns
     -------
     None
-
     """
 
     with gzip.open("data/saves/savegame", "rb") as load_file:
@@ -497,7 +496,6 @@ def preferences_save():
     Returns
     -------
     None
-
     """
 
     with gzip.open("data/saves/settings", "wb") as save_file:
@@ -510,7 +508,6 @@ def preferences_load():
     Returns
     -------
     None
-
     """
 
     with gzip.open("data/saves/settings", "rb") as load_file:
@@ -523,7 +520,6 @@ def game_start(new=True):
     Returns
     -------
     None
-
     """
     if new:
         game_new()

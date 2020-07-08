@@ -21,7 +21,6 @@ class StructTile:
         The bit-mask value for floor tiles.
     floor_rand_index : int
         The index that assigns a random floor tile design accordingly.
-
     """
 
     def __init__(self, block_path):
@@ -40,13 +39,14 @@ class StructTile:
     def floor_assignment(self, value):
         # set random tile pattern for room tiles (not tunnel)
         if value in (0, 1, 2, 4, 8):
-            self.floor_rand_index = random.randrange(len(globalvars.ASSETS.floor_explored_dict[value]))
+            self.floor_rand_index = random.randrange(
+                len(globalvars.ASSETS.floor_explored_dict[value]))
 
         self._floor_assignment = value
 
 
 class StructPreferences:
-    """A preferences object class that tracks general game settings such as volume, display, or key bindings
+    """A preferences object that tracks general game settings like volume, display, or key bindings
 
     Attributes
     ----------
@@ -57,7 +57,6 @@ class StructPreferences:
     keybindings : dict
     default_display_window : str
     display_window: str
-
     """
     def __init__(self):
         self.sfx_volume_val = 0.5

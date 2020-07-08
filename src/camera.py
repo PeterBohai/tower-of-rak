@@ -9,14 +9,13 @@ class ObjCamera:
     Attributes
     ----------
     width : int
-        The width of the rectangular camera display in pixels (typically same as the game window dimensions).
+        The width of the rectangular camera display in pixels (typically same as the game window).
     height : int
-        The height of the rectangular camera display in pixels (typically same as the game window dimensions).
+        The height of the rectangular camera display in pixels (typically same as the game window).
     x : int
         The x-coordinate in pixels of where the camera will be aligned to relative to the map.
     y : int
         The y-coordinate in pixels of where the camera will be aligned to relative to the map.
-
     """
 
     def __init__(self):
@@ -26,7 +25,7 @@ class ObjCamera:
 
     @property
     def rectangle(self):
-        """pygame.Rect obj: The rectangle area of the camera object aligned at its center coordinates."""
+        """pygame.Rect obj: The rectangular camera object aligned at its center coordinates."""
         pos_rect = pygame.Rect((0, 0), (constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
         pos_rect.center = (self.x, self.y)
 
@@ -34,7 +33,7 @@ class ObjCamera:
 
     @property
     def map_address(self):
-        """tuple: The map-grid coordinates (not pixels) of where the camera object's center is currently at."""
+        """tuple: The map-grid coordinates (not pixels) of the camera's current center."""
 
         map_x = int(self.x / constants.CELL_WIDTH)
         map_y = int(self.y / constants.CELL_HEIGHT)
@@ -51,7 +50,7 @@ class ObjCamera:
         """
         camera_speed = 1
 
-        # add half the dimensions of one cell as PLAYER coordinates are aligned to the cell's upper-left corner
+        # Add half of one cell as PLAYER coordinates are aligned to the cell's upper-left corner
         target_x = (globalvars.PLAYER.x * constants.CELL_WIDTH) + (constants.CELL_WIDTH/2)
         target_y = (globalvars.PLAYER.y * constants.CELL_HEIGHT) + (constants.CELL_HEIGHT/2)
         distance_to_target_x, distance_to_target_y = self.map_dist_to_cam((target_x, target_y))
@@ -70,8 +69,7 @@ class ObjCamera:
         Returns
         -------
         tuple
-            The (x, y) pixel coordinate difference between the camera and `coords` relative to the map.
-
+            The (x, y) pixel coordinate difference between the camera and relative map coords.
         """
         map_x, map_y = map_pixel_coord
 
@@ -81,7 +79,7 @@ class ObjCamera:
         return distance_diff_x, distance_diff_y
 
     def window_dist_to_cam(self, window_coord):
-        """Calculates the distance the camera's center (in terms of the window) from the specified window `coords`.
+        """Return the distance the camera's center (window-wise) from the specified window coords.
 
         Parameters
         ----------
@@ -91,8 +89,7 @@ class ObjCamera:
         Returns
         -------
         tuple
-            The (x, y) pixel coordinate difference between the camera and `coords` relative to the window.
-
+            The (x, y) pixel coordinate difference between the camera and relative map coords.
         """
         window_x, window_y = window_coord
 

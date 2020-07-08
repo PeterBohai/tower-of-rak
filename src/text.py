@@ -24,7 +24,6 @@ def draw_text(display_surface, text, font, coords, text_color, back_color=None, 
     Returns
     -------
     None
-
     """
     if back_color is not None:
         text_surf = font.render(text, False, text_color, back_color)
@@ -41,7 +40,8 @@ def draw_text(display_surface, text, font, coords, text_color, back_color=None, 
     display_surface.blit(text_surf, text_rect)
 
 
-def draw_fading_text(display_surface, text, font, coords, text_color, alpha_val, speed=2, center=False):
+def draw_fading_text(display_surface, text, font, coords, text_color, alpha_val, speed=2,
+                     center=False):
     """Displays text that fades to transparency
 
     Parameters
@@ -67,8 +67,7 @@ def draw_fading_text(display_surface, text, font, coords, text_color, alpha_val,
     Returns
     -------
     int
-        The new alpha value (so that it can modify the actual alpha variable that needs to be changed)
-
+        The new alpha value (needed to modify the actual alpha variable that needs to be changed)
     """
     orig_surface = font.render(text, True, text_color)
     txt_surface = orig_surface.copy()
@@ -104,7 +103,6 @@ def get_text_height(font):
     -------
     int
         The height of the text font in pixels.
-
     """
     font_object = font.render('A', False, (0, 0, 0))
     font_rect = font_object.get_rect()
@@ -126,7 +124,6 @@ def get_text_width(font, text):
     -------
     int
         The width of the text in pixels.
-
     """
     font_object = font.render(text, False, (0, 0, 0))
     font_rect = font_object.get_rect()

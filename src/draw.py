@@ -18,7 +18,6 @@ def draw_game():
     Returns
     -------
     None
-
     """
     globalvars.SURFACE_MAIN.fill(constants.COLOR_GAME_BG)
     globalvars.SURFACE_MAP.fill(constants.COLOR_GAME_BG)
@@ -33,7 +32,7 @@ def draw_game():
 
 
 def draw_map(target_map):
-    """Draws the desired `map` (floor, walls, all objects) onto the the map display surface SURFACE_MAP.
+    """Draws the desired map (floor, walls, all objects) onto the the display surface SURFACE_MAP.
 
     Only the camera area of the map is rendered to prevent performance loss on large maps.
 
@@ -45,7 +44,6 @@ def draw_map(target_map):
     Returns
     -------
     None
-
     """
 
     # render only the visible portion of the map
@@ -82,31 +80,36 @@ def draw_map(target_map):
                 target_map[x][y].explored = True
 
                 if target_map[x][y].block_path is True:
-                    globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_dict[wall_num],
-                                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                    globalvars.SURFACE_MAP.blit(
+                        globalvars.ASSETS.wall_dict[wall_num],
+                        (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                 else:
                     if floor_num in (0, 1, 2, 4, 8):
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num][index],
-                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        globalvars.SURFACE_MAP.blit(
+                            globalvars.ASSETS.floor_dict[floor_num][index],
+                            (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
                     else:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_dict[floor_num],
-                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
-
+                        globalvars.SURFACE_MAP.blit(
+                            globalvars.ASSETS.floor_dict[floor_num],
+                            (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
             else:
                 if target_map[x][y].explored:
 
                     if target_map[x][y].block_path is True:
-                        globalvars.SURFACE_MAP.blit(globalvars.ASSETS.wall_explored_dict[wall_num],
-                                                    (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                        globalvars.SURFACE_MAP.blit(
+                            globalvars.ASSETS.wall_explored_dict[wall_num],
+                            (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
                     else:
                         if floor_num in (0, 1, 2, 4, 8):
-                            globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num][index],
-                                                        (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                            globalvars.SURFACE_MAP.blit(
+                                globalvars.ASSETS.floor_explored_dict[floor_num][index],
+                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
                         else:
-                            globalvars.SURFACE_MAP.blit(globalvars.ASSETS.floor_explored_dict[floor_num],
-                                                        (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
+                            globalvars.SURFACE_MAP.blit(
+                                globalvars.ASSETS.floor_explored_dict[floor_num],
+                                (x * constants.CELL_WIDTH, y * constants.CELL_HEIGHT))
 
     # draw all objects onto the map
     for obj in globalvars.GAME.current_objects:
@@ -123,15 +126,14 @@ def draw_map(target_map):
 
 
 def draw_window_ui():
-    """Draws all the hud locked onto the screen window and not the map (floor num, fps, PLAYER health, msgs).
+    """Draws all the hud fixed on the screen window and not the map (floor num, fps, health, msgs).
 
     Returns
     -------
     None
-
     """
 
-    # draw floor number (title) in the middle for a few seconds when floor changes and when game first starts
+    # Draw floor number in the middle for a few seconds when floor changes/game first starts
     if globalvars.GAME.floor_transition_alpha > 0:
         hud.draw_floor_title(change_alpha=False)
 
@@ -161,7 +163,7 @@ def draw_window_ui():
 
 
 def draw_one_tile(display_surface, tile_coords, color, alpha=150, mark=False):
-    """Covers one tile grid on the map with a specific color tint. For use in tile selection (spell scrolls).
+    """Covers one tile on the map with a color tint. For use in tile selection (spell scrolls).
 
     Parameters
     ----------
@@ -179,7 +181,6 @@ def draw_one_tile(display_surface, tile_coords, color, alpha=150, mark=False):
     Returns
     -------
     None
-
     """
     x, y = tile_coords
 
@@ -209,7 +210,8 @@ def fade_to_solid(width, height, redraw_func, redraw_args, color=pygame.Color('b
     height : int
         Height of the surface area to be faded.
     redraw_func : function
-        The draw function that is executed while the display doesnt fade straight to the color after one iteration.
+        The draw function that is executed while the display doesnt fade straight to the color
+        after one iteration.
     redraw_args : tuple
         All necessary arguments to be passed into the `redraw_func` function
     color : tuple, optional
@@ -218,7 +220,6 @@ def fade_to_solid(width, height, redraw_func, redraw_args, color=pygame.Color('b
     Returns
     -------
     None
-
     """
     fade_surface = pygame.Surface((width, height))
     fade_surface.fill(color)
@@ -253,7 +254,8 @@ def draw_menu_background(surface, menu_wh, top_l, top_r, bot_l, bot_r, assets=No
     mid_tile = globalvars.ASSETS.S_MID_MENU_BROWN
 
     if assets:
-        top_l_tile, top_r_tile, bot_l_tile, bot_r_tile, top_tile, bot_tile, side_l_tile, side_r_tile, mid_tile = assets
+        top_l_tile, top_r_tile, bot_l_tile, bot_r_tile, top_tile, bot_tile, \
+         side_l_tile, side_r_tile, mid_tile = assets
 
     # blit the corners
     surface.blit(top_l_tile, top_l)

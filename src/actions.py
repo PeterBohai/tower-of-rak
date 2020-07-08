@@ -2,13 +2,12 @@ from src import globalvars, map
 
 
 def use_stairs():
-    """Checks to see if PLAYER is on a set of stairs or a portal when player and invokes the appropriate use functions.
+    """Checks to see if PLAYER is on a set of stairs/portal and invokes the respective actions.
 
     Returns
     -------
     str
         Either the status "Just Changed Floors" or None.
-
     """
     objs_at_player = map.objects_at_coords(globalvars.PLAYER.x, globalvars.PLAYER.y)
 
@@ -26,7 +25,7 @@ def use_stairs():
 
 
 def move_one_tile(direction):
-    """Sets the dx, dy according to the `direction` specified and passes those values to the PLayer's move method.
+    """Sets the dx, dy according to the `direction` and passes them to the PLayer's move method.
 
     Parameters
     ----------
@@ -36,7 +35,6 @@ def move_one_tile(direction):
     Returns
     -------
     None
-
     """
     if direction == "up":
         dx, dy = 0, -1
@@ -76,5 +74,6 @@ def drop_item():
 
     """
     if len(globalvars.PLAYER.container.inventory) > 0:
-        globalvars.PLAYER.container.inventory[-1].item.drop(globalvars.PLAYER.x, globalvars.PLAYER.y)
+        globalvars.PLAYER.container.inventory[-1].item.drop(globalvars.PLAYER.x,
+                                                            globalvars.PLAYER.y)
 

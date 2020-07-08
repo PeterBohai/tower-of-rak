@@ -19,7 +19,6 @@ def draw_player_health(surface, coords, percentage):
     Returns
     -------
     None
-
     """
     if percentage < 0:
         percentage = 0
@@ -69,7 +68,6 @@ def draw_player_exp(surface, coords):
     Returns
     -------
     None
-
     """
     percentage = globalvars.PLAYER.exp / globalvars.PLAYER.exp_to_next
 
@@ -113,7 +111,6 @@ def pfp(surface, coord):
     Returns
     -------
     None
-
     """
 
     pfp_img = globalvars.ASSETS.S_PLAYER_PFP
@@ -128,12 +125,11 @@ def level_sign(surface, coord):
     surface : pygame Surface obj
         The surface to draw the level indicator on (normally main surface).
     coord : tuple
-        Appropriate coordinates (usually in px) to position the indicator relative to its topleft corner.
+        The coordinates (usually in px) to position the indicator relative to the topleft corner.
 
     Returns
     -------
     None
-
     """
     level_img = globalvars.ASSETS.S_PLAYER_LVL
     level_txt = f"LV {globalvars.PLAYER.level}"
@@ -166,7 +162,6 @@ def update_pfp(surface, player_input):
     -------
     bool
         True if the pfp was clicked, False if not.
-
     """
     surface_rect = surface.get_rect()
     mouse_clicked = False
@@ -178,10 +173,11 @@ def update_pfp(surface, player_input):
             if event.button == 1:
                 mouse_clicked = True
 
-    mouse_hover = (surface_rect.left <= mouse_x <= surface_rect.right and
-                   surface_rect.top <= mouse_y <= surface_rect.bottom)
+    mouse_hover = (surface_rect.left <= mouse_x <= surface_rect.right
+                   and surface_rect.top <= mouse_y <= surface_rect.bottom)
 
-    button_clicked, globalvars.GAME.hover_sound_played = gui.hovered_clickable_element(mouse_hover, mouse_clicked, globalvars.GAME.hover_sound_played)
+    button_clicked, globalvars.GAME.hover_sound_played = gui.hovered_clickable_element(
+        mouse_hover, mouse_clicked, globalvars.GAME.hover_sound_played)
 
     return button_clicked
 
@@ -193,7 +189,6 @@ def draw_fps():
     -------
     int
         The x-coordinate of the topleft corner of the fps message
-
     """
     fps_text = f"fps: {int(globalvars.CLOCK.get_fps())}"
     pos_x = constants.CAMERA_WIDTH - text.get_text_width(constants.FONT_BEST, fps_text) - 5
@@ -208,13 +203,12 @@ def draw_fps():
 def draw_messages():
     """Draws the message console to the game screen window.
 
-    Displays a number of messages from GAME.message_history in sequence. The order of messages starts from
-    the most recent at the bottom and older at the top.
+    Displays a number of messages from GAME.message_history in sequence.
+    The order of messages starts from the most recent at the bottom and older at the top.
 
     Returns
     -------
     None
-
     """
     if len(globalvars.GAME.message_history) <= constants.NUM_MESSAGES:
         globalvars.GAME.message_history = globalvars.GAME.message_history
@@ -230,8 +224,9 @@ def draw_messages():
                        (text_x, start_y + (i * text_height)), color, constants.COLOR_GAME_BG)
 
 
-def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20, change_alpha=True):
-    """Displays the fading floor title text when entering game from the main menu or entering a floor.
+def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT_BEST_20,
+                     change_alpha=True):
+    """Displays the fading title text when entering game from the main menu or entering a floor.
 
     Parameters
     ----------
@@ -245,7 +240,6 @@ def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT
     Returns
     -------
     None
-
     """
     text_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2 - constants.CELL_HEIGHT - 5)
     floor_num = globalvars.GAME.cur_floor
@@ -255,11 +249,13 @@ def draw_floor_title(text_color=pygame.Color('aquamarine1'), font=constants.FONT
 
     # dont need to change alpha value here since the main game loop does it
     if change_alpha:
-        globalvars.GAME.floor_transition_alpha = text.draw_fading_text(globalvars.SURFACE_MAIN, floor_text, font,
-                                                                       text_coords, text_color, alpha_val, center=True)
+        globalvars.GAME.floor_transition_alpha = text.draw_fading_text(
+            globalvars.SURFACE_MAIN, floor_text, font, text_coords, text_color, alpha_val,
+            center=True)
     else:
         text.draw_fading_text(globalvars.SURFACE_MAIN, floor_text, font,
                               text_coords, text_color, alpha_val, speed=1, center=True)
+
 
 def draw_mini_map(target_map):
     """Draws the mini map onto the the main display surface SURFACE_MAIN.
@@ -272,7 +268,6 @@ def draw_mini_map(target_map):
     Returns
     -------
     None
-
     """
     mini_cell_w, mini_cell_h = 2, 2
     cam_grid_x, cam_grid_y = globalvars.CAMERA.map_address
@@ -284,7 +279,8 @@ def draw_mini_map(target_map):
     mini_cam_rect = mini_cam_surface.get_rect()
     mini_cam_rect.center = (cam_grid_x * mini_cell_w, cam_grid_y * mini_cell_h)
 
-    mini_surface = pygame.Surface((constants.MAP_WIDTH * mini_cell_w, constants.MAP_HEIGHT * mini_cell_h))
+    mini_surface = pygame.Surface((constants.MAP_WIDTH * mini_cell_w,
+                                   constants.MAP_HEIGHT * mini_cell_h))
     mini_surface.fill(back_color)
 
     cam_grid_width = mini_cam_width // mini_cell_w
@@ -329,4 +325,5 @@ def draw_mini_map(target_map):
             mini_surface.blit(globalvars.ASSETS.S_MINI_PORTAL, (obj.x * 2, obj.y * 2))
 
     mini_cam_surface.blit(mini_surface, (0, 0), mini_cam_rect)
-    globalvars.SURFACE_MAIN.blit(mini_cam_surface, (constants.CAMERA_WIDTH - mini_cam_width, fps_msg_height))
+    globalvars.SURFACE_MAIN.blit(mini_cam_surface,
+                                 (constants.CAMERA_WIDTH - mini_cam_width, fps_msg_height))

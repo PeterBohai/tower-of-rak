@@ -13,8 +13,8 @@ def menu_tile_select(coords_origin=None,
                      single_tile=False):
     """Enables the player to select a tile on the map.
 
-    This function produces a rectangular indication when the mouse is hovered over a tile as well as other tiles
-    that could be affected, depending on the spell being used, etc.
+    This function produces a rectangular indication when the mouse is hovered over a tile as well
+    as other tiles that could be affected, depending on the spell being used, etc.
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ def menu_tile_select(coords_origin=None,
     max_range : int, optional
         Maximum number of tiles out from the caster.
     radius : int, optional
-        Number of tiles out from the player when using an area of affect spell in the shape of a ball/square.
+        Number of tiles from the player when using an area of affect spell.
     wall_pen : bool, optional
         True if spell can ignore wall tiles.
     creature_pen : bool, optional
@@ -39,7 +39,6 @@ def menu_tile_select(coords_origin=None,
     -------
     tuple
         The map-grid coordinate of the tile that the PLAYER clicked on.
-
     """
     menu_close = False
     while not menu_close:
@@ -112,10 +111,12 @@ def menu_tile_select(coords_origin=None,
 
             if target_creature is not None:
                 if target_creature is not globalvars.PLAYER:
-                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, alpha=100, mark=True)
+                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color,
+                                       alpha=100, mark=True)
 
                 elif target_creature is globalvars.PLAYER and single_tile:
-                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, mark=True)
+                    draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y),
+                                       constants.COLOR_ORANGE, mark=True)
             else:
                 draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), base_color)
 
@@ -134,16 +135,20 @@ def menu_tile_select(coords_origin=None,
                 # highlight tile in red if tile contains a monster
                 if target_creature is not None:
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, mark=True)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color,
+                                           mark=True)
 
                     else:
-                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color, mark=True)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), target_color,
+                                           mark=True)
                 else:
                     # mark target with an "X"
                     if (tile_x, tile_y) == target_tile:
-                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=200, mark=True)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y),
+                                           constants.COLOR_ORANGE, alpha=200, mark=True)
                     else:
-                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y), constants.COLOR_ORANGE, alpha=125)
+                        draw.draw_one_tile(globalvars.SURFACE_MAP, (tile_x, tile_y),
+                                           constants.COLOR_ORANGE, alpha=125)
 
         globalvars.SURFACE_MAIN.blit(globalvars.SURFACE_MAP, (0, 0), globalvars.CAMERA.rectangle)
         draw.draw_window_ui()

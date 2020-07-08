@@ -9,8 +9,8 @@ from src import globalvars
 class ObjSpriteSheet:
     """A sprite sheet object class for processing the individual sprites.
 
-    Loads sprite sheet files and grab relevant portions of the file for making animation sequence lists or simply still
-    image sprites. Will also have scaling functionality (to 32 x 32).
+    Loads sprite sheet files and grab relevant portions of the file for making animation sequence
+    lists or simply still image sprites. Will also have scaling functionality (to 32 x 32).
 
     Attributes
     ----------
@@ -22,13 +22,14 @@ class ObjSpriteSheet:
     """
 
     def __init__(self, file_dir, file_name):
-        self.sprite_sheet = pygame.image.load(os.path.join('data', 'graphics', file_dir, file_name)).convert()
+        self.sprite_sheet = pygame.image.load(
+            os.path.join('data', 'graphics', file_dir, file_name)).convert()
         self.tileDict = {
-                            'A': 0, 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9, 'j': 10,
-                            'k': 11, 'l': 12, 'm': 13, 'n': 14, 'o': 15, 'p': 16, 'q': 17, 'r': 18, 's': 19, 't': 20,
-                            'u': 21, 'v': 22, 'w': 23, 'x': 24, 'y': 25, 'z': 26, 'a1': 27, 'b1': 28, 'c1': 29,
-                            'd1': 30, 'e1': 31, 'f1': 32, 'g1': 33
-                        }
+            'A': 0, 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
+            'j': 10, 'k': 11, 'l': 12, 'm': 13, 'n': 14, 'o': 15, 'p': 16, 'q': 17, 'r': 18,
+            's': 19, 't': 20, 'u': 21, 'v': 22, 'w': 23, 'x': 24, 'y': 25, 'z': 26, 'a1': 27,
+            'b1': 28, 'c1': 29, 'd1': 30, 'e1': 31, 'f1': 32, 'g1': 33
+        }
 
     def get_image(self, col, row, w=constants.CELL_WIDTH, h=constants.CELL_HEIGHT, scale=None):
         """Returns a list with a single sprite entry.
@@ -40,17 +41,16 @@ class ObjSpriteSheet:
         row : int
             The row coordinate number (counting from 0) of the desired image.
         w : int, optional
-            The width of the sprite image in pixels. Usually 16 or 32 but defaulted to match the game tile size (32).
+            The width of the sprite in pixels. Usually 16 or 32. Default 32 to match tile size.
         h : int, optional
-            The height of the sprite image in pixels. Usually 16 or 32 but defaulted to match the game tile size (32).
+            The height of the sprite in pixels. Usually 16 or 32. Default 32 to match tile size.
         scale : tuple, optional
             The (width, height) in pixels for the desired image to be scaled to.
 
         Returns
         -------
         list
-            A list of length 1 containing a single sprite image from the sprite sheet loaded during the initialization.
-
+            A list containing a single sprite image from the sprite sheet.
         """
         image_list = []
 
@@ -63,7 +63,8 @@ class ObjSpriteSheet:
         image_list.append(image_surface)
         return image_list
 
-    def get_animation(self, col, row, num_sprites, w=constants.CELL_WIDTH, h=constants.CELL_HEIGHT, scale=None):
+    def get_animation(self, col, row, num_sprites, w=constants.CELL_WIDTH, h=constants.CELL_HEIGHT,
+                      scale=None):
         """Returns a list with a sequence of sprites that make up an animation
 
         Parameters
@@ -73,20 +74,19 @@ class ObjSpriteSheet:
         row : int
             The row coordinate number (counting from 0) of the desired image.
         num_sprites : int
-            The number of sequential sprites in a row (counting the first one specified by `row` and `col`)
-            in the particular animation sequence.
+            The number of sequential sprites in a row (counting the first one specified by
+            `row` and `col`) in the particular animation sequence.
         w : int, optional
-            The width of the sprite image in pixels. Usually 16 or 32 but defaulted to match the game tile size (32).
+            The width of the sprite in pixels. Usually 16 or 32. Default 32 to match tile size.
         h : int, optional
-            The height of the sprite image in pixels. Usually 16 or 32 but defaulted to match the game tile size (32).
+            The height of the sprite in pixels. Usually 16 or 32. Default 32 to match tile size.
         scale : tuple, optional
             The (width, height) in pixels for the desired image to be scaled to.
 
         Returns
         -------
         list
-            A list containing a sequence of sprites from the sprite sheet loaded during the initialization.
-
+            A list containing a sequence of sprites from the sprite sheet.
         """
         animation_list = []
 
@@ -108,9 +108,8 @@ class ObjSpriteSheet:
 class ObjAssets:
     """A class which functions like a struct and contains all the assets used in the game.
 
-    Loads sprite sheets using the ObjSpriteSheet class and creates individual sprite images and animations from the
-    ObjActor class. Music and sound effects are included as assets.
-
+    Loads sprite sheets using the ObjSpriteSheet class and creates individual sprite images and
+    animations from the ObjActor class. Music and sound effects are included as assets.
     """
 
     def __init__(self):
@@ -146,8 +145,10 @@ class ObjAssets:
         # ---> Player
         self.A_PLAYER_LEFT = self.player.get_animation('A', 5, 4)
         self.A_PLAYER_RIGHT = self.player.get_animation('A', 4, 4)
-        self.S_PLAYER_PFP = pygame.image.load(os.path.join("data", "graphics", "menu", "pfp.png")).convert()
-        self.S_PLAYER_LVL = pygame.image.load(os.path.join("data", "graphics", "menu", "player_level.png")).convert()
+        self.S_PLAYER_PFP = pygame.image.load(
+            os.path.join("data", "graphics", "menu", "pfp.png")).convert()
+        self.S_PLAYER_LVL = pygame.image.load(
+            os.path.join("data", "graphics", "menu", "player_level.png")).convert()
 
         # ---> Enemy creatures
         self.A_DUNGO = self.slime.get_animation('A', 1, 2)
@@ -400,7 +401,8 @@ class ObjAssets:
 
         # ---> GUI
         self.slider_button_size = (26, 20)
-        self.slider_btn_path = os.path.join("data", "graphics", "GUI", "buttons", "BTN_SLIDER_SM_(1).png")
+        self.slider_btn_path = os.path.join(
+            "data", "graphics", "GUI", "buttons", "BTN_SLIDER_SM_(1).png")
         self.S_SLIDER_BUTTON = pygame.image.load(self.slider_btn_path).convert()
         self.S_SLIDER_BUTTON = pygame.transform.scale(self.S_SLIDER_BUTTON, self.slider_button_size)
 
@@ -561,10 +563,10 @@ class ObjAssets:
         #                             ||| Music |||
 
         self.main_menu_music = os.path.join("data", "audio", "music", "RPG-Blues_Looping.ogg")
-        self.ingame_music = os.path.join("data", "audio", "music", "Bog-Creatures-On-the-Move_Looping.ogg")
+        self.ingame_music = os.path.join(
+            "data", "audio", "music", "Bog-Creatures-On-the-Move_Looping.ogg")
 
         #                          ||| Sound Effects |||
-
         self.sfx_list = []
 
         self.sfx_hit_punch1 = self.sfx_add("hit_punch_1.wav")
@@ -603,7 +605,6 @@ class ObjAssets:
         -------
         pygame Sound obj
             The sound effect that was loaded in as a pygame Sound object.
-
         """
         new_sfx = pygame.mixer.Sound(os.path.join("data", "audio", "sfx", file_name))
         self.sfx_list.append(new_sfx)
@@ -611,12 +612,11 @@ class ObjAssets:
         return new_sfx
 
     def volume_adjust(self):
-        """Changes volume of all audio in the sfx list and the music volume according to the settings.
+        """Changes volume of all sfx audio and the music volume according to the settings.
 
         Returns
         -------
         None
-
         """
         for sfx in self.sfx_list:
             sfx.set_volume(globalvars.PREFERENCES.sfx_volume_val)

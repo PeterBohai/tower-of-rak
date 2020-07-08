@@ -38,7 +38,6 @@ def gen_magic_rock(coord):
     Returns
     -------
     None
-
     """
     item_com = itemcom.ComItem("A mysterious ancient relic.")
     rock_obj = actor.ObjActor(*coord, "MAGIC ROCK", "S_MAGIC_ROCK", item=item_com)
@@ -57,7 +56,6 @@ def gen_portal(coord):
     Returns
     -------
     None
-
     """
     portal_com = structure.ComPortal()
     portal_obj = actor.ObjActor(*coord, "Portal", "S_PORTAL_CLOSED", portal=portal_com)

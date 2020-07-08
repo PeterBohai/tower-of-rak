@@ -16,7 +16,6 @@ def menu_inventory():
     Returns
     -------
     None
-
     """
     menu_width = 809
     menu_height = 384
@@ -60,8 +59,8 @@ def menu_inventory():
                     mouse_clicked = True
 
         # exit menu if mouse clicks outside its boundaries
-        if mouse_clicked and \
-                (mouse_rel_y < 0 or mouse_rel_x < 0 or mouse_rel_x > menu_width or mouse_rel_y > menu_height):
+        if mouse_clicked and (mouse_rel_y < 0 or mouse_rel_x < 0
+                              or mouse_rel_x > menu_width or mouse_rel_y > menu_height):
             menu_close = True
 
         player_input = ((mouse_rel_x, mouse_rel_y), mouse_clicked, event_list)
@@ -76,13 +75,14 @@ def menu_inventory():
             item_x = first_frame_x + col * frame_x_spacing
             item_y = first_frame_y + row * frame_y_spacing
 
-            mouse_hover = (item_x < mouse_rel_x < item_x + 32 and item_y < mouse_rel_y < item_y + 32)
+            mouse_hover = (item_x < mouse_rel_x < item_x + 32
+                           and item_y < mouse_rel_y < item_y + 32)
 
-            item_clicked, item.item.hover_sound_played = gui.hovered_clickable_element(mouse_hover, mouse_clicked,
-                                                                                       item.item.hover_sound_played,
-                                                                                       change_cursor=False)
+            item_clicked, item.item.hover_sound_played = gui.hovered_clickable_element(
+                mouse_hover, mouse_clicked, item.item.hover_sound_played, change_cursor=False)
             if mouse_hover:
-                inventory_surface.blit(globalvars.ASSETS.S_INVENTORY_SELECT, (item_x - 2, item_y - 2))
+                inventory_surface.blit(globalvars.ASSETS.S_INVENTORY_SELECT,
+                                       (item_x - 2, item_y - 2))
 
             if item_clicked:
                 obj_selected = item
@@ -93,7 +93,8 @@ def menu_inventory():
                 globalvars.PLAYER.container.inventory.remove(item)
                 break
 
-            inventory_surface.blit(globalvars.ASSETS.animation_dict[item.animation_key][0], (item_x, item_y))
+            inventory_surface.blit(globalvars.ASSETS.animation_dict[item.animation_key][0],
+                                   (item_x, item_y))
 
         # display equipment menu
         equipment_menu(inventory_surface, player_input)
@@ -105,17 +106,19 @@ def menu_inventory():
         gold_value = f"{globalvars.PLAYER.gold}"
 
         gold_coords = (346 - text.get_text_width(constants.FONT_BEST, gold_value), 327)
-        text.draw_text(inventory_surface, gold_value, constants.FONT_BEST, gold_coords, (255, 229, 26))
+        text.draw_text(inventory_surface, gold_value, constants.FONT_BEST, gold_coords,
+                       (255, 229, 26))
 
         # display item information in the info side menu
         if obj_selected is not None:
             globalvars.PLAYER.container.currently_displayed_item_info = obj_selected
         if globalvars.PLAYER.container.currently_displayed_item_info is not None:
-            obj_state = display_item_info(inventory_surface,
-                                          globalvars.PLAYER.container.currently_displayed_item_info, player_input)
+            obj_state = display_item_info(
+                inventory_surface, globalvars.PLAYER.container.currently_displayed_item_info,
+                player_input)
 
-            if globalvars.PLAYER.container.currently_displayed_item_info is not None and \
-                    globalvars.PLAYER.container.currently_displayed_item_info.equipment is None and obj_state == "used":
+            if globalvars.PLAYER.container.currently_displayed_item_info is not None \
+                    and globalvars.PLAYER.container.currently_displayed_item_info.equipment is None and obj_state == "used":
                 menu_close = True
         if menu_close:
             break
@@ -126,7 +129,7 @@ def menu_inventory():
 
 
 def equipment_menu(surface, player_input):
-    """Displays the equipment menu to the left of the inventory and monitors any interaction inside the menu.
+    """Displays the equipment menu to the left of the inventory and monitors any actions inside.
 
     Parameters
     ----------
@@ -138,7 +141,6 @@ def equipment_menu(surface, player_input):
     Returns
     -------
     None
-
     """
 
     mouse_rel_x, mouse_rel_y = player_input[0]
@@ -185,7 +187,7 @@ def equipment_menu(surface, player_input):
 
 
 def display_item_info(surface, target_item, player_input):
-    """Displays all information about the `target_item` and provides options to use or drop the item.
+    """Displays all information about the `target_item` and provides options to use/drop the item.
 
     Parameters
     ----------
@@ -200,7 +202,6 @@ def display_item_info(surface, target_item, player_input):
     -------
     None or str
         A string "used" is returned if the item was used, otherwise None is returned.
-
     """
     info_width, info_height = 212, 269
     info_x, info_y = 557, 73
@@ -244,13 +245,13 @@ def display_item_info(surface, target_item, player_input):
         bonus_y = last_y + (2 * text_height)
 
         if atk_bonus > 0:
-            text.draw_text(info_surface, f"+{atk_bonus}   Attack", constants.FONT_BEST, (text_x, bonus_y),
-                           constants.COLOR_GRASS_GREEN)
+            text.draw_text(info_surface, f"+{atk_bonus}   Attack", constants.FONT_BEST,
+                           (text_x, bonus_y), constants.COLOR_GRASS_GREEN)
             bonus_y += text_height + 10
 
         if def_bonus > 0:
-            text.draw_text(info_surface, f"+{def_bonus}   Defence", constants.FONT_BEST, (text_x, bonus_y),
-                           constants.COLOR_GRASS_GREEN)
+            text.draw_text(info_surface, f"+{def_bonus}   Defence", constants.FONT_BEST,
+                           (text_x, bonus_y), constants.COLOR_GRASS_GREEN)
 
     else:
         use_btn_text = "Use"
@@ -315,11 +316,13 @@ def display_stats(surface):
                         atk_text_coords[1] + text_height + 1)
 
     crit_chance_text_coords = (6, def_text_coords[1] + text_height + 1)
-    crit_chance_value_coords = (stats_surface_width - text.get_text_width(stats_font, crit_chance_val) - 6,
+    crit_chance_value_coords = (stats_surface_width - text.get_text_width(stats_font,
+                                                                          crit_chance_val) - 6,
                                 def_text_coords[1] + text_height + 1)
 
     crit_dmg_text_coords = (6, crit_chance_text_coords[1] + text_height + 1)
-    crit_dmg_value_coords = (stats_surface_width - text.get_text_width(stats_font, crit_dmg_val) - 6,
+    crit_dmg_value_coords = (stats_surface_width - text.get_text_width(stats_font,
+                                                                       crit_dmg_val) - 6,
                              crit_chance_text_coords[1] + text_height + 1)
 
     exp_text_coords = (6, crit_dmg_text_coords[1] + text_height + 1)
@@ -332,14 +335,17 @@ def display_stats(surface):
     text.draw_text(stats_surface, def_text, stats_font, def_text_coords, pygame.Color("#112d4e"))
     text.draw_text(stats_surface, def_value, stats_font, def_value_coords, pygame.Color("#3f72af"))
 
-    text.draw_text(stats_surface, crit_chance_text, stats_font, crit_chance_text_coords, pygame.Color("#112d4e"))
-    text.draw_text(stats_surface, crit_chance_val, stats_font, crit_chance_value_coords, pygame.Color("#3f72af"))
+    text.draw_text(stats_surface, crit_chance_text, stats_font, crit_chance_text_coords,
+                   pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, crit_chance_val, stats_font, crit_chance_value_coords,
+                   pygame.Color("#3f72af"))
 
-    text.draw_text(stats_surface, crit_dmg_text, stats_font, crit_dmg_text_coords, pygame.Color("#112d4e"))
-    text.draw_text(stats_surface, crit_dmg_val, stats_font, crit_dmg_value_coords, pygame.Color("#3f72af"))
+    text.draw_text(stats_surface, crit_dmg_text, stats_font, crit_dmg_text_coords,
+                   pygame.Color("#112d4e"))
+    text.draw_text(stats_surface, crit_dmg_val, stats_font, crit_dmg_value_coords,
+                   pygame.Color("#3f72af"))
 
     text.draw_text(stats_surface, exp_text, stats_font, exp_text_coords, pygame.Color("#521262"))
     text.draw_text(stats_surface, exp_value, stats_font, exp_value_coords, pygame.Color("#6639a6"))
 
     surface.blit(stats_surface, (stats_x, stats_y))
-

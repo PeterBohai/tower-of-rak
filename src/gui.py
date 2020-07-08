@@ -37,7 +37,6 @@ class GuiButton:
         True if the cursor is hovered over the button.
     hover_sfx_played : bool
         True if the hover sfx played once already.
-
     """
     def __init__(self, surface, text, coords_center, size,
                  color_button_hovered=constants.COLOR_BLUE2,
@@ -82,7 +81,7 @@ class GuiButton:
         self.button_rect.center = self._coords_center
 
     def update(self, player_input):
-        """Updates the button color and all other actions when the button is hovered over or clicked on.
+        """Updates the color and other actions when the button is hovered over or clicked on.
 
         Parameters
         ----------
@@ -206,7 +205,8 @@ class GuiSlider:
 
         self.slider_rect = pygame.Rect((0, 0), self.size)
         self.slider_rect.center = self.coords_center
-        self.fg_rect = pygame.Rect((0, 0), (self.slider_rect.width * self.slider_value, self.slider_rect.height))
+        self.fg_rect = pygame.Rect(
+            (0, 0), (self.slider_rect.width * self.slider_value, self.slider_rect.height))
         self.fg_rect.topleft = self.slider_rect.topleft
 
         self.grab_button = pygame.Rect((0, 0), (20, self.slider_rect.height + 6))
@@ -240,7 +240,7 @@ class GuiSlider:
         mouse_pressed = pygame.mouse.get_pressed()[0]
 
         mouse_over_slider = (self.slider_rect.left <= mouse_x <= self.slider_rect.right and
-                             self.grab_button_y <= mouse_y <= self.grab_button_y + self.grab_button_height)
+                             self.grab_button.top <= mouse_y <= self.grab_button.bottom)
 
         self.mouse_hover = (self.grab_button.left <= mouse_x <= self.grab_button.right and
                             self.grab_button.top <= mouse_y <= self.grab_button.bottom)
@@ -260,7 +260,8 @@ class GuiSlider:
         """
         pygame.draw.rect(self.surface, self.color_slider_bg, self.slider_rect)
         pygame.draw.rect(self.surface, self.color_slider_fg, self.fg_rect)
-        self.surface.blit(globalvars.ASSETS.S_SLIDER_BUTTON, (self.grab_button_x, self.grab_button_y))
+        self.surface.blit(globalvars.ASSETS.S_SLIDER_BUTTON,
+                          (self.grab_button_x, self.grab_button_y))
 
 
 def hovered_clickable_element(mouse_hovered, mouse_clicked, hover_sound, change_cursor=True):
@@ -277,7 +278,6 @@ def hovered_clickable_element(mouse_hovered, mouse_clicked, hover_sound, change_
     -------
     bool
         True if the mouse clicked within the element
-
     """
     element_clicked = False
     if mouse_hovered:

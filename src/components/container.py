@@ -13,7 +13,6 @@ class ComContainer:
         The maximum weight the container can carry (in wu - weight units).
     currently_displayed_item_info : ComItem obj
         The object that is currently displayed on the info menu in the inventory menu.
-
     """
 
     def __init__(self, weight=0, max_weight=20):

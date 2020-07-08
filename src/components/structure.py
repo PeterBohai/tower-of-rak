@@ -15,7 +15,6 @@ class ComStairs:
     ----------
     upwards : bool
         True if the user (PLAYER) will go up a floor, False if down a floor.
-
     """
 
     def __init__(self, upwards=True):
@@ -29,7 +28,7 @@ class ComStairs:
         None
 
         """
-        # TODO:  Possibly implement "locking" the player in until a task is done (rendering stairs unusable).
+        # TODO:  Implement "locking" the player in until a task is done (make stairs unusable).
         if self.upwards:
             globalvars.GAME.map_transition_next()
         else:
@@ -45,19 +44,17 @@ class ComPortal:
         String that corresponds to an animation dictionary key in ASSETS indicating the portal is open.
     closed_animation : str
         String that corresponds to an animation dictionary key in ASSETS indicating the portal is closed.
-
     """
     def __init__(self):
         self.open_animation = "A_PORTAL_OPEN"
         self.closed_animation = "S_PORTAL_CLOSED"
 
     def update(self):
-        """Updates the status of the portal object as well as its animation depending on if the PLAYER has the relic.
+        """Updates the status and animation of the portal depending on if the PLAYER has the relic.
 
         Returns
         -------
         None
-
         """
         found_relic = False
 
@@ -83,7 +80,6 @@ class ComPortal:
         Returns
         -------
         None
-
         """
 
         if self.owner.status == "STATUS_OPEN":
@@ -129,7 +125,6 @@ class ComPortal:
             # For exiting out of the game
             win_popup = True
             while win_popup:
-
                 # get player input
                 events_list = pygame.event.get()
                 mouse_pos = pygame.mouse.get_pos()
@@ -150,5 +145,4 @@ class ComPortal:
                                center=True)
 
                 quit_button.draw()
-
                 pygame.display.update()

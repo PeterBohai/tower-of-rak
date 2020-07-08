@@ -31,17 +31,20 @@ def game_initialize():
 
     # Set main game window according to preferences
     if globalvars.PREFERENCES.display_window == "default":
-        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH,
+                                                           constants.CAMERA_HEIGHT))
 
     elif globalvars.PREFERENCES.display_window == "fill":
         constants.CAMERA_WIDTH = constants.screen_width
         constants.CAMERA_HEIGHT = constants.screen_height - 45
-        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH,
+                                                           constants.CAMERA_HEIGHT))
 
     elif globalvars.PREFERENCES.display_window == "fullscreen":
         constants.CAMERA_WIDTH = constants.screen_width
         constants.CAMERA_HEIGHT = constants.screen_height
-        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT),
+        globalvars.SURFACE_MAIN = pygame.display.set_mode((constants.CAMERA_WIDTH,
+                                                           constants.CAMERA_HEIGHT),
                                                           flags=pygame.FULLSCREEN)
 
     pygame.mouse.set_cursor(*pygame.cursors.tri_left)

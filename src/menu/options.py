@@ -6,6 +6,16 @@ import pygame
 from src import constants, globalvars, text, gui, game, draw
 from src.menu import popup, mainmenu
 
+# Standard button attributes
+button_wh = (64, 32)
+button_wh_small = (50, 32)
+button_wh_long = (160, 32)
+back_button_text = "BACK"
+save_button_text = "SAVE"
+
+# Standard options menu specs
+menu_width = 448
+
 
 def main_options_menu(in_game=False):
     """The primary options menu that includes sub-menus like audio, control, display, etc.
@@ -21,10 +31,8 @@ def main_options_menu(in_game=False):
     """
 
     # ----- menu specs ----- #
-    menu_width, menu_height = 448, 256
-
-    center_x = constants.CAMERA_WIDTH / 2
-    center_y = constants.CAMERA_HEIGHT / 2
+    menu_height = 256
+    center_x, center_y = constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2
 
     # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
@@ -38,48 +46,37 @@ def main_options_menu(in_game=False):
     button_width = 96 if in_game else 64
     button_height = 32
     button_offset = button_height + 12
-    long_button_width = 160
 
     back_button_x = center_x
     back_button_y = menu_rect.bottom - 30
-    back_button_text = "BACK"
 
     save_button_x = back_button_x - (button_width + button_offset) if in_game else center_x
     save_button_y = menu_rect.bottom - 30
-    save_button_text = "Save game" if in_game else "SAVE"
 
     audio_button_x = center_x
     audio_button_y = menu_rect.top + 80
-    audio_button_text = "Audio Settings"
 
     controls_button_x = center_x
     controls_button_y = audio_button_y + button_offset
-    controls_button_text = "Control Settings"
 
     display_button_x = center_x
     display_button_y = controls_button_y + button_offset
-    display_button_text = "Display Settings"
 
     # ----- create buttons ----- #
-    save_button = gui.GuiButton(surface_menu, save_button_text,
-                                (save_button_x, save_button_y),
-                                (button_width, button_height))
+    save_button = gui.GuiButton(surface_menu, "Save game" if in_game else save_button_text,
+                                (save_button_x, save_button_y), (button_width, button_height))
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
-                                (back_button_x, back_button_y),
-                                (button_width, button_height))
+                                (back_button_x, back_button_y), (button_width, button_height))
 
-    audio_button = gui.GuiButton(surface_menu, audio_button_text,
-                                 (audio_button_x, audio_button_y),
-                                 (long_button_width, button_height))
+    audio_button = gui.GuiButton(surface_menu, "Audio Settings",
+                                 (audio_button_x, audio_button_y), button_wh_long)
 
-    controls_button = gui.GuiButton(surface_menu, controls_button_text,
-                                    (controls_button_x, controls_button_y),
-                                    (long_button_width, button_height))
+    controls_button = gui.GuiButton(surface_menu, "Control Settings",
+                                    (controls_button_x, controls_button_y), button_wh_long)
 
-    display_button = gui.GuiButton(surface_menu, display_button_text,
-                                   (display_button_x, display_button_y),
-                                   (long_button_width, button_height))
+    display_button = gui.GuiButton(surface_menu, "Display Settings",
+                                   (display_button_x, display_button_y), button_wh_long)
 
     button_list = [back_button, audio_button, controls_button, display_button]
 
@@ -167,10 +164,8 @@ def audio_options_menu():
     """
 
     # ----- menu specs ----- #
-    menu_width, menu_height = 448, 256
-
-    center_x = constants.CAMERA_WIDTH / 2
-    center_y = constants.CAMERA_HEIGHT / 2
+    menu_height = 256
+    center_x, center_y = constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2
 
     # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
@@ -190,16 +185,11 @@ def audio_options_menu():
     sfx_slider_x = music_slider_x
     sfx_slider_y = music_slider_y + 45
 
-    button_width = 64
-    button_height = 32
-
-    save_button_x = center_x - button_width
+    save_button_x = center_x - button_wh[0]
     save_button_y = menu_rect.bottom - 30
-    save_button_text = "SAVE"
 
-    back_button_x = center_x + button_width
+    back_button_x = center_x + button_wh[0]
     back_button_y = menu_rect.bottom - 30
-    back_button_text = "BACK"
 
     # ----- create sliders and buttons ----- #
     music_slider = gui.GuiSlider(surface_menu, (music_slider_x, music_slider_y),
@@ -211,12 +201,10 @@ def audio_options_menu():
                                globalvars.PREFERENCES.sfx_volume_val)
 
     save_button = gui.GuiButton(surface_menu, save_button_text,
-                                (save_button_x, save_button_y),
-                                (button_width, button_height))
+                                (save_button_x, save_button_y), button_wh)
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
-                                (back_button_x, back_button_y),
-                                (button_width, button_height))
+                                (back_button_x, back_button_y), button_wh)
 
     button_slider_list = (save_button, back_button, music_slider, sfx_slider)
 
@@ -293,15 +281,11 @@ def controls_options_menu():
     """
 
     # ----- menu specs -----#
-    menu_width, menu_height = 448, 416
-
+    menu_height = 416
+    center_x, center_y = constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2
     scroll_window_width = menu_width - (2 * constants.CELL_WIDTH)
     scroll_window_height = menu_height - 70 - 64
-
     controls_height = 448
-
-    center_x = constants.CAMERA_WIDTH / 2
-    center_y = constants.CAMERA_HEIGHT / 2
 
     # ----- initialize menu surface ----- #
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
@@ -325,89 +309,73 @@ def controls_options_menu():
     text_y_offset = text.get_text_height(constants.FONT_BEST) + 24
     num_lines = 20
     line_y = [text_y_first + line * text_y_offset for line in range(num_lines)]
-
     descriptions = ("Move Left", "Move Right", "Move Up", "Move Down", "Stay",
                     "Grab Item", "Drop Item", "Inventory", "Next Floor", "Back/Exit")
 
     # ----- button specs ----- #
-    button_width = 64
-    button_height = 32
-    small_button_width = 50
-    small_button_height = 32
-    button_x_offset = button_width + 32
+    button_x_offset = button_wh[0] + 32
 
     save_button_x = center_x
     save_button_y = menu_rect.bottom - 30
-    save_button_text = "SAVE"
 
     back_button_x = center_x + button_x_offset
     back_button_y = menu_rect.bottom - 30
-    back_button_text = "BACK"
 
     reset_button_x = center_x - button_x_offset
     reset_button_y = menu_rect.bottom - 30
     reset_button_text = "RESET"
 
     keys_button_x = scroll_window_width // 2
-    keys_button_y = [y_pos + small_button_height // 2 - 8 for y_pos in line_y]
+    keys_button_y = [y_pos + button_wh_small[1] // 2 - 8 for y_pos in line_y]
 
     # ----- create buttons ----- #
     save_button = gui.GuiButton(surface_menu, save_button_text,
-                                (save_button_x, save_button_y),
-                                (button_width, button_height))
+                                (save_button_x, save_button_y), button_wh)
 
     back_button = gui.GuiButton(surface_menu, back_button_text,
-                                (back_button_x, back_button_y),
-                                (button_width, button_height))
+                                (back_button_x, back_button_y), button_wh)
 
-    reset_button = gui.GuiButton(surface_menu, reset_button_text, (reset_button_x, reset_button_y),
-                                 (button_width, button_height))
-
-    # in-game controls buttons
+    reset_button = gui.GuiButton(surface_menu, reset_button_text,
+                                 (reset_button_x, reset_button_y), button_wh)
+    # In-game controls buttons
     previous_key_bindings = copy.deepcopy(globalvars.PREFERENCES.keybindings)
 
     left_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["left"][0],
-                                (keys_button_x, keys_button_y[0]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[0]), button_wh_small)
 
     right_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["right"][0],
-                                 (keys_button_x, keys_button_y[1]),
-                                 (small_button_width, small_button_height))
+                                 (keys_button_x, keys_button_y[1]), button_wh_small)
 
     up_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["up"][0],
-                              (keys_button_x, keys_button_y[2]),
-                              (small_button_width, small_button_height))
+                              (keys_button_x, keys_button_y[2]), button_wh_small)
 
     down_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["down"][0],
-                                (keys_button_x, keys_button_y[3]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[3]), button_wh_small)
 
     stay_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["stay"][0],
-                                (keys_button_x, keys_button_y[4]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[4]), button_wh_small)
 
     grab_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["grab"][0],
-                                (keys_button_x, keys_button_y[5]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[5]), button_wh_small)
 
     drop_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["drop"][0],
-                                (keys_button_x, keys_button_y[6]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[6]), button_wh_small)
 
-    inventory_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["inventory"][0],
-                                     (keys_button_x, keys_button_y[7]),
-                                     (small_button_width, small_button_height))
+    inventory_button = gui.GuiButton(surface_controls,
+                                     globalvars.PREFERENCES.keybindings["inventory"][0],
+                                     (keys_button_x, keys_button_y[7]), button_wh_small)
 
     next_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["next"][0],
-                                (keys_button_x, keys_button_y[8]),
-                                (small_button_width, small_button_height))
+                                (keys_button_x, keys_button_y[8]), button_wh_small)
 
     esc_button = gui.GuiButton(surface_controls, globalvars.PREFERENCES.keybindings["back"][0],
-                               (keys_button_x, keys_button_y[9]),
-                               (small_button_width, small_button_height))
+                               (keys_button_x, keys_button_y[9]), button_wh_small)
 
-    button_list = (save_button, back_button, reset_button, left_button, right_button, up_button, down_button,
-                   stay_button, grab_button, drop_button, inventory_button, next_button, esc_button)
+    button_list = [save_button, back_button, reset_button]
+    game_buttons = [(left_button, "left"), (right_button, "right"), (up_button, "up"),
+                    (down_button, "down"), (stay_button, "stay"), (grab_button, "grab"),
+                    (drop_button, "drop"), (inventory_button, "inventory"), (next_button, "next"),
+                    (esc_button, "back")]
 
     # menu background tile positions
     top_r = tuple(numpy.subtract(menu_rect.topright, (32, 0)))
@@ -419,22 +387,11 @@ def controls_options_menu():
     menu_close = False
     saved = False
     while not menu_close:
-        left_button.text = globalvars.PREFERENCES.keybindings["left"][0]
-        right_button.text = globalvars.PREFERENCES.keybindings["right"][0]
-        up_button.text = globalvars.PREFERENCES.keybindings["up"][0]
-        down_button.text = globalvars.PREFERENCES.keybindings["down"][0]
-        stay_button.text = globalvars.PREFERENCES.keybindings["stay"][0]
-        grab_button.text = globalvars.PREFERENCES.keybindings["grab"][0]
-        drop_button.text = globalvars.PREFERENCES.keybindings["drop"][0]
-        inventory_button.text = globalvars.PREFERENCES.keybindings["inventory"][0]
-        next_button.text = globalvars.PREFERENCES.keybindings["next"][0]
-        esc_button.text = globalvars.PREFERENCES.keybindings["back"][0]
-
         # ---- retrieve user input and events ----- #
         mouse_pos = pygame.mouse.get_pos()
         events_list = pygame.event.get()
 
-        # update relative mouse position
+        # Update relative mouse position
         mouse_x, mouse_y = mouse_pos
         mouse_rel_x = mouse_x - scroll_window_pos[0]
         mouse_rel_y = mouse_y - (scroll_window_pos[1] + scroll_y)
@@ -471,56 +428,25 @@ def controls_options_menu():
                 globalvars.PREFERENCES.keybindings = previous_key_bindings
             menu_close = True
         if reset_button.update(player_events):
-            globalvars.PREFERENCES.keybindings = copy.deepcopy(globalvars.PREFERENCES.default_keybindings)
+            globalvars.PREFERENCES.keybindings = copy.deepcopy(
+                globalvars.PREFERENCES.default_keybindings)
 
-        # game control buttons
-        if left_button.update(player_events_rel):
-            menu_change_controls("left")
-            saved = False
-
-        if right_button.update(player_events_rel):
-            menu_change_controls("right")
-            saved = False
-
-        if up_button.update(player_events_rel):
-            menu_change_controls("up")
-            saved = False
-
-        if down_button.update(player_events_rel):
-            menu_change_controls("down")
-            saved = False
-
-        if stay_button.update(player_events_rel):
-            menu_change_controls("stay")
-            saved = False
-
-        if grab_button.update(player_events_rel):
-            menu_change_controls("grab")
-            saved = False
-
-        if drop_button.update(player_events_rel):
-            menu_change_controls("drop")
-            saved = False
-
-        if inventory_button.update(player_events_rel):
-            menu_change_controls("inventory")
-            saved = False
-
-        if next_button.update(player_events_rel):
-            menu_change_controls("next")
-            saved = False
-
-        if esc_button.update(player_events_rel):
-            menu_change_controls("back")
-            saved = False
+        # Trigger pop-up prompt window if user clicks on a game control button
+        for button, action in game_buttons:
+            # Constantly update button labels so that any changes are displayed in real-time
+            button.text = globalvars.PREFERENCES.keybindings[action][0]
+            if button.update(player_events_rel):
+                menu_change_controls(action)
+                saved = False
 
         # ----- display functions ----- #
         for i, desc in enumerate(descriptions):
-            text.draw_text(surface_controls, desc, constants.FONT_BEST, (text_x, line_y[i]), constants.COLOR_BLACK)
+            text.draw_text(surface_controls, desc, constants.FONT_BEST, (text_x, line_y[i]),
+                           constants.COLOR_BLACK)
 
         surface_scroll_window.blit(surface_controls, (0, scroll_y))
         draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
-        draw.draw_button_update_cursor(button_list)
+        draw.draw_button_update_cursor(button_list + [btn for btn, action in game_buttons])
         # display scroll window
         surface_menu.blit(surface_scroll_window, scroll_window_pos)
         text.draw_text(surface_menu, "CONTROLS", constants.FONT_MENU_TITLE,
@@ -531,7 +457,7 @@ def controls_options_menu():
 
 
 def menu_change_controls(action):
-    """Displays a pop-up prompt menu when player clicks on a key button to change in the controls menu.
+    """Displays a pop-up prompt when player clicks on a key button to change in the controls menu.
 
     Returns
     -------
@@ -539,14 +465,12 @@ def menu_change_controls(action):
     """
 
     # ----- menu specs -----#
-    menu_width, menu_height = 352, 128
-
-    center_x = constants.CAMERA_WIDTH / 2
-    center_y = constants.CAMERA_HEIGHT / 2
+    menu_width_sm, menu_height = 352, 128
+    center_x, center_y = constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2
 
     # ----- initialize menu surface -----#
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
-    menu_rect = pygame.Rect((0, 0), (menu_width, menu_height))
+    menu_rect = pygame.Rect((0, 0), (menu_width_sm, menu_height))
     menu_rect.center = (center_x, center_y)
 
     message_x = center_x
@@ -662,7 +586,7 @@ def menu_change_controls(action):
                        constants.COLOR_BLACK, center=True)
         # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
-        draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)
+        draw.draw_menu_background(surface_menu, (menu_width_sm, menu_height), *corner_positions)
         pygame.display.update()
 
 
@@ -675,10 +599,8 @@ def display_options_menu():
     """
 
     # ------ menu specs ----- #
-    menu_width, menu_height = 448, 256
-
-    center_x = constants.CAMERA_WIDTH / 2
-    center_y = constants.CAMERA_HEIGHT / 2
+    menu_height = 256
+    center_x, center_y = constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2
 
     # ----- initialize menu surface -----#
     surface_menu = pygame.Surface((constants.CAMERA_WIDTH, constants.CAMERA_HEIGHT))
@@ -690,43 +612,33 @@ def display_options_menu():
     title_y = menu_rect.top + 30
 
     # ----- button specs ----- #
-    button_width = 64
-    button_height = 32
-    button_offset = button_height + 12
-    long_button_width = 160
+    button_offset = button_wh[1] + 12
 
     back_button_x = center_x
     back_button_y = menu_rect.bottom - 30
-    back_button_text = "BACK"
 
     default_button_x = center_x
     default_button_y = menu_rect.top + 80
-    default_button_text = "Default Screen"
 
     fill_button_x = center_x
     fill_button_y = default_button_y + button_offset
-    fill_button_text = "Fill Screen"
 
     fullscreen_button_x = center_x
     fullscreen_button_y = fill_button_y + button_offset
-    fullscreen_button_text = "Fullscreen"
 
     # ----- create buttons ----- #
     back_button = gui.GuiButton(surface_menu, back_button_text,
-                                (back_button_x, back_button_y),
-                                (button_width, button_height))
+                                (back_button_x, back_button_y), button_wh)
 
-    default_button = gui.GuiButton(surface_menu, default_button_text,
-                                   (default_button_x, default_button_y),
-                                   (long_button_width, button_height))
+    default_button = gui.GuiButton(surface_menu, "Default Screen",
+                                   (default_button_x, default_button_y), button_wh_long)
 
-    fill_button = gui.GuiButton(surface_menu, fill_button_text,
-                                (fill_button_x, fill_button_y),
-                                (long_button_width, button_height))
+    fill_button = gui.GuiButton(surface_menu, "Fill Screen",
+                                (fill_button_x, fill_button_y), button_wh_long)
 
-    fullscreen_button = gui.GuiButton(surface_menu, fullscreen_button_text,
-                                      (fullscreen_button_x, fullscreen_button_y),
-                                      (long_button_width, button_height))
+    fullscreen_button = gui.GuiButton(surface_menu, "Fullscreen",
+                                      (fullscreen_button_x, fullscreen_button_y), button_wh_long)
+
     button_list = (back_button, default_button, fill_button, fullscreen_button)
 
     # menu background tile positions
@@ -781,9 +693,7 @@ def display_options_menu():
         # ------- display functions ------- #
         draw.draw_button_update_cursor(button_list)
         text.draw_text(surface_menu, "Display Settings", constants.FONT_MENU_TITLE,
-                       (title_x, title_y),
-                       constants.COLOR_BLACK,
-                       center=True)
+                       (title_x, title_y), constants.COLOR_BLACK, center=True)
         # update display
         globalvars.SURFACE_MAIN.blit(surface_menu, menu_rect.topleft, menu_rect)
         draw.draw_menu_background(surface_menu, (menu_width, menu_height), *corner_positions)

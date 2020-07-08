@@ -7,7 +7,7 @@ from src.generators import itemgen, creaturegen, specialgen
 
 
 class ObjRoom:
-    """Rectangular room object containing relevant properties such as its boundary and center coordinates.
+    """Rectangular room object containing relevant properties such boundary and center coordinates.
 
     Attributes
     ----------
@@ -27,7 +27,6 @@ class ObjRoom:
         The center map-grid x-coordinate of the room.
     center_y : int
         The center map-grid y-coordinate of the room.
-
     """
 
     def __init__(self, coords_topleft, size):
@@ -68,18 +67,18 @@ class ObjRoom:
 def map_create():
     """Creates a map.
 
-    Procedurally generates a map using Tunneling Algorithm, which initiates all map tiles as wall first and "digs" out
-    rectangular rooms and connects them with passages.
+    Procedurally generates a map using Tunneling Algorithm, which initiates all map tiles as wall
+    first and "digs" out rectangular rooms and connects them with passages.
 
     Returns
     -------
     tuple
         Contains the new_map, which is a 2d array of StrucTile objects (walls, floors)
         and a list of room objects in this map
-
     """
     # initialize empty map with wall tiles
-    new_map = [[data.StructTile(True) for y in range(0, constants.MAP_HEIGHT)] for x in range(0, constants.MAP_WIDTH)]
+    new_map = [[data.StructTile(True) for y in range(0, constants.MAP_HEIGHT)]
+               for x in range(0, constants.MAP_WIDTH)]
 
     list_of_rooms = []
 
@@ -130,7 +129,6 @@ def map_create_room(target_map, new_room):
     Returns
     -------
     None
-
     """
     def add_to_x_y(_x, _y):
         rand_add_x = random.choice((-1, 0, 1))
@@ -151,7 +149,7 @@ def map_create_room(target_map, new_room):
 
     pillar_x1, pillar_y1 = None, None
 
-    # spawn a few "pillar" walls (80% chance) around the room if the room is bigger than a certain width/height
+    # spawn a few "pillar" walls (80% chance) around the room if the room is "big"
     if new_room.width * new_room.height > 64 and tcod.random_get_int(0, 1, 100) < 80:
 
         # spawn at least 2 tiles from walls and not the middle tile
@@ -199,7 +197,6 @@ def map_create_tunnels(target_map, new_center, prev_center):
     Returns
     -------
     None
-
     """
 
     x1, y1 = new_center
@@ -238,7 +235,6 @@ def map_place_items_creatures(room_list):
     Returns
     -------
     None
-
     """
     floor_num = globalvars.GAME.max_floor_reached
     cur_floor = globalvars.GAME.cur_floor
@@ -310,7 +306,6 @@ def creature_at_coords(x, y, exclude=None):
     -------
     ObjActor or None
         A creature object or None if there is no creature there.
-
     """
 
     for obj in globalvars.GAME.current_objects:
@@ -338,7 +333,8 @@ def create_fov_map(target_map):
     for y in range(constants.MAP_HEIGHT):
         for x in range(constants.MAP_WIDTH):
             tcod.map_set_properties(globalvars.FOV_MAP, x, y,
-                                    not target_map[x][y].block_path, not target_map[x][y].block_path)
+                                    not target_map[x][y].block_path,
+                                    not target_map[x][y].block_path)
 
 
 def update_fov():
@@ -350,8 +346,8 @@ def update_fov():
 
     """
     if globalvars.FOV_CALCULATE:
-        tcod.map_compute_fov(globalvars.FOV_MAP, globalvars.PLAYER.x, globalvars.PLAYER.y, constants.TORCH_RADIUS,
-                             constants.FOV_LIGHT_WALLS, constants.FOV_ALG)
+        tcod.map_compute_fov(globalvars.FOV_MAP, globalvars.PLAYER.x, globalvars.PLAYER.y,
+                             constants.TORCH_RADIUS, constants.FOV_LIGHT_WALLS, constants.FOV_ALG)
         globalvars.FOV_CALCULATE = False
 
 

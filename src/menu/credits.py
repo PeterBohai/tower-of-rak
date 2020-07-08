@@ -100,15 +100,16 @@ def menu_credits():
 
         # display lines of text
         line_num = -2
+
         for line in text_lines:
             line_num += 1 if not line.isupper() else 2
-            text.draw_text(credits_surface, line,
-                           constants.FONT_CREDIT_LABELS if line.isupper() else constants.FONT_CREDITS,
-                           (text_x, line_y[line_num]),
+            text_font = constants.FONT_CREDIT_LABELS if line.isupper() else constants.FONT_CREDITS
+            text.draw_text(credits_surface, line, text_font, (text_x, line_y[line_num]),
                            constants.COLOR_BLACK if line.isupper() else constants.COLOR_BLUE3)
         menu_button.draw()
 
         # >>>>> update display <<<<<
         globalvars.SURFACE_MAIN.blit(credits_surface, menu_rect.topleft, menu_rect)
-        draw.draw_menu_background(credits_surface, (menu_width, menu_height), *corner_positions, assets=menu_tiles)
+        draw.draw_menu_background(credits_surface, (menu_width, menu_height), *corner_positions,
+                                  assets=menu_tiles)
         pygame.display.update()

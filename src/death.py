@@ -18,7 +18,6 @@ def death_player(player):
     Returns
     -------
     None
-
     """
     player.status = "STATUS_DEAD"
     center_coords = (constants.CAMERA_WIDTH / 2, constants.CAMERA_HEIGHT / 2)
@@ -115,7 +114,8 @@ def death_enemy(mob):
 def death_friendly(mob):
     """Death function for friendly mobs.
 
-    The dead mob leaves a slow bobbing blue soul behind that gives heals for a certain amount when consumed/picked up.
+    The dead mob leaves a slow bobbing blue soul behind that gives heals for a certain amount when
+    consumed/picked up.
 
     Parameters
     ----------
@@ -125,7 +125,6 @@ def death_friendly(mob):
     Returns
     -------
     None
-
     """
 
     death_msg = f"{mob.display_name} is dead and dropped a healing element!"
